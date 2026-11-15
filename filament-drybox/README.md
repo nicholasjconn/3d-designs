@@ -24,7 +24,8 @@ the purchased fitting is a dimensional envelope, not manufacturer CAD. Its exact
 packaging specifies PT 1/8, 7 mm of thread and 18 mm overall length. The printed
 fitting socket follows the nominal shoulder-seated tapered interface. Its native
 solid and fabrication mesh pass the geometric checks; printed engagement still
-requires the first fit trial.
+requires the first fit trial. A 45° internal funnel removes the socket ledge,
+so the checked slice needs no internal supports; exterior body supports remain.
 
 `cad/clip.py` / `clip.json` provide an original one-piece hinged clip with smooth
 sandwich jaws, side loading and a releasable latch. The **open** pose is the

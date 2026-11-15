@@ -308,9 +308,20 @@ def make_body(c):
                  external_thread(ct["major_diameter_mm"], ct["pitch_mm"], *ct["z_mm"]),
                  cylinder(nk["diameter_mm"]/2, *nk["z_mm"])])
     pi, tu = c["purchased_interfaces"],c["tube"]
+    guide_radius = tu["body_clearance_bore_mm"] / 2
+    relief_radius = pi["tip_relief_diameter_mm"] / 2
+    relief_start = pi["tip_relief_z_mm"][0]
+    angle = math.radians(tu["guide_transition_angle_deg"])
+    if not 0 < angle < math.pi / 2:
+        raise ValueError("Tube guide transition angle must be between 0 and 90 degrees")
+    guide_end = relief_start - (relief_radius - guide_radius) / math.tan(angle)
+    if not tu["body_clearance_z_mm"][0] < guide_end < relief_start:
+        raise ValueError("Tube guide transition must fit behind the purchased socket")
     tools = [cq.Solid.makeBox(30,50,fl["z_mm"][1]-fl["z_mm"][0],cq.Vector(fl["across_flats_mm"]/2,-25,fl["z_mm"][0])),
              cq.Solid.makeBox(30,50,fl["z_mm"][1]-fl["z_mm"][0],cq.Vector(-30-fl["across_flats_mm"]/2,-25,fl["z_mm"][0])),
              cylinder(tu["body_clearance_bore_mm"]/2,tu["body_clearance_z_mm"][0]-.1,tu["body_clearance_z_mm"][1]),
+             # Neck-down printing closes this funnel gradually instead of bridging a ledge.
+             cone(guide_radius, relief_radius, guide_end, relief_start),
              cylinder(pi["tip_relief_diameter_mm"]/2,*pi["tip_relief_z_mm"]),
              purchased_socket_tool(c)]
     rg, wg = c["radial_ring"], c["wall_ring"]

@@ -45,23 +45,23 @@ reference, not a print input.
 | Process overrides | `enable_support = 1`; all other process and filament settings factory defaults |
 | Count | One body, one nut, one cap and one open clip |
 
-The offline slice has zero warnings and zero mesh repairs. Actual paths retain
+The final offline slice has zero warnings and zero mesh repairs. Actual paths retain
 one connected clip footprint in all 20 layers. The 0.8 mm leaf, jaws and latch
 remain present; the jaw and latch gaps stay open. This checks deposition, not
 hinge strength, grip or fatigue.
 
 | Material / time | Estimate |
 |---|---:|
-| Useful body | 6.272 g |
+| Useful body | 6.268 g |
 | Useful nut | 1.570 g |
 | Useful cap | 12.833 g |
 | Useful clip | 0.185 g |
-| Useful parts total | 20.860 g |
-| Removable supports and support interface | 1.729 g |
+| Useful parts total | 20.856 g |
+| Removable supports and support interface | 1.660 g |
 | Brim and tower | 0 g |
 | Slicer-minus-deposition residual | 0.030 g |
-| Slicer total | 22.620 g |
-| Estimated total time | 1 h 2 m 39 s |
+| Slicer total | 22.547 g |
+| Estimated total time | 1 h 2 m 16 s |
 
 Positive startup extrusion commands separately represent approximately 0.183 g.
 Conditional startup, loading and calibration consumption depend on printer state
@@ -75,23 +75,23 @@ The added purchased-fitting socket is a complete rounded tapered helix with
 provisional print allowance and a small root clearance. This is not an ISO
 thread-gauge qualification.
 
-A support-free body slice starts the M26 shoulder and outer flange walls without
-previous-layer support. The proposed body therefore uses factory supports,
-with only `enable_support` changed from the Standard preset. The other three
-parts need no generated supports. Body-only comparison: support off is 6.302 g
-and 23 m 25 s; support on is 8.031 g and 33 m 52 s. The lower-overhead slice is
-not the proposed first print because of those unsupported starts.
+The internal guide now meets the fitting socket through a 45° funnel, rather
+than an abrupt ledge. It joins the Ø4.4 mm tube guide to the Ø10.2 mm tip relief
+over 2.9 mm, leaving 19.2 mm of straight guide and the full 7 mm fitting thread.
+The continuous PTFE tube passes through this funnel; filament remains inside
+PTFE. The exterior and both seal glands are unchanged.
 
-Supports reach about 7.8 mm into the fitting socket. Break them apart and remove
-them through its wide, bed-facing mouth, rather than trying to push a rigid plug
-through the narrow PTFE passage. The external radial O-ring groove also needs
-support cleanup. Inspect the thread and smooth groove carefully before trying
-the metal fitting or ring. The upward wall-face O-ring gland has no support
-roads. Accessibility is a geometric check; successful cleanup and sealing are
-physical checks.
+Actual support paths in the final four-part slice contain no support bead
+inside the socket or tube passage. Exterior supports remain necessary for the
+M26 shoulder and flange; only `enable_support` differs from factory Standard.
+The other three parts receive no generated support. Supports also reach the
+external radial O-ring groove: remove them and inspect its smooth surfaces and
+the retention threads before fitting the ring. The upward wall-face gland has
+no support roads. Cleanup, surface quality and sealing still need physical checks.
 
-The editable four-part project and upright STLs are offline candidates. They
-have not been verified in the native Studio window or sent to a printer.
+The replacement editable project is `outlet-funnel.3mf`. It has been opened in
+native Bambu Studio with all four parts visible; the estimates above come from
+the checked offline slice. No print has been sent.
 Current generated files live under the ignored
 `build/filament-drybox/outlet-print/` directory. The exact prepared project
 retains its support-selection metadata; importing meshes into a fresh factory

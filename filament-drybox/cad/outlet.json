@@ -77,6 +77,8 @@
     "od_mm": 4,
     "id_mm": 2.5,
     "body_clearance_bore_mm": 4.4,
+    "guide_transition_angle_deg": 45,
+    "guide_transition_status": "A funnel behind the purchased socket joins the 4.4 mm guide to the 10.2 mm tip relief. Its length is derived from those radii and the angle; neck-down printing needs no internal scaffold in the checked factory slice. External supports remain.",
     "body_clearance_z_mm": [
       -12,
       10.092857142857143
