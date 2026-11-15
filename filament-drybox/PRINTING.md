@@ -4,7 +4,8 @@ One complete stand is prepared upright, base down, in Bambu PLA Basic.
 The wall-contact noses have small sloped undersides so this revision can be
 printed with the factory support setting left off. The rounded contact areas,
 base, bearing seats and main frames are retained. This is a fit prototype;
-the rest of the drybox is still in development. No print has been sent.
+the rest of the drybox is still in development. The owner reports that the
+stand print is complete; physical fit and print quality have not yet been reported.
 
 ## Prepared files
 
@@ -79,3 +80,7 @@ For the reviewed upright pose, rotate +90° about X, then translate the minimum
 XYZ corner to the origin. Import into Bambu Studio with the selections above.
 Display meshes are for preview; use the native STEP or the prepared fabrication
 STL for print preparation. A regenerated slice needs its own review.
+
+## Print record
+
+15 November 2026 — Owner reports one stand prototype printed and complete; prepared for Bambu PLA Basic, factory 0.20 mm Standard on H2D right 0.4 mm, support off (actual send settings not reported); source `cad/stand.py` / `cad/stand.json`, commit `463119cc972861f764fc8ddcdc39d433d4c2cbd7`; outcome: completed, fit and surface quality not yet reported.

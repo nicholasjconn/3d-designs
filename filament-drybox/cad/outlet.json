@@ -1,7 +1,7 @@
 {
   "units": "mm",
   "frame": "Z=0 wall outside face; +Z outward along filament axis. Native geometry stays in this frame.",
-  "status": "CONCEPT ONLY. Purchased fitting female interfaces UNFINISHED; not fabrication-ready.",
+  "status": "First-fit PLA prototype candidate. Nominal purchased R1/8-compatible shoulder-seated socket; printed thread retention, seal performance and fitting passage require physical checks. Not fabrication approval.",
   "wall_thickness_mm": 2,
   "wall_thickness_checks_mm": [
     1,
@@ -48,13 +48,30 @@
     "thickness_mm": 5
   },
   "purchased_interfaces": {
-    "diameter_mm": 10.2,
-    "outer_pilot_z_mm": [
+    "thread_z_mm": [
       11,
       18
     ],
-    "thread_form": "UNKNOWN: M10x1 versus R1/8 must be established from purchased HANGLIFE samples",
-    "modeled": "One smooth outside pilot only, intentionally unfinished"
+    "thread_form": "R1/8-compatible printed tapered socket; right-hand 55 degree rounded Whitworth, 28 TPI, 1:16 diameter taper. Matched seated male cone, not ISO-gauged Rc entry.",
+    "pitch_mm": 0.9071428571428571,
+    "included_angle_deg": 55,
+    "diameter_taper_ratio": 16,
+    "gauge_major_diameter_mm": 9.728,
+    "male_gauge_z_mm": 15,
+    "female_radial_allowance_mm": 0.1,
+    "female_flank_axial_allowance_mm": 0.05,
+    "allowance_status": "Provisional first-fit PLA allowances on the shoulder-seated cone; not a calculated or physically qualified fit. Coarse M16/M26 allowances do not apply.",
+    "tip_relief_diameter_mm": 10.2,
+    "tip_relief_z_mm": [
+      10.092857142857143,
+      11
+    ],
+    "shoulder_stop_z_mm": 18,
+    "modeled": "Complete rounded tapered helical female socket, shoulder-stopped. Stop tightening when the fitting hex seats; do not use taper interference as a seal.",
+    "purchased_dimension_source_url": "https://m.media-amazon.com/images/I/71eWDXMqZWL._AC_SL1500_.jpg",
+    "thread_standard_source_url": "https://cdn.standards.iteh.ai/samples/20819/7860e4c71b9647f68baf76cd62d6e320/ISO-7-1-1994.pdf",
+    "root_closure_tolerance_mm": 0.01,
+    "root_closure_status": "Root core follows the envelope of axially widened rounded grooves: R\u2212sqrt(R\u00b2\u2212flank\u00b2), plus0.01 mm radial root relief. Total root lift about0.02047 mm closes the conical sweep strictly below one pitch. Crest/flank geometry retained; mechanical first-fit retainer, not an ISO gauge-class form."
   },
   "tube": {
     "od_mm": 4,
@@ -62,15 +79,15 @@
     "body_clearance_bore_mm": 4.4,
     "body_clearance_z_mm": [
       -12,
-      11
+      10.092857142857143
     ],
     "fitting_envelope_passage_mm": 4.2,
     "inside_tip_z_mm": -25,
     "shown_outside_end_z_mm": 80,
     "interior_projection_mm": 13,
     "reference_insertion_depth_mm": 54,
-    "reference_insertion_status": "29 reference collet top minus \u221225 inside tip; provisional until actual fitting shoulder/thread length and tube pass-through are measured.",
-    "workflow": "Keep the outlet mounted permanently. Hold the detached PTFE lead free end away from the mounted outlet for hand access. Thread filament into that detached lead and feed it until it emerges at the printer end. Then slide the PTFE lead along the filament into the outside fitting and through the body to its provisional insertion mark. Reconnect the printer after filament emerges. Remove the entire PTFE lead for storage; the outlet stays mounted."
+    "reference_insertion_status": "Nominal 29 mm collet station from purchased 18 overall /7 thread drawing minus inside tip \u221225 =54 mm insertion. Mark against the actual fitting and verify full PTFE passage before use.",
+    "workflow": "Keep the outlet mounted permanently. Hold the detached PTFE lead free end away from the mounted outlet for hand access. Thread filament into that detached lead and feed it until it emerges at the printer end. Then slide the PTFE lead along the filament into the outside fitting and through the body to its checked insertion mark. Reconnect the printer after filament emerges. Remove the entire PTFE lead for storage; the outlet stays mounted."
   },
   "cap": {
     "outside_diameter_mm": 30,
@@ -83,7 +100,7 @@
     "lead_in_mouth_diameter_mm": 23.1,
     "blind_z_mm": 52,
     "top_z_mm": 54,
-    "derivation": "Provisional outer collet29 +20 parked filament tail =tip49; +3 headroom =blind52; +2 crown =top54. Mouth4 gives50 overall cap height. Actual fitting projection must be measured.",
+    "derivation": "Purchased drawing 18 overall minus7 thread gives11 projection; shoulder18 gives collet29. Add20 parked filament tail to tip49; add3 headroom to blind52; add2 crown to top54. Mouth4 gives50 overall cap height. Nominal envelope, not factory CAD.",
     "lead_in_status": "14.93 degrees from axis; ERIKS/Trelleborg sourced nominal gland geometry checked by independent reviewer. Native R0.2 lead transition fillets; physical surface finish and sealing unqualified.",
     "lead_in_edge_radius_mm": 0.2
   },
@@ -119,41 +136,40 @@
   },
   "fitting_envelope": {
     "purchased_part": "HANGLIFE PC4-M10 pass-through for 4 mm tube",
-    "actual_confirmed": "Purchased listing dimension graphic: 9.5 thread OD, 18 overall, 10 hex AF, 10 collar OD; 4 mm tube pass-through. Exact thread form and actual bore unverified.",
+    "actual_confirmed": "Exact purchased pack drawing: PT1/8,7 thread length,18 overall,10 hex AF and10 collar OD;4.2 upper passage/4.4 threaded-end bore. Physical full4 mm tube passage and shape transitions unverified.",
     "reference_total_length_mm": 18,
     "reference_thread_length_mm": 7,
     "reference_hex_af_mm": 10,
     "reference_collet_diameter_mm": 10,
-    "source": "Purchased HANGLIFE listing graphic dimensions for 9.5 OD /18 overall /10 AF /10 collar; 7 mm thread length is other-brand reference only.",
-    "female_thread_not_modeled": true,
-    "reference_source_url": "https://www.amazon.com/dp/B0F62FZK4R",
-    "reference_artifact": "../viewer/shopping/evidence/stlisuyxm-dimensions.jpg",
-    "reference_thread_form": "PT1/8 and 9.7 mm OD in other-brand drawing; not a HANGLIFE guarantee",
+    "source": "Exact purchased HANGLIFE pack dimension graphic; nominal dimensions, not factory CAD.",
+    "female_thread_not_modeled": false,
+    "reference_source_url": "https://m.media-amazon.com/images/I/71eWDXMqZWL._AC_SL1500_.jpg",
+    "reference_thread_form": "PT1/8 purchased pack label; modeled as nominal external R1/8 Whitworth taper",
     "purchased_source_url": "https://www.amazon.com/dp/B0DQ7W6CGR",
-    "purchased_thread_envelope_diameter_mm": 9.5,
-    "projection_status": "7 mm thread length comes only from the other-brand reference, so the 11 mm projection and nominal tube-release station remain provisional.",
-    "passage_diameter_status": "4.2 mm passage is a clearance placeholder, not a manufacturer bore dimension."
+    "purchased_thread_envelope_diameter_mm": 9.9155,
+    "projection_status": "11 mm projection derived from exact purchased18 overall minus7 thread length; transitions and collet movement remain envelope assumptions.",
+    "passage_diameter_status": "Purchased pack drawing labels4.2 upper passage and4.4 threaded-end bore. Display uses4.2 conservative passage; full PTFE passage still needs physical check."
   },
   "tail": {
     "filament_diameter_mm": 1.75,
     "tip_z_mm": 49,
     "reference_release_z_mm": 29,
     "exposed_tail_mm": 20,
-    "conservative_clamp_radial_envelope_mm": 8.352,
-    "clamp_status": "Concept envelope check only. Clip mechanism and native geometry handled separately; not qualified.",
+    "clamp_status": "Separate canonical clip.py/clip.json define the native open printing and closed storage clip. Use its checks for the actual closed radial envelope; grip and cycling remain physically unqualified.",
     "clip_center_z_mm": 38,
     "clip_height_mm": 4
   },
   "provenance": {
     "printed_geometry": "Proposed concept dimensions supplied by parent, 2026-11-14",
     "thread_profile": "Reused helical ISO 68-1 profile/sweep helpers from obsolete-m6-evidence/generator.py. Native probing exposed a fractional-phase helper defect; the nut cutter now uses the same full sweep domain as the male before clipping. Clearances are model allowances, not a qualified process.",
-    "purchased_fitting": "HANGLIFE listing product-1-image-3 dimension graphic inspected by independent reviewer; factory native CAD, exact thread pitch/form, bore and thread length remain unverified.",
+    "purchased_fitting": "Exact purchased HANGLIFE pack drawing https://m.media-amazon.com/images/I/71eWDXMqZWL._AC_SL1500_.jpg labels PT1/8,7 mm thread,18 overall,10 AF/collar and4.2/4.4 bores. Nominal envelope only; no factory CAD.",
     "wall": "1\u20134 mm assumed fit range; actual wall thickness unmeasured",
     "glands": {
       "basis": "Independent Grok research of Trelleborg 2024 and ERIKS primary gland guidance, adopted by parent 2026-11-14",
       "scope": "Nominal gland candidate, not printed seal qualification"
     },
-    "architecture_change": "Founder requested simpler single fitting and shorter cap; one continuous PTFE path avoids all printed filament contact during printing."
+    "architecture_change": "Founder requested simpler single fitting and shorter cap; one continuous PTFE path avoids all printed filament contact during printing.",
+    "purchased_thread": "ISO7-1 rounded55-degree R1/8 profile and1:16 diameter taper. Male gauge plane15 follows tip11 +4 gauge length; printed female follows the seated male cone with .10 radial/.05 each flank provisional allowance. Not a qualified Rc gauge class or pressure seal."
   },
   "architecture": "One outside purchased fitting retains one continuous removable printer PTFE lead; no inside fitting, printed throat or separate fixed liner.",
   "materials": {

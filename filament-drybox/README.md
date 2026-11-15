@@ -1,6 +1,6 @@
 # Filament drybox
 
-Original parametric CadQuery source for the current filament-drybox project. The stand is prepared for its first fit prototype in Bambu PLA Basic. See [print preparation](PRINTING.md) for the proposed factory-preset setup, support change, files and estimate. No print has been sent; strength and physical fit remain unqualified.
+Original parametric CadQuery source for the current filament-drybox project. The owner reports the first stand fit prototype is printed and complete. See [print preparation](PRINTING.md) for its prepared Bambu PLA Basic factory-preset setup, files, estimate and print record. Strength, physical fit and surface quality remain unreported.
 
 ## Stand
 
@@ -16,13 +16,32 @@ The default output is repository-local `build/filament-drybox/`, independent of 
 
 Previous native checks established nominal one-solid connectivity, spool/rotor clearance and upward bearing service in synthetic cases. Portability regeneration checks identity against those results; it does not repeat or extend physical qualification. Actual container fit/taper, bearing support/capture, loads, stiffness, tipping, manufacturing allowances and wall contact remain unqualified. Printed-body connectivity is not strength evidence.
 
-## Other parts: concept sources only
+## Outlet prototype preparation
 
-`cad/wheel.py` / `wheel.json` preserve the current original Ø120 handwheel with three Ø15 × 3 magnet pockets at radius 30. `build()` returns its single native solid. Adhesive retention, manufacturing tolerances and performance remain unqualified; it is not the current print-preparation target.
+See [outlet print preparation](OUTLET-PRINTING.md) for the body, nut, cap and
+filament clip. `cad/outlet.py` / `outlet.json` own the bulkhead and cap assembly;
+the purchased fitting is a dimensional envelope, not manufacturer CAD. Its exact
+packaging specifies PT 1/8, 7 mm of thread and 18 mm overall length. The printed
+fitting socket follows the nominal shoulder-seated tapered interface. Its native
+solid and fabrication mesh pass the geometric checks; printed engagement still
+requires the first fit trial.
 
-`cad/outlet.py` / `outlet.json` preserve the one-fitting continuous-lead concept. `build(config)` reconstructs the body, nut, short cap and reference assembly components without archived binary caches. Purchased fitting interfaces remain unfinished smooth pilots; the purchased fitting is a dimensional envelope, not manufacturer CAD. No outlet fabrication STL is supplied.
+`cad/clip.py` / `clip.json` provide an original one-piece hinged clip with smooth
+sandwich jaws, side loading and a releasable latch. The **open** pose is the
+fabrication input; the closed pose is an assembly reference. The current native
+and factory-slice checks support a first PLA fit/function trial, not qualified
+grip, fatigue, sustained retention or use across all filament materials.
 
-The clamp is only an illustrative preview: its hinge, latch, grip and native one-body geometry are not qualified here. The rotating desiccant core is also a visual concept without a native generator. These previews must not be presented as printable CAD. Only the stand is entering print preparation; no other part is approved for fabrication.
+## Remaining concepts
+
+`cad/wheel.py` / `wheel.json` preserve the original Ø120 handwheel with three
+Ø15 × 3 magnet pockets at radius 30. `build()` returns its single native solid.
+Adhesive retention, manufacturing tolerances and performance remain unqualified;
+it is not the current print-preparation target.
+
+The rotating desiccant core is still a visual concept without a native generator.
+The older clamp preview predates the printable prototype and is not its geometry
+source. These concept visuals must not be presented as printable CAD.
 
 
 ## Preserved concept preview
