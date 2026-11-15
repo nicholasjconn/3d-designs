@@ -1,0 +1,118 @@
+{
+  "units": "mm",
+  "frame": "X axle, Y up from floor, Z fore/aft; bearing axis at Y104,Z0.",
+  "base": {
+    "width": 98,
+    "depth": 110,
+    "height": 8,
+    "opening": 72,
+    "crossbeam_depth": 12,
+    "outer_corner_radius": 4,
+    "inner_corner_radius": 4
+  },
+  "frame_profile": {
+    "centers_x": [
+      -40,
+      40
+    ],
+    "thickness": 10,
+    "foot_centers_zy": [
+      [
+        -45,
+        8
+      ],
+      [
+        45,
+        8
+      ]
+    ],
+    "foot_radius": 7,
+    "head_center_zy": [
+      0,
+      104
+    ],
+    "head_radius": 14,
+    "window_vertices_zy": [
+      [
+        -35,
+        18
+      ],
+      [
+        35,
+        18
+      ],
+      [
+        0,
+        87
+      ]
+    ],
+    "window_corner_radius": 6
+  },
+  "bearings": {
+    "centers_x": [
+      -40,
+      40
+    ],
+    "axis_y": 104,
+    "axis_z": 0,
+    "id": 8,
+    "od": 22,
+    "width": 7,
+    "seat_radius": 11.2,
+    "pocket_width": 7.4,
+    "shoulder_open_radius": 9,
+    "status": "Open lift-in nominal concept. Actual bearing fit, supported axis after clearance, capture and axial retention unqualified."
+  },
+  "wall_stops": {
+    "side": "drive wall only",
+    "nose_radius": 6,
+    "nose_depth_z": 10,
+    "nose_center_x": 47,
+    "nose_centers_yz": [
+      [
+        104,
+        -47
+      ],
+      [
+        104,
+        47
+      ]
+    ],
+    "max_x": 53,
+    "wing_thickness_x": 10,
+    "status": "Integral firm wing and nose; no flexure or opposite-wall contact selected. Contact stiffness and actual wall contact unqualified."
+  },
+  "envelopes": {
+    "spool_radius": 100,
+    "spool_width": 67,
+    "rotor_radius": 40,
+    "rotor_x": [
+      45.5,
+      51.5
+    ],
+    "drive_face_x": 51.5,
+    "inner_air": 1.5
+  },
+  "container_cases": [
+    {
+      "W": 106,
+      "H": 208,
+      "D": 228,
+      "F": 0
+    },
+    {
+      "W": 106,
+      "H": 208,
+      "D": 228,
+      "F": 3
+    }
+  ],
+  "material": "Bambu PLA Basic selected for stand fit prototype; manufacturing settings and fabrication not approved",
+  "provenance": "Original coherent stand design, 14 November 2026; geometry retained unchanged from the approved native concept. Synthetic container dimensions are not physical measurements.",
+  "limitations": [
+    "Connectivity is not strength or stiffness qualification.",
+    "Magnet rotor/wall nominal clearance is small; no whole-arm compliance selected.",
+    "Bearing seats/capture, print allowances and lift handling require physical qualification.",
+    "Footprint unchanged; rigid-body tipping resistance is not improved by section shape alone."
+  ]
+}
