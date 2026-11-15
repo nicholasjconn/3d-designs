@@ -80,7 +80,16 @@
     ],
     "max_x": 53,
     "wing_thickness_x": 10,
-    "status": "Integral firm wing and nose; no flexure or opposite-wall contact selected. Contact stiffness and actual wall contact unqualified."
+    "status": "Integral firm wing and rounded contact with growing underside; no flexure or opposite-wall contact selected. Contact stiffness and actual wall contact unqualified.",
+    "nose_underside": {
+      "start_y": 95,
+      "start_outer_x": 45,
+      "start_outer_z": 40.5,
+      "inner_z": 40.3,
+      "tangent_y": 99.2,
+      "tangent_outer_x": 50.6,
+      "note": "Lower face grows from wing at 4:3 X/Y and 1:1 Z/Y; lower outer end tapers, rounded wall-contact tip X53/Y104 at Z\u00b147 retained."
+    }
   },
   "envelopes": {
     "spool_radius": 100,
@@ -108,7 +117,7 @@
     }
   ],
   "material": "Bambu PLA Basic selected for stand fit prototype; manufacturing settings and fabrication not approved",
-  "provenance": "Original coherent stand design, 14 November 2026; geometry retained unchanged from the approved native concept. Synthetic container dimensions are not physical measurements.",
+  "provenance": "Original coherent stand design, 14 November2026; nose-only underside and low outer-end taper revision removes isolated starts. Base, A frames/windows, bearing and wall-contact datums retained. Synthetic container dimensions are not measurements.",
   "limitations": [
     "Connectivity is not strength or stiffness qualification.",
     "Magnet rotor/wall nominal clearance is small; no whole-arm compliance selected.",

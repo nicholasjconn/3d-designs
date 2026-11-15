@@ -66,9 +66,25 @@ def make_frame(c,x,drive=False):
  for tool in tools:frame=frame.cut(tool)
  return one(frame.clean(),'A frame')
 
+def supported_nose(c,y,z):
+ """Retain the rounded contact; grow its underside from the existing wing.
+
+ The lower outside end tapers fore/aft so no full-width strip starts in air.
+ Wall-contact point and upper circular patch are retained, without extra ribs.
+ """
+ s=c['wall_stops'];p=s['nose_underside'];side=1 if z>0 else -1
+ nose=cq.Solid.makeCylinder(s['nose_radius'],s['nose_depth_z'],cq.Vector(s['nose_center_x'],y,z-s['nose_depth_z']/2),cq.Vector(0,0,1))
+ y0=p['start_y'];y1=p['tangent_y'];x0=p['start_outer_x'];x1=p['tangent_outer_x'];zi=p['inner_z'];z0=p['start_outer_z'];z1=z0+y1-y0
+ def section(yy,xx,zz):
+  return cq.Wire.makePolygon([cq.Vector(35,yy,side*zi),cq.Vector(xx,yy,side*zi),cq.Vector(xx,yy,side*zz),cq.Vector(35,yy,side*zz)],close=True)
+ apron=cq.Solid.makeLoft([section(y0,x0,z0),section(y1,x1,z1)],ruled=True)
+ # Keep positive-side Z <= Y + z0-y0, mirrored on the other nose.
+ keep=extrude(wire_zy([(side*30,90),(side*(z0+90-y0),90),(side*(z0+120-y0),120),(side*30,120)]),30,30)
+ return one(nose.intersect(keep).fuse(apron).clean(),'supported rounded nose')
+
 def build(c):
  base=make_base(c);left=make_frame(c,-40);right=make_frame(c,40,True)
- s=c['wall_stops'];noses=[cq.Solid.makeCylinder(s['nose_radius'],s['nose_depth_z'],cq.Vector(s['nose_center_x'],y,z-s['nose_depth_z']/2),cq.Vector(0,0,1)) for y,z in s['nose_centers_yz']]
+ s=c['wall_stops'];noses=[supported_nose(c,y,z) for y,z in s['nose_centers_yz']]
  stand=join([base,left,right,*noses])
  return stand,{'base':base,'left-frame':left,'drive-frame':right,'noses':noses}
 
