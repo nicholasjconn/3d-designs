@@ -197,7 +197,13 @@ def checks(config=None):
             result["poses"][pose]["outside_cap_bore_mm3"] = outside
             if outside > 1e-5:
                 raise ValueError("Closed clip exceeds the cap bore")
-    for angle in (25, 20, 15, 10, 5, 4, 3, 2, 1, 0):
+    # Default 25° schedule, including 1° samples near closed. Drop angles
+    # beyond the configured opening and include that opening when it is absent.
+    opening = h["opening_deg"]
+    samples = [angle for angle in (25, 20, 15, 10, 5, 4, 3, 2, 1, 0) if angle <= opening]
+    if not samples or samples[0] != opening:
+        samples.insert(0, opening)
+    for angle in samples:
         p = components(c, angle)
         overlap = sum(v.Volume() for v in p["lower"].intersect(p["upper"]).Solids())
         result["motion_samples"].append({"opening_deg": angle, "rigid_jaw_latch_overlap_mm3": overlap,
