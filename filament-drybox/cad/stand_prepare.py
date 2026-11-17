@@ -42,7 +42,7 @@ def placement_proof(project, parts, output):
         objects = {o.attrib['id']: o for o in model.findall('m:resources/m:object', namespace)}
         items = list(model.find('m:build', namespace))
         if len(items) != len(parts):
-            raise ValueError('3MF object count differs from the four-part recipe')
+            raise ValueError('3MF object count differs from the declared part recipe')
         for part, item in zip(parts, items):
             if item.attrib.get('transform', '1 0 0 0 1 0 0 0 1 0 0 0') != '1 0 0 0 1 0 0 0 1 0 0 0':
                 raise ValueError('Unexpected 3MF build transform; placement proof must be extended')

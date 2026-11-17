@@ -1,12 +1,61 @@
 # Holder print preparation
 
-## Current: spindle and collar first-fit print (r5)
+## Prepared: seven-part holder first-fit plate (17 November 2026)
+
+The updated spindle, collar, blue disc, retaining clip, gray frame and two
+bearing carriers fit on one H2D plate. This replaces the old spindle/collar and
+disc/clip plates. The broad flat stops use the measured 59.6 mm hub width; the
+frame gives 70 mm working clearance for the measured 67.8 mm flange width.
+The square drive and matching socket, 0.5 mm tip chamfer and clip snap must be
+printed together. No print has been sent.
+
+| Part | Orientation | Useful part, g |
+| --- | --- | ---: |
+| Gray frame | Base down | 54.58 |
+| Blue disc | Closed magnet cover down, pockets up | 14.22 |
+| Spindle | Drive tip down, axle vertical | 10.55 |
+| Collar | Outer stop-ring face down | 7.52 |
+| Left bearing carrier | Outer face down | 1.57 |
+| Right bearing carrier | Outer face down | 1.57 |
+| Disc retaining clip | Broad face down | 0.42 |
+
+Saved slice: **4 h 3 min 16 s, 99.58 g**. Useful parts are **90.44 g**;
+supports total **9.10 g** (7.06 body, 1.02 transition, 1.02 interface), and brim
+is 0.02 g. Reconstructed deposition differs from Studio reporting by 0.028 g.
+Identified startup extrusion is another 0.18 g; firmware loading, purge and
+calibration consumption is unknown. No prime tower or material changes occur.
+
+Proposed configuration: H2D right 0.4 mm nozzle, Bambu PLA Basic, Textured PEI,
+factory 0.20mm Standard (2 walls, 15% infill). Changes from factory are support
+on, critical regions only, and tree slim. This single-material proposal uses
+less overhead than the previous job's separate interface material. These
+settings are disclosed for review; opening the file does not approve or send a
+print. Separate interface material would require a fresh estimate.
+
+All seven fabrication meshes are single, watertight solids. Saved project
+reimport preserves resolved settings and placement, with no warnings or mesh
+repairs. The actual plate and sampled support paths are in the
+[private preview](https://macbook.terrier-shade.ts.net/3d-designs/filament-drybox/holder/).
+Retained local preparation is `build/holder-fit-reprint-20261117`.
+
+Remove supports from the carrier grooves, bearing contact surfaces, disc
+counterbore and spindle clip groove. Pull the collar-arm interface off axially,
+without prying the compliant arm outward. Clean the collar hub outer end face flat: support scars there consume its 0.25 mm worst-case running gap. Empty the two lower anchor-magnet pockets before gluing magnets. Check the thread, lock, pilots,
+spool clearance and free rotation by hand before loading or rewinding. Bore,
+chamfer and recess dimensions remain assumed; this is a gentle first-fit
+prototype, not loaded-rewind qualification.
+
+Rebuild with `cad/spindle_print.py --scope holder --variant critical-tree-slim`
+and the same native/engineering-root/Bambu arguments shown below. Generated
+files stay ignored; source and exact inputs must be retained before printing.
+
+## Sent, superseded: spindle and collar first-fit print (r5)
 
 A **gentle, manual first fit** of the two printed center parts only. The
 founder sent the job on 17 November 2026 with separate support material:
 2 h 15 min 59 s and 38.55 g in its saved slice (14.54 g useful parts, 9.58 g
 supports and interface, 6.32 g prime tower, 8.09 g nominal flush, 14 right-nozzle
-AMS changes). Completion and fit are not reported; see the
+AMS changes). The founder reported seating and drive-fit problems; see the
 [print record](https://macbook.terrier-shade.ts.net/castle-harker/notebook/pages/2026-11-17/manufacturing.html). The single-material numbers below are the
 prepared comparison, not the sent job. It qualifies no clamp force, torque or load: do not test index
 preload or loaded rewind on these prints. Geometry and rationale are in
@@ -59,13 +108,12 @@ remove nubs from the thrust-sleeve face. No support enters the thread, lock
 slots, female thread, spring pocket or key hole. These are estimates, not
 weighed spool consumption, and no fabrication is approved by this preparation.
 
-## Not ready to print: outside drive and changed frame
+## Not ready to print: outside drive
 
 The 17 November 2026 outside drive (fixed X, redesigned handwheel, retainer ring,
-axle clip) and the gray frame with its four anchor branches are current native
-designs only: not sliced, not printed, not released, with no approved settings.
-The spindle, collar, disc, clip and carriers are unchanged by it. Preparing these
-parts needs a separate print-preparation pass and your approval of the settings.
+axle clip) are current native designs only: not sliced, not printed, not released, with no approved settings.
+Preparing these parts needs a separate print-preparation pass and your approval
+of the settings.
 
 ## Superseded: four-part holder fit-print proposal
 

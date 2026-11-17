@@ -30,6 +30,9 @@ spacer would be a later tested change.
 
 - Actual container fit, floor corners, taper, lid access and wall gaps.
 - Bearing seating, retention and removal; spindle/collar clamp, thread and lock.
+- Spool seat on the real spool: stop faces on the hub faces, pilot entry and
+  centring (bore, chamfer and recess unmeasured), square drive key and clip
+  retention, and flange clearance to the relieved frame plates.
 - Wall-stop/frame deformation, full and nearly empty spool stability, and stand
   position with the outside wheel removed for printing and during reattachment.
 - Useful magnetic rewind torque at the 10.1 mm drive gap, adhesive retention,

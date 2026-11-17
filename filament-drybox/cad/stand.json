@@ -47,14 +47,30 @@
         87
       ]
     ],
-    "window_corner_radius": 6
+    "window_corner_radius": 6,
+    "spool_relief": {
+      "depth": 0.5,
+      "inner_radius": 34.0,
+      "outer_radius": 101.0,
+      "note": "Both plate inner faces are recessed 0.5 mm (3.0 to 2.5 mm thick) only where the spool flanges sweep: the annulus R34-R101 about the axle, which reaches down to 3 mm above the floor because the assumed \u00d8200 rim passes 4 mm above it. The carrier head, slots and tongues (inside R34) and the feet below 3 mm and outside the annulus keep the full 3 mm. Working faces 70 mm apart: 1.1 mm per side to the measured 67.8 mm spool, 0.6 mm at full axial float."
+    }
   },
   "envelopes": {
     "spool_radius": 100,
     "spool_width": 67,
     "rotor_radius": 40,
     "inner_air": 1.5,
-    "spool_side_clearance": 1.0
+    "spool_side_clearance": 1.0,
+    "measured_spool": {
+      "overall_width": 67.8,
+      "hub_face_width": 59.6,
+      "measured": "Founder measurement 17 November 2026 of the actual Bambu spool: A (outermost flange faces, largest reading) and D (hub end faces next to the bore).",
+      "assumed_bore_diameter": 55.0,
+      "assumed_recess_opening_diameter": 80.0,
+      "assumed_outer_diameter": 200.0,
+      "assumed_note": "Bore (B), chamfer (C) and the radius where the flange face begins cannot be measured with the available tools; these come from the Bambu printable reference model radial profile (bore R27.5, flange face from about R40, R100 rim) and only bound the first fit.",
+      "reference_note": "The printable reference model has flush hub faces 67.4 mm apart; it no longer sets any seating datum."
+    }
   },
   "bearings": {
     "axis_y": 104.0,
@@ -75,11 +91,16 @@
     "journal_radius": 4.0,
     "right_end_x": 43.2,
     "key_start_x": 36.1,
-    "key_apothem": 3.75,
+    "key_apothem": 3.2,
+    "key_flats": 4,
+    "key_min_engagement": 0.5,
+    "key_note": "Square drive key (17 November 2026, replacing the 3.75-apothem hex that engaged the disc by only 0.10 mm): four flats at the clip-groove root radius, corners rounded by the \u00d88 journal circle. Flats at groove_radius keep the groove neck a full \u00d86.4 circle, so the clip snaps the same at any key angle, and the corners outboard of the groove stay as four broad lugs for the clip. The 608 still slides over the key (nothing outside \u00d88); the bearing seat stays the round \u00d88 journal. key_min_engagement: the corners must reach at least 0.5 mm past the socket flats, well above ordinary print error (the hex had 0.10).",
+    "tip_chamfer": 0.5,
+    "tip_chamfer_note": "45-degree geometric chamfer X42.7-43.2 on the drive tip (printed on the bed): bed flare on sharp key corners or flat edges would jam the 608 bore or the disc socket. The clip-bearing lugs X41.8-42.7 and the end X43.2 are unchanged.",
     "groove_start_x": 39.6,
     "groove_end_x": 41.800000000000004,
     "groove_radius": 3.2,
-    "interface": "608 journals on the printed spindle (cad/spindle.py). The drive journal key and clip groove match the printed disc and clip; the thrust sleeves stop 0.2 mm short of each inner race.",
+    "interface": "608 journals on the printed spindle (cad/spindle.py). The drive journal square key and clip groove match the disc socket and clip; the thrust sleeves stop 0.2 mm short of each inner race.",
     "left_end_x": -36.2,
     "shoulder_radius": 7.0,
     "shoulder_length": 3.4,
@@ -196,10 +217,11 @@
     "thickness": 2.0,
     "outer_radius": 9.0,
     "bore_radius": 3.3,
-    "mouth_width": 6.2
+    "mouth_width": 6.0,
+    "mouth_note": "Mouth 6.0 across the \u00d86.4 groove neck: 0.2 mm jaw snap each side (was 0.1 with a 6.2 mouth, within ordinary print error)."
   },
   "material": "Bambu PLA Basic is a prior prototype material; no manufacturing settings or fabrication are approved for this concept.",
-  "provenance": "16 November 2026: founder requested removing the redundant rounded wall noses and auditing each printed part for print preparation. Rounded noses and their purpose-free support wings are removed; the surrounding guard lip retains the same drive-wall plane and nominal 1.5 mm gap. Both purchased 608 bearings, four printed parts, 82.2 mm wall span and 75 \u00d7 130 mm base are retained. Fabrication-mesh audit found a zero-thickness tangent rib/air-tube contact; rib inner radius reduced from 21 to 20.8 mm for positive overlap, preserving the \u00d86 air bore and outside footprint. Later 16 November: a narrow guard roof with 1:1 axial growth and 35 degree side-strut sections lands on the existing legs, replacing guard scaffolding. The roof stops 0.2 mm inside the wall plane, preserving its contact face. Free diaphragm tips are capped at the existing guard-contact height. Bearing seats, base and inboard chamber-growth space are retained; comparative linear stiffness and actual slices bound this optimization. Physical qualification remains outstanding. 17 November 2026: frame replaced by the founder-directed spoked U-rim (two upper spokes, R6 junction rounds, central brace, three 45-degree rim undersides); fixed inboard bearing heads replaced by keyed seats for two removable carriers that lift out with the high-flow cartridge; the green axle/core is superseded by that cartridge. 17 November 2026: founder replaced the high-flow cartridge with a lighter printed spindle and threaded collar that clamp the spool by its bore-end chamfers; the journals, disc key and clip groove are unchanged. Independent review the same day: cone rings lengthened inboard to 3.5 mm with struts joining the full ring section, arms deepened to 6 mm, cones shortened to keep running gaps through the \u00b10.5 mm axial float, left journal made a \u00d87.9 slip fit for spool changes Later the same day the founder required the collar to hold in both turning directions, so an integral positive collar lock (crest slots on the spindle, compliant key on the collar) replaced the thread-hand requirement. 17 November 2026: founder selected a fixed outside diagonal X (one magnet per arm, paired through the wall with four magnets glued into integral gray-frame branches) and an extra 608 so the handwheel no longer rubs the container. The holder, spindle and full-assembly axial endpoints (X-37.5..44.7, -36.2..43.2, -37.5..67.15 at a nominal 2 mm wall) and the 75 x 130 mm base are kept; the spindle, collar, disc, clip, carriers and both internal 608s are unchanged. The wheel starts 4 mm farther out, its knob is 4 mm shorter, and its 608 is held positively by printed parts only (integral lip, split retainer ring, shoulder and axle clip).",
+  "provenance": "16 November 2026: founder requested removing the redundant rounded wall noses and auditing each printed part for print preparation. Rounded noses and their purpose-free support wings are removed; the surrounding guard lip retains the same drive-wall plane and nominal 1.5 mm gap. Both purchased 608 bearings, four printed parts, 82.2 mm wall span and 75 \u00d7 130 mm base are retained. Fabrication-mesh audit found a zero-thickness tangent rib/air-tube contact; rib inner radius reduced from 21 to 20.8 mm for positive overlap, preserving the \u00d86 air bore and outside footprint. Later 16 November: a narrow guard roof with 1:1 axial growth and 35 degree side-strut sections lands on the existing legs, replacing guard scaffolding. The roof stops 0.2 mm inside the wall plane, preserving its contact face. Free diaphragm tips are capped at the existing guard-contact height. Bearing seats, base and inboard chamber-growth space are retained; comparative linear stiffness and actual slices bound this optimization. Physical qualification remains outstanding. 17 November 2026: frame replaced by the founder-directed spoked U-rim (two upper spokes, R6 junction rounds, central brace, three 45-degree rim undersides); fixed inboard bearing heads replaced by keyed seats for two removable carriers that lift out with the high-flow cartridge; the green axle/core is superseded by that cartridge. 17 November 2026: founder replaced the high-flow cartridge with a lighter printed spindle and threaded collar that clamp the spool by its bore-end chamfers; the journals, disc key and clip groove are unchanged. Independent review the same day: cone rings lengthened inboard to 3.5 mm with struts joining the full ring section, arms deepened to 6 mm, cones shortened to keep running gaps through the \u00b10.5 mm axial float, left journal made a \u00d87.9 slip fit for spool changes Later the same day the founder required the collar to hold in both turning directions, so an integral positive collar lock (crest slots on the spindle, compliant key on the collar) replaced the thread-hand requirement. 17 November 2026: founder selected a fixed outside diagonal X (one magnet per arm, paired through the wall with four magnets glued into integral gray-frame branches) and an extra 608 so the handwheel no longer rubs the container. The holder, spindle and full-assembly axial endpoints (X-37.5..44.7, -36.2..43.2, -37.5..67.15 at a nominal 2 mm wall) and the 75 x 130 mm base are kept; the spindle, collar, disc, clip, carriers and both internal 608s are unchanged. The wheel starts 4 mm farther out, its knob is 4 mm shorter, and its 608 is held positively by printed parts only (integral lip, split retainer ring, shoulder and axle clip). Later 17 November 2026: founder reported the blue disc slipping on the shaft and asked for a reprint fix. The drive key became a square (flats at the R3.2 groove root, \u00d88 corners) with a matching disc socket, the clip mouth narrowed to 6.0 for a 0.2 mm snap per jaw, and the \u00d88 608 journal, groove, clip outline and all endpoints are kept. Later 17 November 2026: the founder measured the actual spool (A 67.8 mm overall, D 59.6 mm hub faces); the reference model had flush 67.4 mm hub faces, so the 45-degree cones sat 3.9 mm outboard of the real hub faces, letting the spool ride into the frame. Both rings became flat hub-face stops at |X| 29.8 with \u00d854 loose pilots, the collar hub moved 0.5 mm inboard for D 54.1-61.6 clamp travel, and the plate inner faces were relieved 0.5 mm in the flange sweep only. Spindle 79.4, holder 82.2 and base 75 x 130 are kept.",
   "limitations": [
     "Seven printed holder parts (frame, two removable carriers, spindle, collar, disc, clip) plus two purchased 608s; the outside drive adds a printed X, wheel, retainer ring and axle clip, a third 608 and eight anchor magnets.",
     "Carriers seat by gravity only; no latch. Guide strength, carrier retention, alignment and bearing grip are unqualified.",
@@ -241,14 +263,15 @@
       26.5
     ],
     "ring_x": [
-      30.0,
-      33.5
+      27.8,
+      31.5
     ],
+    "stop_outer_radius": 31.0,
+    "pilot_length": 2.0,
+    "pilot_radius": 27.0,
+    "pilot_lead_in": 0.5,
+    "seat_note": "Each ring is a broad flat stop face at the spool hub face plus a short loose pilot. The face lies at |X| = ring_x[0] + pilot_length = 29.8, half the measured hub-face width D 59.6 (envelopes.measured_spool), so the hub faces set the axial datum without relying on the bore chamfer. Face \u00d854-62 (pilot \u00d854 to stop_outer_radius); the \u00d854 pilot is 1 mm under the \u00d855 reference bore, a loose first-fit centring guess because the real bore (B) and chamfer (C) cannot be measured. The 1.7 mm flange keeps min_running_gap to the frame at the collar's 2 mm outboard travel, full axial float and thread flank clearance. Replaces the 45-degree cones of 17 November, which were placed for the reference model's flush 67.4 mm hub and sat 3.9 mm outboard of the measured hub faces.",
     "ring_inner_radius": 21.5,
-    "seat_bore_radius": 27.5,
-    "seat_start_x": 32.9,
-    "seat_radial_gap": 0.0,
-    "seat_note": "Each 45-degree cone seats in a spool bore-end chamfer (bore R27.5, chamfer from |X|32.9 at R27.5 to |X|33.7 at R28.3, hub faces at |X|33.7), taken from the Bambu printable reference spool model. Molded Bambu spool dimensions are unmeasured; the collar travel absorbs hub-width differences.",
     "thread": {
       "hand": "right",
       "pitch": 3.0,
@@ -270,14 +293,15 @@
     },
     "collar": {
       "hub_x": [
-        -25.5,
-        -15.5
+        -24.5,
+        -14.5
       ],
       "hub_outer_radius": 12.0,
       "arm_x": [
-        19.5,
-        25.5
-      ]
+        18.5,
+        24.5
+      ],
+      "note": "Hub and arms 1.0 mm inboard of r5 (17 November 2026) for the flat stops. Outboard travel 2.0 mm keeps min_running_gap to the left carrier and the frame after full axial float plus the thread flank clearance (the clamp pushes the collar outboard through that play); inboard 5.0 mm to the thread end. Clamped hub width D 54.6-61.6 mm."
     },
     "min_running_gap": 0.25,
     "running_gap_note": "min_running_gap is the gap that must remain after the rotating unit takes up its full axial float (thrust-sleeve gap + 608 seat clearance + carrier tongue/groove play, derived in stand.py).",

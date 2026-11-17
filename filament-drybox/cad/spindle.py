@@ -3,10 +3,11 @@
 
 The spindle carries both 608 journals (the drive journal keeps the disc key and
 clip groove), a slender central shaft, an external thread near the refill end
-and a fixed 45-degree centering cone at the drive end. The collar screws onto
-that thread and carries the matching cone at the refill end. The two cones seat
-in the spool's bore-end chamfers and clamp the hub between them; the clamp force
-stays inside spindle, collar and spool, so the 608s carry no axial preload.
+and a fixed flat stop ring at the drive end. The collar screws onto that thread
+and carries the matching ring at the refill end. The two flat faces bear on the
+spool's hub end faces and clamp the hub between them, with short loose pilots in
+the bore; the clamp force stays inside spindle, collar and spool, so the 608s
+carry no axial preload.
 
 The collar is locked against turning on the spindle in both directions: a key on a
 compliant arm in the collar wall drops into one of the slots cut through the
@@ -117,20 +118,33 @@ def _journal(c, side):
         cq.Solid.makeCone(a['sleeve_inner_root_radius'], a['sleeve_inner_face_radius'], length, base, direction))
     body = body.fuse(sleeve).clean()
     if s > 0:
-        for angle in range(0, 360, 60):
+        for i in range(a['key_flats']):
             body = body.cut(_box(a['key_start_x'], a['right_end_x'] + 0.1, y + a['key_apothem'], y + 8, -8, 8)
-                            .rotate((0, y, 0), (1, y, 0), angle))
+                            .rotate((0, y, 0), (1, y, 0), i * 360 / a['key_flats']))
         groove = _cyl(a['journal_radius'] + 0.1, a['groove_start_x'], a['groove_end_x'], y).cut(
             _cyl(a['groove_radius'], a['groove_start_x'] - 0.1, a['groove_end_x'] + 0.1, y))
         body = body.cut(groove)
+        # 45-degree tip chamfer on the printed bed end (drive end down): a cone takes the Ø8 corners and one plane
+        # per flat takes the flat edges, both tip_chamfer deep, so bed flare cannot jam the 608 or the disc socket.
+        ch = a['tip_chamfer']; xc = a['right_end_x'] - ch; big = 2 * a['journal_radius']
+        cone = _revolve([(xc, a['journal_radius']), (a['right_end_x'] + 0.1, a['journal_radius'] - ch - 0.1),
+                         (a['right_end_x'] + 0.1, big), (xc, big)], y)
+        body = body.cut(cone)
+        for i in range(a['key_flats']):
+            plane = _box(xc - big, xc + big, y + a['key_apothem'], y + a['key_apothem'] + big, -big, big).rotate(
+                (xc, y + a['key_apothem'], 0), (xc, y + a['key_apothem'], 1), -45).intersect(
+                _box(xc, a['right_end_x'] + 0.1, y - big, y + big, -big, big))
+            body = body.cut(plane.rotate((0, y, 0), (1, y, 0), i * 360 / a['key_flats']))
     return body
 
 
 def _cone_ring(sp, y, side):
-    """45-degree centering/clamping cone that seats in the spool bore-end chamfer."""
-    x_in, x_out = sp['ring_x']
-    seat = lambda x: sp['seat_bore_radius'] + (x - sp['seat_start_x']) - sp['seat_radial_gap']
-    pts = [(x_in, sp['ring_inner_radius']), (x_out, sp['ring_inner_radius']), (x_out, seat(x_out)), (x_in, seat(x_in))]
+    """Flat hub-face stop ring with a short loose pilot (drive side; mirrored for the collar).
+
+    The stop face at |X| = ring_x[0] + pilot_length bears on the spool hub face from the pilot (Ø2*pilot_radius,
+    with a 45-degree lead-in) out to stop_outer_radius; the flange runs outboard to ring_x[1]."""
+    x0, x1 = sp['ring_x']; xs = x0 + sp['pilot_length']; ri, rp, li = sp['ring_inner_radius'], sp['pilot_radius'], sp['pilot_lead_in']
+    pts = [(x0, ri), (x1, ri), (x1, sp['stop_outer_radius']), (xs, sp['stop_outer_radius']), (xs, rp), (x0 + li, rp), (x0, rp - li)]
     ring = _revolve(pts, y)
     return ring if side > 0 else ring.mirror('YZ')
 
@@ -205,9 +219,15 @@ def collar(c, travel=0.0, lift=0.0, lock=True):
     sp = c['spindle']; t = sp['thread']; col = sp['collar']; k = sp['lock']; y = c['bearings']['axis_y']
     _, female, bore = thread_profiles(t)
     hub_x = col['hub_x']; h0 = hub_x[0]
-    hub = _cyl(col['hub_outer_radius'], hub_x[0], hub_x[1], y).cut(_cyl(bore, hub_x[0] - 0.1, hub_x[1] + 0.1, y))
-    groove = _helical(female, t['pitch'], hub_x[0] - 0.2, hub_x[1] + 0.2, t['phase_x'], y, t['hand'] == 'left')
-    hub = hub.cut(groove)
+    # Cut the groove into a tube longer than the hub, then trim: cutting a hub-length tube directly silently
+    # removes nothing at some hub positions (OCC boolean), leaving an unthreaded bore.
+    e = t['pitch'] / 2
+    tube = _cyl(col['hub_outer_radius'], hub_x[0] - e, hub_x[1] + e, y).cut(_cyl(bore, hub_x[0] - e - 0.1, hub_x[1] + e + 0.1, y))
+    groove = _helical(female, t['pitch'], hub_x[0] - e - 0.2, hub_x[1] + e + 0.2, t['phase_x'], y, t['hand'] == 'left')
+    cut = tube.cut(groove)
+    if tube.Volume() - cut.Volume() < 0.5 * groove.Volume() * (hub_x[1] - hub_x[0]) / (hub_x[1] - hub_x[0] + 2 * e + 0.4):
+        raise ValueError('collar thread groove cut removed too little material')
+    hub = cut.intersect(_cyl(col['hub_outer_radius'] + 1, hub_x[0], hub_x[1], y))
     # Lock: a pocket in the outer hub wall holds the compliant arm; a guide hole through the threaded wall holds the key.
     # The pocket runs through the whole hub so it has no roof over the arm (printed axis-vertical, a roof would bridge
     # one layer above the arm); the hole roof stays closed, key_hole_roof_gap above the key, to tie the hub together.

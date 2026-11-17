@@ -170,6 +170,16 @@ def anchor_pockets(c,x_face,inward):
  m=c['mount'];r=c['magnets']['pocket_radius'];d=m['anchor_pocket_depth']
  return [cylinder_x(r,x_face-d-.1 if inward<0 else x_face-.1,d+.2,ay,az) for ay,az in anchors(c)]
 
+def spool_relief(c):
+ """The 0.5 mm recess of both plate inner faces, only where the spool flanges sweep (annulus about the axle)."""
+ d=datums(c);r=c['frame_profile']['spool_relief'];y=c['bearings']['axis_y'];x=d['frame_inner']
+ cut=[]
+ for side in [-1,1]:
+  ring=cylinder_x(r['outer_radius'],x-2,2+r['depth'],y).cut(cylinder_x(r['inner_radius'],x-2.1,2.2+r['depth'],y))
+  cut.append(ring if side>0 else ring.mirror('YZ'))
+ return cq.Compound.makeCompound(cut)
+
+
 def frame(c):
  """Two continuous A-frames with keyed seats for the removable bearing carriers, an open U-rim guard and four anchor branches."""
  d=datums(c);t=c['frame_profile']['thickness']
@@ -177,6 +187,7 @@ def frame(c):
  left=extrude(a_outline(c),-d['frame_outer'],t,[hole]);right=extrude(a_outline(c),d['frame_inner'],t,[hole])
  body=join([make_base(c),left,right,*expansion_pilot_pads(c),wheel_guard(c),anchor_branches(c)])
  for pocket in anchor_pockets(c,d['wall_contact'],-1):body=body.cut(pocket)
+ body=body.cut(spool_relief(c))
  p=c['base']['expansion_pilots']
  for side in [-1,1]:body=body.cut(cylinder_x(p['diameter']/2,d['pilot_entry_x']-.1,p['depth']+.1,d['pilot_axis_y'],side*p['center_z']))
  # Keyed seats for the removable carriers: a vertical slot down to the carrier's flat bottom, with the two guide
@@ -197,7 +208,7 @@ def drive_rotor(c):
  for i in range(m['count']):
   angle=i*2*math.pi/m['count'];disc=disc.cut(cylinder_x(m['pocket_radius'],m['cup_back_x']-.1,front-m['front_cover']-m['cup_back_x']+.1,y+m['pitch_radius']*math.cos(angle),m['pitch_radius']*math.sin(angle)))
  bore=cylinder_x(a['journal_radius']+d['key_radial_clearance'],d['key_bore_start_x'],front-d['key_bore_start_x']+.2,y)
- for angle in range(0,360,60):bore=bore.intersect(box(d['key_bore_start_x']-.1,front+.2,y-2*a['journal_radius'],y+a['key_apothem']+d['key_radial_clearance'],-2*a['journal_radius'],2*a['journal_radius']).rotate((0,y,0),(1,y,0),angle))
+ for i in range(a['key_flats']):bore=bore.intersect(box(d['key_bore_start_x']-.1,front+.2,y-2*a['journal_radius'],y+a['key_apothem']+d['key_radial_clearance'],-2*a['journal_radius'],2*a['journal_radius']).rotate((0,y,0),(1,y,0),i*360/a['key_flats']))
  disc=disc.cut(bore).cut(cylinder_x(d['counterbore_radius'],d['counterbore_back_x'],front-d['counterbore_back_x']+.1,y))
  channel=box(d['counterbore_back_x'],front+.1,y,y+d['clip_channel_reach'],-d['clip_channel_width']/2,d['clip_channel_width']/2).rotate((0,y,0),(1,y,0),d['clip_channel_angle_deg'])
  return one(disc.cut(channel).clean(),'keyed magnetic disc with radial clip access')
@@ -256,9 +267,59 @@ def axial_float(c):
 
 
 def collar_travel(c):
- """Allowed collar travel (+ inboard): full collar hub on the thread, and the cone keeps min_running_gap to the frame after full float."""
- sp=c['spindle'];t=sp['thread'];h=sp['collar']['hub_x']
- return {'inboard':t['thread_x'][1]-h[1],'outboard':round(min(h[0]-t['thread_x'][0],datums(c)['frame_inner']-sp['ring_x'][1]-axial_float(c)['total']-sp['min_running_gap']),4)}
+ """Allowed collar travel (+ inboard): full collar hub on the thread; after full float and the thread flank clearance
+ (the clamp pushes the collar outboard through it) the stop ring keeps min_running_gap to the frame and the hub to the left carrier."""
+ sp=c['spindle'];t=sp['thread'];h=sp['collar']['hub_x'];run=axial_float(c)['total']+t['flank_clearance']+sp['min_running_gap']
+ # Travel limits are whole lock positions (the key rests in a slot at each end).
+ step=t['pitch']/sp['lock']['slot_count'];lock=lambda v:round(math.floor(v/step+1e-9)*step,4)
+ return {'inboard':lock(t['thread_x'][1]-h[1]),'outboard':lock(min(h[0]-t['thread_x'][0],datums(c)['frame_inner']-sp['ring_x'][1]-run,h[0]+c['bearings']['carrier_inner_x']-run))}
+
+
+def drive_key(c,parts):
+ """Square drive key, disc socket and clip, from the exported parts: torsion stop, 608 and disc slide paths, clip snap at any key angle, axial hold both ways."""
+ a=c['axle'];d=c['disc'];p=c['clip'];b=c['bearings'];y=b['axis_y'];R=a['journal_radius'];k=a['key_apothem'];sock=k+d['key_radial_clearance']
+ end=parts['spindle'].intersect(box(35,a['right_end_x']+1,y-12,y+12,-12,12));disc=parts['drive-rotor'];clip=parts['retaining-clip'];brg=parts['right-bearing']
+ rot=lambda s,deg:s.rotate((0,y,0),(1,y,0),deg);fail=[];r={}
+ # Torsion: the Ø8 corner arcs reach past the socket flats; the key turns freely until a corner meets a flat.
+ free=math.degrees(math.acos(k/R)-math.acos(sock/R))
+ r['flats']=a['key_flats'];r['key_across_flats_mm']=2*k;r['socket_across_flats_mm']=2*sock;r['corner_diameter_mm']=2*R
+ r['engagement_mm']=round(R-sock,3);r['free_turn_deg']=round(free,2)
+ r['turn_overlap_mm3']={f'{s*t:+.2f}':round(overlap(rot(end,s*t),disc),4) for s in (1,-1) for t in (free-.5,free+1)}
+ if R-sock<a['key_min_engagement']:fail.append('Drive key engages the disc socket less than key_min_engagement')
+ if any(v>1e-5 for n,v in r['turn_overlap_mm3'].items() if abs(abs(float(n))-(free-.5))<.01) or any(v<.01 for n,v in r['turn_overlap_mm3'].items() if abs(abs(float(n))-(free+1))<.01):
+  fail.append('Drive key does not stop the disc within free turn + 1 deg both ways')
+ # The groove neck must stay a full circle so the clip snap does not depend on the key angle.
+ g0,g1,gr=a['groove_start_x']+.05,a['groove_end_x']-.05,a['groove_radius']
+ neck=overlap(end,cylinder_x(gr,g0,g1-g0,y));outside=overlap(end,cylinder_x(R+.5,g0,g1-g0,y).cut(cylinder_x(gr,g0-.1,g1-g0+.2,y)))
+ r['groove_neck']={'diameter_mm':2*gr,'round_fraction':round(neck/(math.pi*gr*gr*(g1-g0)),4),'material_outside_neck_mm3':round(outside,5)}
+ if r['groove_neck']['round_fraction']<.999 or outside>1e-5:fail.append('Clip groove neck is not a full circle')
+ # Assembly: the 608 slides over the key from the drive end; the disc slides on and off past the groove and tip.
+ r['bearing_slide_overlap_mm3']={f'{t:g}':round(overlap(brg.translate((t,0,0)),end),5) for t in (.5,2,4,7,10,15)}
+ r['disc_slide_overlap_mm3']={f'{t:g}':round(overlap(disc.translate((t,0,0)),end),5) for t in (.5,2,3.5,5,7.5)}
+ if max(r['bearing_slide_overlap_mm3'].values())>1e-4:fail.append('608 cannot slide over the drive key')
+ if max(r['disc_slide_overlap_mm3'].values())>1e-5:fail.append('Disc cannot slide over the drive key')
+ # Clip: radial path through the disc channel; it must clear the disc, and its jaws must spread over the neck at any key angle.
+ th=math.radians(d['clip_channel_angle_deg']);u=(0,math.cos(th),math.sin(th));path=(.2,.5,1,1.5,2,3,4.5,6,9,13)
+ move=lambda s,t:s.translate((0,u[1]*t,u[2]*t))
+ r['clip_path_disc_overlap_mm3']=round(max(overlap(move(clip,t),disc) for t in path),5)
+ r['clip_snap_each_jaw_mm']=round((2*gr-p['mouth_width'])/2,3)
+ r['clip_extraction_neck_overlap_mm3']={f'key turned {deg} deg':round(max(overlap(move(clip,t),rot(end,deg)) for t in path),4) for deg in (0,90/a['key_flats'],180/a['key_flats'])}
+ if r['clip_path_disc_overlap_mm3']>1e-5:fail.append('Clip path through the disc channel is blocked')
+ if r['clip_snap_each_jaw_mm']<.15 or min(r['clip_extraction_neck_overlap_mm3'].values())<.01:fail.append('Clip does not snap over the groove neck at every key angle')
+ # Axial hold. Outward (the wheel magnets pull the disc toward the wall): disc -> clip -> corner lugs outboard of the groove.
+ out_play=(a['groove_end_x']-p['start_x']-p['thickness'])+(p['start_x']-d['counterbore_back_x'])
+ lead=p['start_x']-d['counterbore_back_x']  # the disc moves this far before it pushes the clip
+ pair=lambda t:overlap(clip.translate((max(0,t-lead),0,0)),end)+overlap(disc.translate((t,0,0)),end)
+ r['outward_play_mm']=round(out_play,3);r['outward_overlap_mm3']={'play-0.05':round(pair(out_play-.05),5),'play+0.1':round(pair(out_play+.1),4)}
+ # Bearing area: the actual clip (mouth included) pushed 0.1 mm into the lug faces.
+ lug=overlap(clip.translate((a['groove_end_x']-p['start_x']-p['thickness']+.1,0,0)),end)/.1
+ r['outboard_clip_bearing_area_mm2']=round(lug,2)
+ if r['outward_overlap_mm3']['play-0.05']>1e-5 or r['outward_overlap_mm3']['play+0.1']<.01:fail.append('Clip does not hold the disc outward within its play')
+ # Inward: the disc thrust ring stops on the 608 inner ring; the clip cannot leave the groove inboard.
+ in_gap=d['thrust_start_x']-b['center_x']-b['width']/2
+ r['inward_gap_to_608_mm']=round(in_gap,3);r['inward_overlap_mm3']={'disc to 608 at gap+0.1':round(overlap(disc.translate((-in_gap-.1,0,0)),brg),4),'clip inboard 0.1':round(overlap(clip.translate((-.1,0,0)),end),4)}
+ if min(r['inward_overlap_mm3'].values())<.01:fail.append('Disc or clip not stopped inward')
+ return r,fail
 
 
 def verify(c,parts):
@@ -300,8 +361,19 @@ def verify(c,parts):
  for move in [-travel['outboard'],0,travel['inboard']]:
   moved=sp.collar(c,move);case={'spindle_overlap_mm3':overlap(parts['spindle'],moved),'spindle_gap_mm':min_gap(parts['spindle'],moved),'frame_gap_nominal_mm':min_gap(moved,parts['fixed-stand'])}
   case['frame_gap_after_float_mm']=min(min_gap(moved.translate((-fl['total'],0,0)),parts[n]) for n in stationary)
+  case['frame_gap_after_float_and_flank_mm']=min(min_gap(moved.translate((-fl['total']-t['flank_clearance'],0,0)),parts[n]) for n in stationary)
   checks['thread']['cases'][f'{move:+.2f}']={k:round(v,4) for k,v in case.items()}
-  if case['spindle_overlap_mm3']>1e-5 or case['frame_gap_after_float_mm']<need-1e-6:checks['failures'].append(f'Collar travel {move:+.2f} mm collides')
+  if case['spindle_overlap_mm3']>1e-5 or case['frame_gap_after_float_and_flank_mm']<need-1e-6:checks['failures'].append(f'Collar travel {move:+.2f} mm collides')
+ # Full-turn receipt at the outboard limit, float and flank play: the whole collar (paddle, arm, hub, stop ring) swept about
+ # the axle. Its outboard-most point within the left carrier's radial reach must keep `need` to the carrier's inner face, and
+ # its outboard-most point overall to the frame plate (which is plane at frame_inner for every radius the collar reaches).
+ worst=sp.collar(c,-travel['outboard']).translate((-fl['total']-t['flank_clearance'],0,0))
+ cb=parts['left-carrier'].BoundingBox();reach=max(math.hypot(yy-y,zz) for yy in (cb.ymin,cb.ymax) for zz in (cb.zmin,cb.zmax))
+ near=worst.intersect(cylinder_x(reach,-v['frame_inner']-1,2*v['frame_inner']+2,y)).BoundingBox().xmin
+ sweep={'carrier_reach_radius_mm':round(reach,2),'collar_min_x_within_reach':round(near,3),'collar_min_x':round(worst.BoundingBox().xmin,3),
+  'carrier_gap_mm':round(near+c['bearings']['carrier_inner_x'],3),'frame_gap_mm':round(worst.BoundingBox().xmin+v['frame_inner'],3)}
+ checks['collar_full_turn_outboard_mm']=sweep
+ if min(sweep['carrier_gap_mm'],sweep['frame_gap_mm'])<need-1e-6:checks['failures'].append('Collar swept at its outboard limit is closer than min_running_gap to the left carrier or frame')
  # Collar lock: key in a slot at every lock position; turning either way past the key play collides; lifted, the collar turns freely.
  k=c['spindle']['lock'];step=sp.lock_positions(c);deg=360/k['slot_count'];lift=t['major_radius']+k['lift_clearance']-k['key_tip_radius']
  for limit in travel.values():
@@ -349,6 +421,22 @@ def verify(c,parts):
  checks['magnet_stack_mm']={'pocket_depth':pocket_depth,'magnet_thickness':m['thickness'],'front_cover':m['front_cover']}
  if pocket_depth<m['thickness']:checks['failures'].append('Magnet deeper than pocket')
  checks['bearing_jaw_deflection_each_mm']=(b['od']-b['mouth_width'])/2;checks['clip_jaw_deflection_each_mm']=(2*a['groove_radius']-p['mouth_width'])/2
+ dk,fails=drive_key(c,parts);checks['drive_key']=dk;checks['failures']+=fails
+ # Spool seat datum: both stop faces at half the measured hub-face width; collar travel covers D +-2 mm.
+ sp=c['spindle'];ms=c['envelopes']['measured_spool'];face=sp['ring_x'][0]+sp['pilot_length'];tr=collar_travel(c)
+ checks['spool_seat']={'stop_face_x':face,'measured_hub_face_width':ms['hub_face_width'],'stop_face_diameters':[2*sp['pilot_radius'],2*sp['stop_outer_radius']],
+  'pilot_radial_clearance_to_assumed_bore':round(ms['assumed_bore_diameter']/2-sp['pilot_radius'],3),'clamped_hub_width_range':[round(2*face-tr['inboard'],3),round(2*face+tr['outboard'],3)],
+  'face_inside_assumed_recess_opening_mm':round(ms['assumed_recess_opening_diameter']/2-sp['stop_outer_radius'],3)}
+ if abs(2*face-ms['hub_face_width'])>1e-6:checks['failures'].append('Stop faces are not at the measured hub-face width')
+ if checks['spool_seat']['clamped_hub_width_range'][0]>ms['hub_face_width']-2+1e-6 or checks['spool_seat']['clamped_hub_width_range'][1]<ms['hub_face_width']+2-1e-6:checks['failures'].append('Collar travel does not cover the measured hub width +-2 mm')
+ # Flange-sweep relief: thinned only inside the annulus; analytic bound for the thinned members (PLA, section ratio only).
+ r=c['frame_profile']['spool_relief'];t0=c['frame_profile']['thickness'];t1=t0-r['depth'];v=datums(c)
+ removed=overlap(parts['fixed-stand'],spool_relief(c))
+ checks['spool_relief']={'working_inner_faces_mm':2*(v['frame_inner']+r['depth']),'plate_thickness_mm':[t0,t1],'frame_material_in_relief_mm3':round(removed,5),
+  'section_ratios':{'in_plane_stiffness_and_strength':round(t1/t0,3),'out_of_plane_strength':round((t1/t0)**2,3),'out_of_plane_stiffness':round((t1/t0)**3,3)},
+  'gravity_bound':'Assumed 1.25 kg full spool (12.3 N) shared by two plates: 6.1 N in-plane per plate, so a relieved member w mm wide carries 6.1/(2.5 w) = 2.4/w MPa (0.5 MPa even at 5 mm), far below PLA strength. Out-of-plane loads (anchor magnet pull, hand loads) enter at the carrier heads and reach the base through the relieved legs: bending strength x0.694, stiffness x0.579 of the 3 mm section. The spool clamp closes internally through spindle, thread and collar, not through the frame. Section ratios only, not FE or qualification.'}
+ if removed>1e-5:checks['failures'].append('Frame material left inside the flange-sweep relief')
+
  checks['dimensions_mm']={'wall_span':v['minimum_wall_span'],'base_width':v['base_width'],'base_depth':c['base']['depth']}
  checks['pass']=not checks['failures'];checks['summary']='Pass' if checks['pass'] else '; '.join(checks['failures'])
  return checks

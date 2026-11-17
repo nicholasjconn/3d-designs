@@ -162,6 +162,7 @@ printGroup.rotation.x = -Math.PI / 2;
 printGroup.visible = false;
 scene.add(printGroup);
 let supportLines = null;
+if (!pr) document.querySelector('#print').hidden = true;
 if (pr) {
   const bed = new T.Mesh(new T.PlaneGeometry(350, 320), new T.MeshBasicMaterial({color: '#cfd5da', side: T.DoubleSide}));
   bed.position.set(175, 160, -0.05);
@@ -187,21 +188,22 @@ if (pr) {
   const L = pr.material_ledger.materials[0].commanded_mass_kg_by_category, g1 = v => (1000 * (v || 0)).toFixed(2) + ' g';
   const minutes = Math.round(pr.estimate_seconds / 60);
   document.querySelector('#print-info').innerHTML = `<table><tbody>
-<tr><td>Prepared single-material comparison: Studio estimate (not the sent job)</td><td>${Math.floor(minutes / 60)} h ${minutes % 60} min; ${pr.slicer_total_g.toFixed(2)} g reported by Studio</td></tr>
-<tr><td>Useful parts</td><td>spindle ${pr.useful_part_g.spindle.toFixed(2)} g, collar ${pr.useful_part_g.collar.toFixed(2)} g</td></tr>
+<tr><td>Prepared replacement plate: Studio estimate (not sent)</td><td>${Math.floor(minutes / 60)} h ${minutes % 60} min; ${pr.slicer_total_g.toFixed(2)} g reported by Studio</td></tr>
+<tr><td>Useful parts</td><td>${Object.entries(pr.useful_part_g).map(([name,g]) => name + ' ' + g.toFixed(2) + ' g').join('; ')}</td></tr>
 <tr><td>Support (body / transition / interface)</td><td>${g1(L.support_body)} / ${g1(L.support_transition)} / ${g1(L.support_interface)}</td></tr>
-<tr><td>Brim / skirt</td><td>${g1(L.brim_or_skirt)}</td></tr>
+<tr><td>Material changes / purge tower</td><td>None in this single-material proposal; firmware loading and calibration overhead remain unmeasured</td></tr>\n<tr><td>Brim / skirt</td><td>${g1(L.brim_or_skirt)}</td></tr>
 <tr><td>Identified start-up G-code extrusion</td><td>${g1(L.startup_custom_positive)}, separate from the Studio total; firmware filament loading, purge and calibration are not identified in the G-code and are unknown</td></tr>
-<tr><td>Settings</td><td>${Object.entries(pr.settings).map(([k, v]) => k + ' = ' + v).join(', ')}</td></tr>
+<tr><td>Settings</td><td>${pr.settings.layer_height} mm layers; ${pr.settings.wall_loops} walls; ${pr.settings.sparse_infill_density} infill; tree slim supports, critical regions only; one PLA material</td></tr>
 <tr><td>Support roads shown</td><td>${pr.support_roads.length.toLocaleString()} of ${pr.support_roads_total.toLocaleString()} actual roads (orange support, red contact interface)</td></tr>
-<tr><td>Downloads (prepared comparison)</td><td>${[pr.downloads.project && `<a href="${pr.downloads.project}">editable project 3MF</a>`, pr.downloads.sliced && `<a href="${pr.downloads.sliced}">sliced 3MF</a>`].filter(Boolean).join(' · ')}${(pr.withheld || []).map(w => '<br>' + w).join('')}</td></tr></tbody></table>`;
+<tr><td>Downloads (prepared replacement)</td><td>${[pr.downloads.project && `<a href="${pr.downloads.project}">editable project 3MF</a>`, pr.downloads.sliced && `<a href="${pr.downloads.sliced}">sliced 3MF</a>`].filter(Boolean).join(' · ')}${(pr.withheld || []).map(w => '<br>' + w).join('')}</td></tr></tbody></table>`;
 }
 
 // Checks table, straight from the build results.
 const k = data.checks, rows = [];
 const row = (a, b) => rows.push(`<tr><td>${a}</td><td>${b}</td></tr>`);
 const g = k.rotating_min_gap_mm;
-row(`Spindle and collar turning past the frame and carriers (every 10° over 0–110°, one period of the three-fold bodies; axial float ±${k.axial_float_mm.total} mm). The single lock paddle is checked analytically for the full turn: ≥1.25 mm axially from the left carrier at every angle`, `≥ ${Math.min(...Object.values(g)).toFixed(2)} mm gap; collar cone at its outboard limit ${Object.values(k.thread.cases)[0].frame_gap_after_float_mm} mm`);
+row(`Spindle and collar turning past the frame and carriers (every 10° over 0–110°, one period of the three-fold bodies; axial float ±${k.axial_float_mm.total} mm).`, `≥ ${Math.min(...Object.values(g)).toFixed(2)} mm gap; collar at its outboard limit including thread flank play ${Object.values(k.thread.cases)[0].frame_gap_after_float_and_flank_mm} mm`);
+row('Whole collar through a full turn at maximum outboard travel, float and thread flank play', `${k.collar_full_turn_outboard_mm.carrier_gap_mm} mm to left carrier; ${k.collar_full_turn_outboard_mm.frame_gap_mm} mm to frame`);
 row('Collar on the thread across its travel (moves along the helix)', `0 mm³ overlap at ${Object.keys(k.thread.cases).join(', ')} mm; ${k.thread.cases['+0.00'].spindle_gap_mm.toFixed(2)} mm flank gap`);
 row('Same collar shifted half a pitch without turning (check is discriminating)', `${k.thread.half_pitch_unrotated_overlap_mm3} mm³ overlap`);
 const L = k.lock;
@@ -210,10 +212,12 @@ row(`Key lifted ${L.lift_required_mm.toFixed(2)} mm (rigid radial illustration; 
 row('Spindle + collar CAD solid volume', `${mm(k.volume_mm3.spindle / 1000)} + ${mm(k.volume_mm3.collar / 1000)} cm³`);
 const f = k.spool_fit;
 if (f) {
-  row('Bambu printable spool seated', `contact only in the chamfer bands (X ${f.seated.spindle.overlap_extent.x.join('…')}, R ${f.seated.spindle.overlap_extent.r.join('…')}); ${f.seated.frame_gap_mm} mm to frame (${f.seated.frame_gap_after_axial_float_mm} mm at full float)`);
-  row('Spool slides on from the refill end; collar runs in', f.failures.length ? f.failures.join('; ') : 'Clear at every step');
-  row('Spool hub widths the collar can clamp at the reference bore', `${f.clamp_range.hub_width_mm_at_reference_bore.join('–')} mm (reference ${f.clamp_range.reference_hub_width_mm} mm); joint condition with bore size`);
+  row('Spool envelope seated: measured overall width and hub width; radial profile assumed', `flat stop faces; ${f.seated.frame_gap_mm} mm to frame (${f.seated.frame_gap_after_axial_float_mm} mm at full float)`);
+  row('Spool slides on from the refill end; collar runs in', f.failures.length ? f.failures.join('; ') : 'Clear at sampled steps');
+  row('Hub face widths covered by collar travel', `${f.clamp_range.clamped_hub_width_mm.join('–')} mm (measured ${f.clamp_range.measured_hub_face_width_mm} mm)`);
 } else row('Spool fit', 'Not run for this preview');
+if(k.drive_key) row('Square drive and retaining clip', `${k.drive_key.engagement_mm} mm radial engagement; ${k.drive_key.free_turn_deg}° free turn; ${k.drive_key.clip_snap_each_jaw_mm} mm snap per jaw`);
+if(k.spool_relief) row('Local flange clearance relief', `${k.spool_relief.working_inner_faces_mm} mm working inner span; ${k.spool_relief.plate_thickness_mm.join(' → ')} mm local plate thickness`);
 document.querySelector('#checks').innerHTML = rows.join('');
 const sys = data.system;
 if (sys) {
@@ -242,9 +246,9 @@ if (sys) {
 const state = {mode: 'assembly', cut: false, spool: false, lifted: false, supports: true, height: 0, angle: 0};
 const driveSeparated = {'drive-mount-x': 170, 'drive-magnets-x': 170, 'drive-608-inner': 205, 'drive-608-outer': 205, 'drive-hub-retainer': 190,
   'drive-wheel': 240, 'drive-magnets-wheel': 240, 'drive-axle-clip': 275};
-const rotators = new Set(['spindle', 'collar', 'section-spindle', 'section-collar', 'drive-rotor', 'retaining-clip', 'spool-narrow', 'spool-wide']);
+const rotators = new Set(['spindle', 'collar', 'section-spindle', 'section-collar', 'drive-rotor', 'retaining-clip', 'spool-envelope']);
 const separated = {'left-carrier': -150, 'left-bearing': -115, collar: -75, 'right-bearing': 55, 'right-carrier': 85, 'drive-rotor': 120, 'retaining-clip': 150};
-const change = {'left-carrier': -70, 'left-bearing': -70, collar: -45, 'spool-narrow': -110, 'spool-wide': -110};
+const change = {'left-carrier': -70, 'left-bearing': -70, collar: -45, 'spool-envelope': -110};
 const centerParts = ['section-spindle', 'section-collar'];
 
 function fit(direction) {
@@ -253,7 +257,7 @@ function fit(direction) {
   const target = state.mode === 'print' ? printGroup : group;
   target.updateMatrixWorld(true);
   // The drive-wall slab is a view-only reference: it never sets the camera extents.
-  target.traverseVisible(o => { if (o.geometry && o !== driveWall && (state.mode === 'print' || state.mode !== 'lock' || o === objects['section-lock-collar'] || o === objects['section-lock-collar-lifted'])) { o.geometry.computeBoundingBox(); box.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld)); } });
+  target.traverseVisible(o => { if (state.mode === 'center' && o === objects['spool-envelope']) return; if (o.geometry && o !== driveWall && (state.mode === 'print' || state.mode !== 'lock' || o === objects['section-lock-collar'] || o === objects['section-lock-collar-lifted'])) { o.geometry.computeBoundingBox(); box.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld)); } });
   // The axial section's side labels sit right of the knob tip: keep room for them.
   if (state.mode === 'axial' && data.axial) box.expandByPoint(new T.Vector3(data.axial.labels.find(l => l.to).to[0] + 70, data.axis_y, 0));
   const center = box.getCenter(new T.Vector3()), d = (direction || new T.Vector3(1, .3, .8)).clone().normalize();
@@ -270,17 +274,17 @@ function fit(direction) {
 }
 
 const captions = {
-  assembly: 'Gray frame (now with four anchor branches), two light-grey carriers in keyed seats, and the green spindle with its light-green collar clamping the spool hub between their cones. Outside the translucent 2 mm wall (nominal), the fixed gray X holds the blue handwheel on an extra 608; one magnet per X arm pairs with a magnet glued into each frame branch.',
+  assembly: 'Gray frame (now with four anchor branches), two light-grey carriers in keyed seats, and the green spindle with its light-green collar clamping the recessed spool hub between their flat stop faces. Outside the translucent 2 mm wall (nominal), the fixed gray X holds the blue handwheel on an extra 608; one magnet per X arm pairs with a magnet glued into each frame branch.',
   lift: 'Spindle, collar, spool, blue disc, purple clip, both bearings and both carriers lift out together. The frame keeps only the empty keyed seats; its anchor branches stay outside the disc\'s lift path. The outside drive stays on the wall.',
   parts: 'Printed: two carriers, green spindle, light-green collar, blue magnetic disc, purple clip (frame hidden); outside: gray X, yellow retainer ring, extra 608, blue wheel, purple axle clip. Purchased: three 608s and the magnets.',
   carriers: 'Each carrier slides down a 24.4 mm slot in the frame plate to a flat floor. Grooves on the carrier ride on thinned frame edges to stop movement along the axle. Carriers are held down by gravity only.',
-  center: 'CAD half-section (cut on the axle plane) of the spindle and collar. The collar screws onto the spindle; its cone and the spindle\'s cone seat in the spool bore\'s end chamfers. Clamp force stays inside spindle, collar and spool.',
+  center: 'Native CAD half-section through the spindle and threaded collar. Their hub-face stops clamp the spool; the short pilots enter its bore. Clamp force stays inside spindle, collar and spool.',
   lock: 'Slice through the collar lock, viewed from the refill side. The key rests in one of the slots cut through the spindle thread crests, so the collar cannot turn either way. Press “Lift key” to see it raised clear of the crests.',
   lifted: 'Key lifted clear of the thread crests, so the collar can be turned. Push the paddle toward the arm root to lift it; this view shows a rigid radial lift for illustration, while the real arm also tilts the key. Let go and keep turning forward until the key drops into the next slot.',
-  change: 'Spool change, after lifting the whole unit out: pull off the left carrier, slide the left 608 off its slip-fit journal, hold the spool near the collar end and unscrew the collar (about 3.8 turns), then slide the spool off toward the refill side. Reverse to refit.'};
+  change: 'Spool change, after lifting the whole unit out: pull off the left carrier, slide the left 608 off its slip-fit journal, hold the spool near the collar end and unscrew the collar, then slide the spool off toward the refill side. Reverse to refit.'};
 captions.kit = 'Every current part. The outside drive (fixed X, extra 608, handwheel) sits coaxial with the blue disc across a nominal 2 mm drive wall (container unmeasured). In front, set aside because its place on the container is not defined: the outlet in its printing configuration (left: PTFE lead through the body and purchased fitting) and its storage configuration (right: cap on, filament tail held by the two-body clip inside the cap). Translucent plates are 50 mm wall patches.';
-captions.axial = 'Axial section on the axle plane (front half removed). Green: the locked spans along the axle (holder 82.2, spindle 79.4, full assembly 104.65 mm at a nominal 2 mm wall) and the 75 × 130 mm base, all checked against the build. Outside the wall, the fixed gray X carries the extra 608 on its integral axle. The wheel\'s lip and retainer ring hold the outer ring, and the X shoulder and axle clip hold the inner ring. Turn the rotation slider: the wheel, retainer, outer ring and both magnet sets turn with the disc.';
-captions.print = 'Print plate as sliced: spindle standing on its drive journal end, collar on its outboard cone face, with the actual support roads of the prepared single-material comparison. The sent job used separate support material; see the print section below.';
+captions.axial = 'Optional amber spool envelope: measured overall and hub widths, assumed radial profile. Axial section on the axle plane (front half removed). Green: the locked spans along the axle (holder 82.2, spindle 79.4, full assembly 104.65 mm at a nominal 2 mm wall) and the 75 × 130 mm base, all checked against the build. Outside the wall, the fixed gray X carries the extra 608 on its integral axle. The wheel\'s lip and retainer ring hold the outer ring, and the X shoulder and axle clip hold the inner ring. Turn the rotation slider: the wheel, retainer, outer ring and both magnet sets turn with the disc.';
+captions.print = 'Current holder plate in its actual fabrication orientations. Orange lines are sampled support roads; red lines are contact interfaces. This replacement plate has not been sent to the printer.';
 if (data.axial) captions.axial += ' Labels: ' + data.axial.labels.filter(l => l.to).map((l, i) => `${i + 1} ${l.label}`).join('; ') + '.';
 const modes = ['assembly', 'kit', 'axial', 'lift', 'parts', 'carriers', 'center', 'lock', 'change', 'print'];
 
@@ -299,7 +303,7 @@ function update(reframe = true) {
     if (state.mode === 'center') { o.visible = centerParts.includes(n) || (spool && state.spool); o.rotation.x = 0; }
     if (state.mode === 'lock') { o.visible = n === 'section-lock-spindle' || n === (state.lifted ? 'section-lock-collar-lifted' : 'section-lock-collar'); o.rotation.x = 0; }
     if (state.mode === 'change') { if (n === 'fixed-stand' || drive) o.visible = false; o.position.x = change[n] || 0; }
-    if (state.mode === 'axial' && spool) o.visible = false;
+    if (state.mode === 'axial' && spool) o.visible = state.spool;
     o.traverse(m => { if (m.material) m.material.clippingPlanes = (state.cut || state.mode === 'axial') && state.mode !== 'center' ? [cut] : (spool && state.mode === 'center' ? [cut] : []); });
   }
   group.visible = state.mode !== 'print';

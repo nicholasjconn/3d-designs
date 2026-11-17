@@ -10,8 +10,8 @@ when making a physical prototype.
 ## Projects
 
 - [Filament drybox](filament-drybox/README.md): a passive spool holder with a
-  rotating desiccant core and magnetic manual rewind. The stand is being
-  prepared for its first fit print; the complete drybox is still in development.
+  bearing-supported spindle and magnetic manual rewind. The seven-part holder is
+  prepared for a measured-spool fit print; the complete drybox is still in development.
 
 ## Tools
 

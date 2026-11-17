@@ -10,7 +10,7 @@ the authored holder/ viewer and the pinned Three.js runtime from preview/node_mo
 (`npm ci` in preview/). With --spool the output contains third-party meshes: keep it private.
 """
 from pathlib import Path
-import argparse,hashlib,json,math,shutil,struct
+import argparse,hashlib,importlib.util,json,math,shutil,struct
 import numpy as np
 
 HERE=Path(__file__).resolve().parent
@@ -31,11 +31,11 @@ def part(name,vertices,triangles,offset):
 def annotations(build):
     """Labelled dimensions for the spindle/collar view, in axle coordinates (x, radius)."""
     c=build['config'];a=c['axle'];sp=c['spindle'];t=sp['thread'];h=sp['collar']['hub_x'];k=build['checks']
-    travel=k['collar_travel_mm'];seat=sp['seat_start_x']
+    travel=k['collar_travel_mm'];face=sp['ring_x'][0]+sp['pilot_length']
     return [
         {'id':'A','label':f"A  Custom thread Ø{2*t['major_radius']:g} × {t['pitch']:g} pitch, {k['thread']['engaged_turns']:.1f} turns engaged; {c['spindle']['lock']['slot_count']} lock slots",'from':[t['thread_x'][0],-t['major_radius']],'to':[t['thread_x'][1],-t['major_radius']],'offset':-5},
         {'id':'B','label':f"B  Collar travel {travel['inboard']:g} mm inboard / {travel['outboard']:g} mm outboard",'from':[h[1],sp['collar']['hub_outer_radius']],'to':[h[1]+travel['inboard'],sp['collar']['hub_outer_radius']],'offset':3},
-        {'id':'C','label':f"C  Cone seats: 45° chamfers at X±{seat:g}–{sp['ring_x'][1]:g}",'from':[-sp['ring_x'][1],sp['seat_bore_radius']],'to':[sp['ring_x'][1],sp['seat_bore_radius']],'offset':6},
+        {'id':'C','label':f"C  Flat hub-face stops at X±{face:g} (measured hub width {2*face:g}), face Ø{2*sp['pilot_radius']:g}–{2*sp['stop_outer_radius']:g}",'from':[-face,sp['stop_outer_radius']],'to':[face,sp['stop_outer_radius']],'offset':6},
         {'id':'D','label':f"D  Shaft Ø{2*sp['shaft_radius']:g}",'from':[0,-sp['shaft_radius']],'to':[0,sp['shaft_radius']],'offset':0,'radial':True},
         {'id':'E','label':f"E  608 journals: drive Ø{2*a['journal_radius']:g}, left Ø{2*a['left_journal_radius']:g} slip fit",'from':[a['left_end_x'],a['journal_radius']],'to':[a['right_end_x'],a['journal_radius']],'offset':-24},
     ]
@@ -83,9 +83,10 @@ def print_plate(prep,job,limit=60000):
         v,f=stl(Path(p['stl']))
         meshes.append({'id':p['id'],'orientation':p['orientation'],'vertices':np.round(v+[*p['placement_xy_mm'],0],3).tolist(),'triangles':f.tolist()})
         seg=np.array(json.loads((prep/f'analysis-{job}'/f"{p['id']}-supports.json").read_text())['segments'])
-        seg[:,[0,3]]+=p['placement_xy_mm'][0];seg[:,[1,4]]+=p['placement_xy_mm'][1]
-        roads.append(seg)
-    roads=np.concatenate(roads);total=len(roads)
+        if len(seg):
+            seg[:,[0,3]]+=p['placement_xy_mm'][0];seg[:,[1,4]]+=p['placement_xy_mm'][1]
+            roads.append(seg)
+    roads=np.concatenate(roads) if roads else np.empty((0,8));total=len(roads)
     if total>limit:roads=roads[np.linspace(0,total-1,limit).astype(int)]
     settings=json.loads((prep/job/'out/settings.json').read_text())
     return {'job':job,'meshes':meshes,'support_roads':np.round(roads[:,[0,1,2,3,4,5,7]],2).tolist(),'support_roads_total':total,
@@ -120,17 +121,22 @@ def main():
         if mismatch:raise ValueError(f'--native {native} is not the holder build recorded in {a.system}/manifest.json (differs: {mismatch})')
     parts=[part(n,m['vertices'],m['triangles'],0 if n=='fixed-stand' else axis_y) for n,m in display['components'].items()]
     parts+=[part('section-'+n,m['vertices'],m['triangles'],axis_y) for n,m in display['sections'].items()]
-    if a.spool:
-        for n in ['narrow','wide']:
-            v,f=stl(a.spool/f'bambulab_spool_{n}.stl');parts.append(part('spool-'+n,v,f,0))
+    # Show the same explicitly assumed envelope used by the fit checker, rather
+    # than presenting the earlier flush-hub printable model as the measured spool.
+    spec=importlib.util.spec_from_file_location('drybox_spool_fit',HERE.parent/'cad'/'spool_fit.py')
+    fit_module=importlib.util.module_from_spec(spec);spec.loader.exec_module(fit_module)
+    envelope=fit_module.envelope(build['config']['envelopes']['measured_spool']).to_mesh()
+    parts.append(part('spool-envelope',envelope.vert_properties[:,:3],envelope.tri_verts,axis_y))
     # Show the spool fit only when the system manifest binds it to these holder files (not merely because a file exists).
     k=build['checks'];fit=a.native/'spool-fit.json';bound=(manifest or {}).get('spool_fit')
     fit_ok=bool(bound) and fit.exists() and sha(fit)==bound['output_sha256'] and all(recorded.get(f)==h for f,h in bound['holder_sha256'].items())
     checks={'lock':k['lock'],'rotating_min_gap_mm':k['rotating_min_gap_mm'],'axial_float_mm':k['axial_float_mm'],'collar_travel_mm':k['collar_travel_mm'],'thread':k['thread'],
+            'drive_key':k['drive_key'],'spool_relief':k['spool_relief'],'collar_full_turn_outboard_mm':k['collar_full_turn_outboard_mm'],
             'volume_mm3':{n:k['parts'][n]['volume_mm3'] for n in ['spindle','collar']},
             'spool_fit':json.loads(fit.read_text()) if fit_ok else None}
     payload={'axis_y':axis_y,'parts':parts,'dimensions_mm':display['dimensions_mm'],'annotations':annotations(build),'lock_labels':lock_labels(build),'checks':checks,
-            'grip_spec':build['config']['spindle']}  # grip.html places its labels from these spindle and collar values
+            'grip_spec':build['config']['spindle'],
+            'fit_spec':{key:build['config'][key] for key in ['axle','disc','clip','envelopes','frame_profile','carriers']}}
     if a.system:
         system=json.loads((a.system/'system-display.json').read_text())
         if system.get('schema')!='drybox-system-display-v1':raise ValueError('Unexpected system-display schema; rebuild with cad/drybox.py')
@@ -143,19 +149,21 @@ def main():
         payload['system']={'inventory':manifest['inventory'],'checks':sc,
                            'git_head':manifest['git_head'],'working_tree_changes':manifest['working_tree_changes_under_filament_drybox']}
     if a.print_prep:
-        # The plate must have been prepared from geometry identical to this holder: its STEP inputs are the hash-checked
-        # files of the reference build that drybox.py compared (0 mm³ symmetric difference) with these holder outputs.
+        # Bind each print input either to this holder's exact STEP bytes, or to a
+        # checked zero-difference reference. Never show an older part's plate just
+        # because a print-preparation directory happens to exist.
         if not manifest:raise ValueError('--print-prep needs --system (its geometry is bound through the system reference comparison)')
         ref=json.loads((a.system/'system-checks.json').read_text()).get('reference_build')
-        if not ref:raise ValueError('--print-prep needs a drybox.py run with --reference-build set to the build the plate was prepared from')
         prep=json.loads((a.print_prep/'plate-parts.json').read_text())
         artifacts=json.loads((a.print_prep/'manifest.json').read_text())['artifacts']
         for q in prep:
             step=Path(q['source_step']);name=step.name
-            if step.parent.name!=ref['directory'] or ref['symmetric_difference_mm3'].get(step.stem)!=0:
-                raise ValueError(f'print plate {q["id"]}: {step} is not a zero-difference reference part')
-            if not (sha(step)==q['source_step_sha256']==ref['key']['reference_sha256'].get(name) and ref['key']['holder_sha256'].get(name)==recorded.get(name)):
-                raise ValueError(f'print plate {q["id"]}: STEP input or holder output hash does not match the reference comparison')
+            exact=sha(step)==q['source_step_sha256']==recorded.get(name)
+            equivalent=bool(ref) and step.parent.name==ref['directory'] and ref['symmetric_difference_mm3'].get(step.stem)==0 and (
+                sha(step)==q['source_step_sha256']==ref['key']['reference_sha256'].get(name)
+                and ref['key']['holder_sha256'].get(name)==recorded.get(name))
+            if not (exact or equivalent):
+                raise ValueError(f'print plate {q["id"]}: STEP input does not match the current holder or a bound zero-difference reference')
             if sha(q['stl'])!=q['stl_sha256']:raise ValueError(f'print plate {q["id"]}: plate STL changed since preparation')
         for f in ['plate-parts.json',f'{a.print_job}/out/settings.json',f'{a.print_job}/out/plate_1.gcode',f'analysis-{a.print_job}/final-print-analysis.json']+[f'analysis-{a.print_job}/{q["id"]}-supports.json' for q in prep]:
             if sha(a.print_prep/f)!=artifacts[f]['sha256']:raise ValueError(f'print plate: {f} differs from its preparation manifest')

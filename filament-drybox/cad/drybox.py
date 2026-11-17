@@ -43,9 +43,9 @@ PRODUCERS = {
     'wheel': {'sources': ['wheel.py', 'wheel.json', 'stand.json'], 'command': None,
               'outputs': ['mount-x.step', 'wheel.step', 'hub-retainer.step', 'axle-clip.step', 'outer-bearing.step', 'checks.json']},
 }
-# Holder parts already printed or sent and kept unchanged by the outside-drive change; compared with --reference-build.
-# The gray frame is excluded on purpose: it gained the four anchor branches and glue pockets (baseline commit 7f54693).
-REFERENCE_PARTS = ['left-carrier', 'right-carrier', 'spindle', 'collar', 'drive-rotor', 'retaining-clip', 'left-bearing', 'right-bearing']
+# Only the carriers and purchased bearing envelopes remain unchanged after the measured-spool fit correction.
+# The frame, spindle, collar, disc and clip are intentionally excluded from --reference-build.
+REFERENCE_PARTS = ['left-carrier', 'right-carrier', 'left-bearing', 'right-bearing']
 
 
 def sha(path):
@@ -269,7 +269,7 @@ def system_checks(out, reference, previous, holder_outputs):
         failures += [f'{n}: geometry differs from the reference build' for n, v in same.items() if v > 1e-3]
         checks['reference_build'] = {'directory': Path(reference).name, 'symmetric_difference_mm3': same, 'reused': reused, 'key': key,
                                      'scope': 'Printed or sent holder parts kept unchanged: ' + ', '.join(REFERENCE_PARTS) +
-                                              '. The gray frame is not compared: it changed (anchor branches and glue pockets).'}
+                                              '. The frame, spindle, collar, disc and clip changed and are not compared.'}
     checks['failures'] = failures
     checks['pass'] = not failures
     return checks, placed, o, clip_placed
