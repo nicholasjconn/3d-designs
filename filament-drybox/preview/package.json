@@ -1,0 +1,9 @@
+{
+  "name": "filament-drybox-preview",
+  "private": true,
+  "description": "Runtime for the drybox preview pages; holder_geometry.py copies it into the generated site.",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "three": "0.169.0"
+  }
+}

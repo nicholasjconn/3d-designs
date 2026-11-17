@@ -1,52 +1,25 @@
 {
   "units": "mm",
-  "status": "First PLA fit/function prototype; no fabrication approval or physical grip qualification.",
-  "frame": "XY is the clamp cross-section, Z follows the straight filament. Filament axis X=Y=0. Open pose lies flat at Z=0..4.",
-  "axial_width_mm": 4.0,
+  "status": "Rigid-jaw design prototype; not sliced or physically qualified. The short-neck gripping spring is superseded following snap/stability concerns.",
+  "axial_height_mm": 5.0,
   "filament_diameter_mm": 1.75,
-  "jaw_gap_mm": 1.60,
-  "jaw_thickness_mm": 0.8,
-  "jaw_root_x_mm": -4.6,
-  "jaw_end_x_mm": 4.6,
-  "root_blend_radius_mm": 0.65,
-  "root_junction_fillet_mm": 0.25,
-  "hinge": {
-    "thickness_mm": 0.8,
-    "closed_neutral_radius_mm": 2.65,
-    "opening_deg": 25.0,
-    "root_exclusion_each_mm": 1.0,
-    "model": "Constant neutral-axis length, circular in-plane leaf; lower root/tangent fixed. Open pose reduces the closed leaf sweep by 25 degrees. Uniform-curvature strain is a screening estimate, not a root-strain or material allowable."
-  },
-  "latch": {
-    "arm_inner_x_mm": 7.0,
-    "arm_thickness_mm": 0.8,
-    "arm_root_y_mm": 2.0,
-    "hook_inner_x_mm": 6.3,
-    "hook_top_y_mm": -4.2,
-    "hook_bottom_y_mm": -5.0,
-    "catch_tip_x_mm": 6.7,
-    "catch_ramp_top_x_mm": 5.9,
-    "catch_ramp_top_y_mm": -3.0,
-    "catch_tip_top_y_mm": -3.8,
-    "catch_bottom_y_mm": -4.2,
-    "stem_inner_x_mm": 4.2,
-    "stem_outer_x_mm": 5.0,
-    "snap_extra_clearance_mm": 0.1,
-    "release": "Pull the outside lower tongue outward (+X) until its hook clears the catch, then let the moving jaw open. Push the upper jaw down to close; the smooth catch ramp deflects the tongue outward."
-  },
-  "interfaces": {
-    "cap_bore_diameter_mm": 21.5,
-    "cap_source": "outlet.json cap.bore_diameter_mm",
-    "tail_source": "outlet.json tail.filament_diameter_mm and tail.clip_height_mm",
-    "closed_axial_height_mm": 4.0,
-    "scope": "Closed clip only: radial envelope about the straight filament axis. Actual fitting projection, cap height and user tail length remain outlet assembly checks."
-  },
-  "prototype": {
-    "material": "Bambu PLA Basic",
-    "printer": "H2D, 0.4 mm nozzle",
-    "process": "Factory 0.20 mm Standard; no custom profile required by this source",
-    "orientation": "OPEN pose flat, Z=0 on bed; both jaws, curved leaf and latch flex in XY. No support geometry.",
-    "first_test": "Inspect that 0.8 mm leaf/jaws/latch are continuous, side-load 1.75 mm PLA filament, close once by hand, test a gentle pull, release and inspect for whitening/cracks/filament marking. A successful first closure does not qualify sustained hold, cycles, TPU or abrasive filament.",
-    "limitations": "PLA properties, local root strain, actual extrusion widths, shrinkage, latch snap force, grip force, creep and fatigue unqualified. Nominal 0.15 mm filament interference is not a holding-force prediction."
-  }
+  "seat_radius_mm": 1.0,
+  "unloaded_grip_gap_mm": 1.5,
+  "hinge_x_mm": -7.3,
+  "pin_radius_mm": 1.0,
+  "pin_radial_clearance_mm": 0.25,
+  "fixed_knuckle_radius_mm": 2.5,
+  "moving_knuckle_radius_mm": 1.45,
+  "end_knuckle_height_mm": 1.4,
+  "axial_hinge_clearance_mm": 0.2,
+  "latch_outer_radius_mm": 7.0,
+  "latch_thickness_mm": 0.7,
+  "opening_angle_deg": 65.0,
+  "material": "Bambu PLA Basic first prototype; strength, life and grip unqualified",
+  "mechanism": "Two captured printed bodies; rigid fixed cradle and broad rigid moving jaw. Only the long outside latch intentionally flexes. No short gripping spring, separate pin or bought hardware.",
+  "printing_status": "Open pose is a proposed orientation only; no support or slicer qualification yet.",
+  "moving_jaw_x_mm": [
+    -4.45,
+    3.3
+  ]
 }

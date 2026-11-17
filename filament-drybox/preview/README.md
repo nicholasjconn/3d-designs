@@ -1,14 +1,30 @@
-# Concept preview source reference
+# Preview source
 
-This directory preserves the original authored HTML/JavaScript for the current rotating desiccant core, spool/stand context, one-fitting outlet and all-plastic clip. It is **not yet a self-contained working preview** in this repository. No fake core/clip CAD generator is implied by preserving the display code.
+The current preview is `holder/` (the authored page and viewer) together with
+`holder_geometry.py`, which generates its data. It shows:
 
-- `simple-axle/`: whole drybox, continuous-lead printer context and native stand/wheel viewers. The core, spool and some purchased-part shapes are illustrative geometry.
-- `outlet-tail/`: assembled/exploded/section outlet and open/closed clip. Hinge motion and nominal jaw contact do not establish a printable one-body hinge, grip or force.
+- the holder assembly, with lift-out, separated, carrier, spindle-and-collar section, collar lock and spool-change views;
+- a *Whole kit* view with the outside handwheel and the outlet in its printing and storage configurations;
+- the spindle/collar print plate with actual support paths;
+- the current part inventory and the connection checks between systems.
 
-## Missing runtime dependencies
+Build it as described in the drybox [README](../README.md#build-and-check):
 
-The source expects `vendor/three.module.js` and `vendor/OrbitControls.js`, with import-map name `three`. The inspected source vendor reports `REVISION = '169'`: pin **Three.js 0.169.0** when supplying these dependencies. Third-party library files are not copied here, installed or fetched; their own license remains applicable. No CDN dependency has been added.
+1. Run `cad/drybox.py`.
+2. Run `npm ci` here, which installs the Three.js version pinned in `package.json` / `package-lock.json` (0.169.0).
+3. Run `holder_geometry.py --native <current>/holder --system <current> --output <site>`.
 
-It also expects generated native mesh payloads at `simple-axle/stand-geometry.json`, `simple-axle/wheel-geometry.json` and `outlet-tail/native-geometry.json`. These are not copied as authored source. The portable CAD modules are the geometry source for those parts; the display payload exporter/serving integration remains to be connected. Existing relative links to shopping/sizing pages and image files refer to the original review context and are not supplied here.
+The generated site directory holds everything it needs: `geometry.json`, the page, and `vendor/` (copied from `node_modules`, with Three's license). Serve it over HTTP. With `--spool` the output contains Bambu's printable spool meshes and stays private.
 
-Serve through HTTP only after those dependencies are provided. The earlier working preview remains a temporary review service; this source preservation is not a claim that the new repository already serves it. Actual container fit, physical retention, sealing, strength and manufacturing remain unqualified. No purchase intake, account data, private agent report or third-party model geometry is included.
+The generated payloads are derived; the CAD in `cad/` governs the parts.
+
+## Other pages
+
+`clip/` is a standalone page for the current two-body clip. It expects `geometry.json` from `cad/clip.py` plus a `context.json` whose producer is not maintained here. The whole-kit view shows the same clip, inside the outlet cap, built from `cad/clip.py`.
+
+## Superseded pages (not maintained)
+
+These pages are kept for history and are not current print inputs. Their generated payloads came from producers that are no longer maintained, so they are not reproducible from this checkout.
+
+- `simple-axle/`, with `prepare_print_view.py`: the four-part holder with the green core.
+- `outlet-tail/`: the earlier outlet and C-leaf clip page. It expects `native-geometry.json`.

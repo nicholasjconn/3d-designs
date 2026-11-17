@@ -4,7 +4,8 @@ Prepare one set before making four copies. The complete assembly has four
 printed parts: bulkhead body, inside locknut, storage cap and side-loading
 filament clip. It uses one HANGLIFE fitting, two 18 mm ID × 2 mm NBR O-rings,
 and one continuous 4 mm OD × 2.5 mm ID PTFE lead. All printed parts use the
-owner-selected Bambu PLA Basic. No outlet print has been sent by this task.
+owner-selected Bambu PLA Basic. The owner reports that the first outlet set
+was started and its clip has failed to stay closed; see the print record below.
 
 ## Interfaces and assembly
 
@@ -28,7 +29,63 @@ that the tube projects inside the box. Press the release collar to remove the
 whole lead for storage, hold the filament, rewind to a 20 mm tail, attach the
 clip, then fit the cap. The connected printing path is not claimed hermetic.
 
-## Prepared outlet candidate
+## Current original clip design — 15 November 2026
+
+The owner asked for a purpose-built clip after reviewing the trimmed
+[Mc2.project3D reference](https://makerworld.com/en/models/797139-clip-filament-click-print-in-place#profileId-736443).
+`cad/clip.py` and `cad/clip.json` now define independently authored native CAD,
+using a captured pin hinge and a positive click latch. No third-party mesh is
+loaded or trimmed by this generator. The downloaded reference and personal-use
+trim remain local only; they are superseded as the current design.
+
+Two printed bodies form the clip. The fixed jaw has a 2 mm open cradle and
+already spans the outlet. Following the owner's snapping and stability concerns,
+the moving jaw is now solid all the way to the hinge frame. The former short
+0.7 mm gripping spring and its clearance slot are removed. The broad jaw is
+1.55 mm thick in its plain section, with a minimum 1.3 mm ligament above the
+filament groove, through the full 5 mm axial depth. The long outside latch is
+the only part intended to flex. Its blunt hook and lip provide retention and
+release. The former pointed
+triangle is replaced by a 0.7 mm flat nose with R0.15 corners and full 1 mm
+backing beneath the retaining flat. The empty-closed retaining overlap is
+0.94 mm nominal, or 0.69 mm after a 0.25 mm outward pin shift.
+The filament position is unchanged because a separate flexible pad is no longer
+needed. The spool channel, tall flange, branding and extra stop tab are absent.
+
+At nominal native Z36–41, the empty closed CAD fits within the 21.5 mm cap bore
+with 0.95 mm radial margin and 11 mm below the blind end. Outlet tail metadata
+records this 5 mm clip and its center at Z38.5; body, cap and seal geometry are
+unchanged. These are nominal dimensions, not printed or loaded elastic fit.
+
+The unloaded jaw gap is 1.5 mm. Nominal 1.75 mm filament holds the rigid jaw
+about 1.97° open; the outside latch must bend to engage. The viewer explicitly
+shows the empty closed geometry, without filament intersecting the rigid jaw.
+Open and separated views explain loading and the two printed bodies. It does
+not simulate the loaded latch deformation.
+
+A simplified planar beam model predicts about 0.33 mm downward latch-tip travel
+at nominal filament fit, with about 1% peak bending strain. Nine sampled radial
+hinge-play positions reach about 2% strain; the modeled hook overlap remains at
+least 0.70 mm after the hook revision. These are comparison estimates with a
+fixed root and uniform
+section, excluding local concentrations, nonlinear contact, print errors, creep
+and fatigue. They do not establish holding force or PLA reliability. The prior
+short-neck design and a folded gripping-leaf candidate are superseded; a folded
+leaf still allowed the broad pad to rotate.
+
+The fixed jaw is exactly unchanged. Empty closure has no part intersection,
+and the opening check finds only the intended hook/catch snap contact near
+closure. Native STEP and display meshes are in
+`build/filament-drybox/clip-own/`. No replacement fabrication mesh or slice is
+prepared. Hinge freeing, actual latch engagement, grip, release, loaded cap fit,
+printed dimensions, creep, fatigue, TPU and filled filament need physical tests.
+The source allows an initial Bambu PLA Basic prototype; it does not qualify PLA
+life. Grok independently agreed the blunt-hook revision is ready for design
+review with the existing strain and grip limits; this is not fabrication
+approval. The old four-part sliced plate below contains the failed clip and
+must not be reused.
+
+## Previous outlet candidate with the failed clip
 
 The body prints neck face down and mounting stem up. The nut prints flat;
 the cap prints closed crown down and mouth up; the clip prints flat in its
@@ -91,26 +148,21 @@ no support roads. Cleanup, surface quality and sealing still need physical check
 
 The replacement editable project is `outlet-funnel.3mf`. It has been opened in
 native Bambu Studio with all four parts visible; the estimates above come from
-the checked offline slice. No print has been sent.
+the checked offline slice with critical-regions-only off. The owner's print
+uses critical-regions-only on, as recorded below.
 Current generated files live under the ignored
 `build/filament-drybox/outlet-print/` directory. The exact prepared project
 retains its support-selection metadata; importing meshes into a fresh factory
 process instead requires explicitly enabling supports before slicing.
 
-## Clip first test
+## Failed original clip first test
 
-The clip uses a curved leaf, smooth opposing jaws and a releasable latch. Its
-nominal 1.60 mm gap interferes by 0.15 mm with 1.75 mm filament; the jaws flex to
-accommodate it. Elementary strain screens do not establish printed PLA strength
-or contact pressure. Assumed jaw stiffness gives a wide force sensitivity;
-filament marking, especially with TPU, must be tested.
-
-Inspect the continuous thin features, side-load a straight piece of PLA filament,
-close once gently, test a light pull, then release by pulling the outside latch
-tongue away from the filament. Inspect for whitening, cracks and filament marks.
-Do not leave the prototype as the only safeguard against losing a filament end
-until its grip has been tested. TPU, PETG, abrasive filament, sustained retention
-and repeated cycling remain physical checks.
+The owner reports that the hook never caught and the clip did not come close to
+staying closed. Its 0.8 mm leaf and nominal 1.60 mm jaw gap had passed geometric
+and deposition checks. Those checks did not establish that the latch would
+engage or retain filament. The original mechanism and the trimmed third-party
+reference are superseded by the current design above. The exact failed source
+is retained at the print-record commit.
 
 ## Rebuild and qualification
 
@@ -118,21 +170,23 @@ From the repository root, with the CadQuery dependency installed:
 
 ```sh
 python filament-drybox/cad/outlet.py
-python filament-drybox/cad/clip.py
+python filament-drybox/cad/clip.py --output build/filament-drybox/clip-own
 ```
 
 The outlet generator writes native STEP references and upright fabrication STLs
-to `build/filament-drybox/outlet/`; the clip generator writes to
-`build/filament-drybox/clip/`. Both accept `--config` and `--output`. The outlet
-also accepts `--parts body nut cap` or a subset. Regenerated slices need their
-own review.
-
-`cad/clip.py` exports the native open and closed references and the open STL.
-Its loader checks the shared bore, filament diameter and axial height against
-canonical `cad/outlet.json` so a changed outlet cannot silently retain stale clip
-clearance assumptions.
+to `build/filament-drybox/outlet/`. The current clip generator writes valid native
+part and open/closed assembly STEP references, display geometry and a receipt.
+Both accept `--config` and `--output`; the outlet also accepts `--parts body nut
+cap` or a subset. The clip loader checks its axial height and filament diameter
+against `cad/outlet.json`. The authored clip viewer is in `preview/clip/` and
+uses generated geometry plus the existing local Three.js and outlet context
+assets. This design-stage export does not create or authorize a print job.
 
 The nominal native assembly fits and screw motions are geometric checks.
 Printed thread fit, received fitting passage and retention, O-ring fit, layer
 texture, leakage and humidity retention require the prototype. An intact print
 or a compressed O-ring alone does not establish airtight storage.
+
+## Print record
+
+15 November 2026, reported at approximately 14:50 EST — Owner reports the first outlet prototype set printing; prepared for Bambu PLA Basic, factory 0.20 mm Standard on H2D right 0.4 mm, supports enabled with **Support critical regions only** enabled by the owner (final feed mapping and calibration selections not reported); source `cad/outlet.py` / `cad/outlet.json` and `cad/clip.py` / `cad/clip.json`, commit `edf2a7d637a1d674d95a74f1eb75242fa4517ef5`; outcome: the owner reports the printed clip did not come close to staying closed, and clarified that the hook never caught. Completion and fit of the remaining outlet parts have not been reported. The closure mechanism is being reconsidered; the cause of failure has not been established. The affected comparison passed with exterior supports retained and no internal supports; estimate 61 min 6 s, 22.266 g total (20.856 g useful parts, 1.379 g supports, 0.030 g residual), with startup consumption separate. The owner's exact sent project has not been captured; no release tag is recorded for this print.

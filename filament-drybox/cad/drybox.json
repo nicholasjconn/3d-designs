@@ -1,0 +1,27 @@
+{
+  "units": "mm",
+  "scope": "Current connected filament drybox: one entry per current printed part, its owning source and latest print state. cad/drybox.py builds and checks every part from these sources. Bottom-side desiccant baskets are not designed. The container is unmeasured, so outlet placement on it is not modeled.",
+  "parts": [
+    {"id": "fixed-stand", "name": "Gray frame", "system": "holder", "source": "stand.py / stand.json", "output": "holder/fixed-stand.step", "state": "Current design; not printed."},
+    {"id": "left-carrier", "name": "Left bearing carrier", "system": "holder", "source": "stand.py / stand.json", "output": "holder/left-carrier.step", "state": "Current design; not printed."},
+    {"id": "right-carrier", "name": "Right bearing carrier", "system": "holder", "source": "stand.py / stand.json", "output": "holder/right-carrier.step", "state": "Current design; not printed."},
+    {"id": "spindle", "name": "Spindle (r5, boss ramp)", "system": "holder", "source": "spindle.py / stand.json", "output": "holder/spindle.step", "state": "First-fit print sent 17 Nov 2026 from the unreleased working tree; completion and fit not reported."},
+    {"id": "collar", "name": "Locking collar (r4 lock)", "system": "holder", "source": "spindle.py / stand.json", "output": "holder/collar.step", "state": "First-fit print sent 17 Nov 2026 from the unreleased working tree; completion and fit not reported."},
+    {"id": "drive-rotor", "name": "Blue magnetic disc", "system": "holder", "source": "stand.py / stand.json", "output": "holder/drive-rotor.step", "state": "Disc-and-clip plate sent 17 Nov 2026 (unreleased working tree); completion and fit not reported. Geometry unchanged."},
+    {"id": "retaining-clip", "name": "Disc retaining clip", "system": "holder", "source": "stand.py / stand.json", "output": "holder/retaining-clip.step", "state": "Disc-and-clip plate sent 17 Nov 2026 (unreleased working tree); completion and fit not reported. Geometry unchanged."},
+    {"id": "wheel", "name": "Outside magnetic handwheel", "system": "wheel", "source": "wheel.py / wheel.json (+ stand.json magnets)", "output": "wheel/wheel.step", "state": "Current design; no print record here."},
+    {"id": "body", "name": "Outlet bulkhead body", "system": "outlet", "source": "outlet.py / outlet.json", "output": "outlet/body-native.step", "state": "First set reported printing 15 Nov 2026 from commit edf2a7d (same body/nut/cap geometry); completion and fit not reported."},
+    {"id": "nut", "name": "Outlet inside locknut", "system": "outlet", "source": "outlet.py / outlet.json", "output": "outlet/nut-native.step", "state": "First set reported printing 15 Nov 2026 from commit edf2a7d; completion and fit not reported."},
+    {"id": "cap", "name": "Outlet storage cap", "system": "outlet", "source": "outlet.py / outlet.json", "output": "outlet/cap-native.step", "state": "First set reported printing 15 Nov 2026 from commit edf2a7d; completion and fit not reported."},
+    {"id": "fixed", "name": "Filament clip: fixed jaw and hinge", "system": "clip", "source": "clip.py / clip.json (+ outlet.json tail)", "output": "clip/fixed.step", "state": "Current two-body redesign; not printed (the 15 Nov C-leaf clip did not latch and is superseded)."},
+    {"id": "gate", "name": "Filament clip: moving jaw and latch", "system": "clip", "source": "clip.py / clip.json (+ outlet.json tail)", "output": "clip/gate.step", "state": "Current two-body redesign; not printed."}
+  ],
+  "purchased": [
+    {"name": "608ZZ bearing, 8 × 22 × 7 mm", "quantity": 2, "interface": "stand.json bearings"},
+    {"name": "Axially magnetized neodymium disc, Ø15 × 3 mm", "quantity": 6, "interface": "stand.json magnets (disc and wheel)"},
+    {"name": "Push-fit fitting, PT 1/8 thread per its packaging drawing (sold as HANGLIFE PC4-M10)", "quantity": 1, "interface": "outlet.json purchased_interfaces / fitting_envelope"},
+    {"name": "NBR O-ring, 18 mm ID × 2 mm", "quantity": 2, "interface": "outlet.json wall_ring / radial_ring"},
+    {"name": "PTFE lead, 4 mm OD × 2.5 mm ID, one continuous length", "quantity": 1, "interface": "outlet.json tube"}
+  ],
+  "not_designed": ["Bottom-side desiccant baskets", "Container measurements (wall thickness, interior, outlet location)"]
+}
