@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How the green spool rings attach</title><link rel="icon" href="data:,">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eef1f4;color:#23342e;font:16px/1.5 system-ui}main{max-width:1100px;margin:auto;padding:22px}h1{font-size:28px;line-height:1.2;margin:4px 0 12px}p{max-width:85ch}.card{background:white;border:1px solid #c3cfc8;border-radius:10px;overflow:hidden;margin:18px 0}#view{height:560px;position:relative;touch-action:none;overflow:hidden}canvas{display:block}.controls{display:flex;gap:8px;flex-wrap:wrap;padding:12px;border-top:1px solid #dae2dd}button{font:600 14px system-ui;border:1px solid #83998b;border-radius:5px;background:white;padding:9px 12px;color:inherit;cursor:pointer}button[aria-pressed=true]{background:#245e47;color:white}.text{padding:16px}#caption{margin:0}.label{position:absolute;pointer-events:none;transform:translate(-50%,-100%);font:600 12px/1.25 system-ui;background:#fffffff0;border:1px solid #a6b6ab;border-radius:4px;padding:4px 6px;max-width:235px}.swatch{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px}.parts{display:grid;grid-template-columns:1fr 1fr;gap:20px}.parts h2{font-size:18px;margin:0 0 6px}.parts p{margin:0}a{color:#235d47}.note{font-size:14px;color:#536358}@media(max-width:600px){main{padding:12px}h1{font-size:23px}#view{height:440px}.parts{grid-template-columns:1fr}.label{font-size:10px;max-width:145px}}
+</style></head><body><main>
+<h1>The green rings are attached to two printed parts</h1>
+<p><b>The drive-side ring is part of the spindle.</b> Three arms and three short struts connect it to the shaft. The other ring is part of the collar, which screws onto the spindle.</p>
+<div class="card"><div id="view"><p id="loading" class="text">Loading the current CAD…</p></div><div class="controls">
+<button id="together" aria-pressed="true">1 · Together</button><button id="apart">2 · Separate the collar</button><button id="spindle">3 · Fixed ring connections</button><button id="collar">4 · Collar connections</button><button id="thread">Thread cutaway</button>
+</div><div class="text"><p id="caption"></p><p class="note">Drag to rotate · Scroll or pinch to zoom. Colors identify the two complete printed parts.</p></div></div>
+<div class="card text parts"><div><h2><span class="swatch" style="background:#2f8f6b"></span>Spindle: one printed part</h2><p>Shaft → three radial arms → three axial struts → fixed ring. All of these are fused into one solid. There is no ring-to-shaft assembly joint on this side.</p></div><div><h2><span class="swatch" style="background:#a6cf64"></span>Collar: one printed part</h2><p>Threaded center → three arms and struts → adjustable ring. The entire collar screws onto the spindle. Its locking key engages a spindle slot to prevent unscrewing in either rotation direction.</p></div></div>
+<p>With a spool installed, the tapered rings seat in the ends of its center hole. Gentle collar tightening clamps the spool between them. Friction is intended to make the spool, spindle and collar turn together; the bearings support that rotating assembly.</p>
+<p class="note">Actual spool grip, printed thread fit and lock operation still need the first physical fit check. The separated view illustrates part ownership; it does not simulate unscrewing the collar. These meshes come from the current native CAD build.</p>
+<p><a href="./">Back to the complete drybox design</a></p>
+</main><script type="module">
+import * as T from 'three';
+import {OrbitControls} from './vendor/OrbitControls.js';
+const response=await fetch('geometry.json?view=grip-2',{cache:'no-store'});
+if(!response.ok)throw Error('Current geometry HTTP '+response.status);
+const data=await response.json(), host=document.querySelector('#view');
+const renderer=new T.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+host.querySelector('#loading').remove();host.appendChild(renderer.domElement);
+const scene=new T.Scene();scene.background=new T.Color('#eef1f4');scene.add(new T.HemisphereLight(0xffffff,0x668071,2.4));
+const light=new T.DirectionalLight(0xffffff,2.7);light.position.set(80,100,100);scene.add(light);
+const camera=new T.PerspectiveCamera(32,1,.1,2000),orbit=new OrbitControls(camera,renderer.domElement);orbit.enableDamping=true;
+const colors={spindle:'#2f8f6b',collar:'#a6cf64'}, meshes={};
+for(const id of ['spindle','collar','section-spindle','section-collar']){
+ const p=data.parts.find(p=>p.id===id);if(!p)throw Error('Current build lacks '+id);
+ const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p.vertices.flat(),3));g.setIndex(p.triangles.flat());g.computeVertexNormals();
+ const m=new T.Mesh(g,new T.MeshStandardMaterial({color:colors[id.replace('section-','')],roughness:.6,side:T.DoubleSide}));scene.add(m);meshes[id]=m;
+}
+const labels=[];
+function tag(text,part,point,modes){const el=document.createElement('div');el.className='label';el.textContent=text;host.appendChild(el);labels.push({el,part,point:new T.Vector3(...point),modes});}
+// Label anchors come from the current spindle and collar values (preview frame: axle on X, axis at Y=Z=0;
+// angles turn from +Y toward +Z as in cad/spindle.py; the collar is the mirror image at negative X).
+const sp=data.grip_spec,t=sp.thread,col=sp.collar,k=sp.lock,mid=a=>(a[0]+a[1])/2,ringR=(sp.ring_inner_radius+sp.seat_bore_radius)/2;
+const polar=(x,r,deg)=>[x,r*Math.cos(deg*Math.PI/180),r*Math.sin(deg*Math.PI/180)],strutDeg=360/sp.arm_count;
+tag('Fixed ring — part of the spindle','spindle',[mid(sp.ring_x),ringR,0],['together','apart','spindle']);
+tag('Three arms connect to the shaft','spindle',[mid(sp.drive_arm_x),(sp.shaft_radius+sp.strut_radii[0])/2,0],['spindle']);
+tag('Three short struts join the ring','spindle',polar((sp.drive_arm_x[1]+sp.ring_x[0])/2,mid(sp.strut_radii),strutDeg),['spindle']);
+tag('External thread on the spindle','spindle',[mid(t.thread_x),t.major_radius,0],['apart']);
+tag('Adjustable ring — part of the collar','collar',[-mid(sp.ring_x),-ringR,0],['together','apart','collar']);
+tag('Arms and struts are part of this collar','collar',polar(-mid(col.arm_x),mid(sp.strut_radii),strutDeg),['collar']);
+tag('Threaded center screws onto the spindle','collar',[mid(col.hub_x),col.hub_outer_radius,0],['apart','collar']);
+tag('Collar lock holds both directions','collar',polar(col.hub_x[0]+k.paddle_length_x/2,k.paddle_outer_radius,k.key_angle_deg),['together','collar']);
+tag('Matching threads join the two parts','section-collar',[mid(col.hub_x),t.major_radius,0],['thread']);
+let mode='together';
+const captions={together:'Dark green is the complete spindle, including the fixed ring. Light green is the complete collar, including the adjustable ring. The collar screws onto the spindle between the two rings.',apart:'The collar is shown moved off the spindle. Its ring stays attached to it. The fixed ring stays attached to the spindle.',spindle:'This is ONE printed part. Follow the shaft to the three radial arms, then the three short struts, and finally the ring. The ring cannot slide off: it is printed as part of this solid.',collar:'This is the other ONE printed part. Its ring, arms and threaded center are connected. The complete part screws onto the spindle; the lock keeps it from unscrewing.',thread:'Actual CAD cutaway through the thread. The light-green collar has an internal thread that mates with the dark-green spindle. This threaded connection holds the adjustable ring on the spindle.'};
+if(Object.hasOwn(captions,location.hash.slice(1)))mode=location.hash.slice(1);
+function fit(){
+ const b=new T.Box3();for(const m of Object.values(meshes))if(m.visible)b.expandByObject(m);
+ const center=b.getCenter(new T.Vector3());
+ if(mode==='thread'){const x=mid(col.hub_x);orbit.target.set(x,0,0);camera.position.set(x,0,85);}
+ else{const direction=mode==='spindle'?new T.Vector3(1,.28,.7):mode==='collar'?new T.Vector3(-1,.3,.7):new T.Vector3(.6,.3,1);
+  const extent=b.getSize(new T.Vector3());const size=Math.max(extent.x/Math.min(camera.aspect,1),extent.y,extent.z);
+  orbit.target.copy(center);camera.position.copy(center).add(direction.normalize().multiplyScalar(size*2.15));}
+ orbit.update();
+}
+function update(){
+ for(const [id,m]of Object.entries(meshes)){m.visible=mode==='thread'?id.startsWith('section-'):!id.startsWith('section-')&&(mode==='spindle'?id==='spindle':mode==='collar'?id==='collar':true);m.position.x=mode==='apart'&&id==='collar'?-44:0;}
+ for(const l of labels)l.el.hidden=!l.modes.includes(mode);
+ for(const id of Object.keys(captions))document.querySelector('#'+id).setAttribute('aria-pressed',mode===id);
+ document.querySelector('#caption').textContent=captions[mode];fit();
+}
+for(const id of Object.keys(captions))document.querySelector('#'+id).onclick=()=>{mode=id;history.replaceState(null,'','#'+id);update();};
+new ResizeObserver(()=>{renderer.setSize(host.clientWidth,host.clientHeight);camera.aspect=host.clientWidth/host.clientHeight;camera.updateProjectionMatrix();fit();}).observe(host);
+const point=new T.Vector3();
+function draw(){requestAnimationFrame(draw);orbit.update();renderer.render(scene,camera);
+ for(const l of labels){if(l.el.hidden)continue;point.copy(l.point).add(meshes[l.part].position).project(camera);
+  const half=l.el.offsetWidth/2;l.el.style.left=Math.min(Math.max((point.x+1)/2*host.clientWidth,half+3),host.clientWidth-half-3)+'px';
+  l.el.style.top=Math.min(Math.max((1-point.y)/2*host.clientHeight,25),host.clientHeight-5)+'px';}}
+update();draw();
+</script></body></html>

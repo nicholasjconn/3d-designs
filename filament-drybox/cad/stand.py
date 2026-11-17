@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Drybox spool holder: spoked frame, two removable bearing carriers, printed spindle and threaded collar,
-magnetic disc and clip, plus two 608s.
+"""Drybox spool holder: spoked frame with four anchor branches (glue pockets for the outside X's paired magnets),
+two removable bearing carriers, printed spindle and threaded collar, magnetic disc and clip, plus two 608s.
 
 The spindle and collar (cad/spindle.py) clamp the spool by its bore-end chamfers.
 Bearing-seat and clip insertion require elastic movement; native fit checks do not establish
@@ -143,12 +143,40 @@ def wheel_guard(c):
  return join([rim,*members,brace,wedge,sweep.intersect(legs)])
 
 
+def anchors(c):
+ """Anchor magnet axes (y, z) of the outside X and the matching frame pockets."""
+ m=c['mount'];y=c['bearings']['axis_y'];r=m['anchor_radius']
+ return [(y+r*math.sin(math.radians(a)),r*math.cos(math.radians(a))) for a in m['anchor_angles_deg']]
+
+def strip(p,q,w,x0,x1):
+ """Straight strip of width w in the YZ plane from p=(y,z) to q=(y,z), from x0 to x1."""
+ dy,dz=q[0]-p[0],q[1]-p[1];L=math.hypot(dy,dz);ny,nz=-dz/L*w/2,dy/L*w/2
+ pts=[(p[1]+nz,p[0]+ny),(q[1]+nz,q[0]+ny),(q[1]-nz,q[0]-ny),(p[1]-nz,p[0]-ny)]
+ return extrude(wire_zy(pts),x0,x1-x0)
+
+def anchor_branches(c):
+ """Four integral branches from the drive guard to the anchor pads, front face on the wall-contact plane (pockets cut in frame())."""
+ m=c['mount'];i=m['inside'];y=c['bearings']['axis_y'];x1=datums(c)['wall_contact'];x0=x1-i['depth'];rr=i['root_radius']
+ lower=c['envelopes']['rotor_radius']+i['lower_root_disc_clearance']+rr
+ parts=[]
+ for ay,az in anchors(c):
+  s=1 if az>0 else -1
+  root=(y+i['upper_root_zy'][1],s*i['upper_root_zy'][0]) if ay>y else (y-lower*math.sqrt(.5),s*lower*math.sqrt(.5))
+  parts.append(join([strip(root,(ay,az),m['arm_width'],x0,x1),cylinder_x(rr,x0,i['depth'],*root),cylinder_x(m['anchor_pad_radius'],x0,i['depth'],ay,az)]))
+ return cq.Compound.makeCompound(parts)
+
+def anchor_pockets(c,x_face,inward):
+ """Glue pockets for the anchor magnets, open at x_face; inward=-1 deepens toward -X (frame), +1 toward +X (outside X)."""
+ m=c['mount'];r=c['magnets']['pocket_radius'];d=m['anchor_pocket_depth']
+ return [cylinder_x(r,x_face-d-.1 if inward<0 else x_face-.1,d+.2,ay,az) for ay,az in anchors(c)]
+
 def frame(c):
- """Two continuous A-frames with keyed seats for the removable bearing carriers, and an open U-rim guard."""
+ """Two continuous A-frames with keyed seats for the removable bearing carriers, an open U-rim guard and four anchor branches."""
  d=datums(c);t=c['frame_profile']['thickness']
  hole=rounded_wire(wire_zy(c['frame_profile']['window_vertices_zy']),c['frame_profile']['window_corner_radius'])
  left=extrude(a_outline(c),-d['frame_outer'],t,[hole]);right=extrude(a_outline(c),d['frame_inner'],t,[hole])
- body=join([make_base(c),left,right,*expansion_pilot_pads(c),wheel_guard(c)])
+ body=join([make_base(c),left,right,*expansion_pilot_pads(c),wheel_guard(c),anchor_branches(c)])
+ for pocket in anchor_pockets(c,d['wall_contact'],-1):body=body.cut(pocket)
  p=c['base']['expansion_pilots']
  for side in [-1,1]:body=body.cut(cylinder_x(p['diameter']/2,d['pilot_entry_x']-.1,p['depth']+.1,d['pilot_axis_y'],side*p['center_z']))
  # Keyed seats for the removable carriers: a vertical slot down to the carrier's flat bottom, with the two guide
@@ -157,7 +185,7 @@ def frame(c):
  seat=[box(x0,x1,k['floor_y'],top,-zs,zs)]+[box(xa,xb,k['floor_y'],y+c['bearings']['carrier_radius'],z0,z1) for z0,z1 in [(-zg,-zs+.01),(zs-.01,zg)] for xa,xb in [(x0,k['tongue_x'][0]),(k['tongue_x'][1],x1)]]
  for side in [-1,1]:
   for cut in seat:body=body.cut(cut if side>0 else cut.mirror('YZ'))
- return one(body.clean(),'screwless frame with removable-carrier seats')
+ return one(body.clean(),'screwless frame with removable-carrier seats and anchor branches')
 
 
 def drive_rotor(c):
@@ -303,6 +331,20 @@ def verify(c,parts):
  wrong=overlap(parts['spindle'],parts['collar'].translate((t['pitch']/2,0,0)))
  checks['thread']['half_pitch_unrotated_overlap_mm3']=round(wrong,2)
  if wrong<1:checks['failures'].append('Thread check is not discriminating: a half-pitch misphase does not collide')
+ # Anchor branches: clear the turning disc, keep out of the disc's straight-up lift corridor, glue pockets hold a magnet flush.
+ mt=c['mount'];br=anchor_branches(c);x1=v['wall_contact'];hw=mt['inside']['lift_corridor_half_width']
+ disc_gap=min(min_gap(parts['drive-rotor'].rotate((0,y,0),(1,y,0),angle),br) for angle in range(0,360,30))
+ corridor=overlap(br,box(x1-mt['inside']['depth']-1,x1+1,y,y+200,-hw,hw))
+ fits=[]
+ for ay,az in anchors(c):
+  mag=cylinder_x(m['diameter']/2,x1-m['thickness'],m['thickness'],ay,az)
+  fits.append(round(overlap(mag,parts['fixed-stand']),5))
+ checks['anchor_branches']={'disc_min_gap_mm':round(disc_gap,3),'required_disc_gap_mm':mt['inside']['lower_root_disc_clearance'],'lift_corridor_overlap_mm3':round(corridor,5),
+  'lift_corridor':f'|Z| < {hw} above Y{y:g}, X {x1-mt["inside"]["depth"]:g}..{x1:g}','pocket_magnet_overlap_mm3':fits,'magnet_face_x':x1,'pocket_depth':mt['anchor_pocket_depth'],
+  'anchor_centers_yz':[[round(a,3),round(b,3)] for a,b in anchors(c)],'frame_top_y':round(bounds(parts['fixed-stand'])['y'][1],3)}
+ if disc_gap<mt['inside']['lower_root_disc_clearance']-1e-6:checks['failures'].append('Anchor branch closer to the turning disc than lower_root_disc_clearance')
+ if corridor>1e-6:checks['failures'].append('Anchor branch enters the disc lift corridor')
+ if max(fits)>1e-5 or mt['anchor_pocket_depth']<m['thickness']:checks['failures'].append('Anchor magnet does not fit its glue pocket flush with the wall-contact plane')
  pocket_depth=d['front_x']-m['front_cover']-m['cup_back_x']
  checks['magnet_stack_mm']={'pocket_depth':pocket_depth,'magnet_thickness':m['thickness'],'front_cover':m['front_cover']}
  if pocket_depth<m['thickness']:checks['failures'].append('Magnet deeper than pocket')

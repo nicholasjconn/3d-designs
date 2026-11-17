@@ -2,15 +2,15 @@
   "outside_diameter_mm": 120.0,
   "rim_radial_width_mm": 3.5,
   "structural_thickness_mm": 7.0,
-  "structural_front_offset_mm": 0.0,
   "spoke_count": 3,
   "spoke_width_mm": 20.0,
   "spoke_end_radius_mm": 59.0,
-  "hub_radius_mm": 6.0,
   "cup_back_mm": 4.7,
   "knob_center_radius_mm": 54.0,
   "knob_radius_mm": 6.0,
   "knob_front_mm": 3.3,
-  "knob_length_mm": 17.15,
-  "magnet_source": "stand.json \"magnets\" (shared with the disc): count, pitch radius, magnet size, pocket and cup radii and front cover."
+  "knob_length_mm": 13.15,
+  "magnet_source": "stand.json \"magnets\" (shared with the disc): count, pitch radius, magnet size, pocket and cup radii and front cover.",
+  "knob_note": "Knob shortened from 17.15 mm (baseline commit 7f54693) by the 4 mm the wheel moved out for the X crossing and running gap, so its tip stays at the full-assembly endpoint X67.15 at a nominal 2 mm wall. Exposed grip beyond the wheel plate: 9.45 mm (was 13.45).",
+  "hub_source": "stand.json \"mount\": 608 pocket, lip, retainer groove, hub radius and the axle-clip notch."
 }

@@ -59,6 +59,14 @@ remove nubs from the thrust-sleeve face. No support enters the thread, lock
 slots, female thread, spring pocket or key hole. These are estimates, not
 weighed spool consumption, and no fabrication is approved by this preparation.
 
+## Not ready to print: outside drive and changed frame
+
+The 17 November 2026 outside drive (fixed X, redesigned handwheel, retainer ring,
+axle clip) and the gray frame with its four anchor branches are current native
+designs only: not sliced, not printed, not released, with no approved settings.
+The spindle, collar, disc, clip and carriers are unchanged by it. Preparing these
+parts needs a separate print-preparation pass and your approval of the settings.
+
 ## Superseded: four-part holder fit-print proposal
 
 > **17 November 2026:** the frame and green core on this four-part plate are superseded by the spoked frame, removable carriers, spindle and collar in [README](README.md#holder). The blue disc and retaining clip are unchanged. The spindle and collar are now sliced (see the current proposal above); the current frame and carriers have not been sliced.

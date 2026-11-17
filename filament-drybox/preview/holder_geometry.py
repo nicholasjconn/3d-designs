@@ -3,7 +3,7 @@
 
 Inputs: a `cad/stand.py` build directory (stand-display.json, stand-build.json and,
 when present, the `cad/spool_fit.py` result spool-fit.json); optionally the
-`cad/drybox.py` output (wheel, outlet and filament clip, inventory and system checks),
+`cad/drybox.py` output (outside drive, outlet and filament clip, inventory and system checks),
 a `cad/spindle_print.py` output, and a directory holding Bambu's published printable
 spool STLs as a transparent fit reference. The output directory receives geometry.json,
 the authored holder/ viewer and the pinned Three.js runtime from preview/node_modules
@@ -52,6 +52,28 @@ def lock_labels(build):
             {'label':f"{k['slot_count']} crest slots",'at':at(4,k['key_angle_deg']+4*step)}]
 
 
+def axial(sc,dim,axis_y):
+    """Dimension lines and labels for the axial section view (absolute X, Y; Z=0 plane), from the system checks."""
+    L=sc['axial_limits_mm'];st=sc['outside_drive']['stations_mm'];wall=sc['anchor_pairs']['wall_mm'];wi=dim['right_wall_x'];wo=wi+wall
+    mc=sc['magnet_coupling'];gap=mc['magnet_face_to_face_gap_mm'][f'{wall:g} mm wall']
+    span=lambda k:L[k]['measured']
+    fmt=lambda v:f"{v[0]:g}…{v[1]:g} = {round(v[1]-v[0],2):g} mm"
+    dims=[{'label':f"Base {span('base')[0]:g} mm (× {span('base')[1]:g})",'from':[-span('base')[0]/2,span('base')[0]/2],'y':-8},
+          {'label':f"Holder {fmt(span('holder'))}",'from':span('holder'),'y':-26},
+          {'label':f"Spindle {fmt(span('spindle'))}",'from':span('spindle'),'y':-44},
+          {'label':f"Full, {wall:g} mm wall: {fmt(span('full_nominal_wall'))}",'from':span('full_nominal_wall'),'y':-62}]
+    r=lambda x:wo+x
+    # Drive labels sit right of the knob tip (side) with a leader to the feature; the section stays unobscured.
+    side=L['full_nominal_wall']['measured'][1]+8;mid=lambda a:(a[0]+a[1])/2
+    labels=[{'label':f"Wall {wall:g} mm (nominal, unmeasured)",'at':[wi+wall/2,axis_y+80,0]},
+            {'label':f"Magnet gap {gap:g} mm (was {mc['baseline_gap_mm_at_nominal_wall']:g}); torque not evaluated",'at':[wo,axis_y+30,0],'to':[side,axis_y+60,0],'warn':True},
+            {'label':'Lip + retainer ring: 608 outer ring','at':[r(st['lip'][1]),axis_y+10.5,0],'to':[side,axis_y+34,0]},
+            {'label':'X shoulder + axle clip: inner ring','at':[r(mid(st['clip_groove'])),axis_y-4.5,0],'to':[side,axis_y+8,0]},
+            {'label':'Fixed X 3 mm; 1 mm running gap','at':[r(1.5),axis_y-14,0],'to':[side,axis_y-18,0]},
+            {'label':'Anchor pair: frame / X pocket','at':[wo,axis_y-55,-55],'to':[side,axis_y-44,-55]}]
+    return {'dims':dims,'labels':labels,'wall':[wi,wo]}
+
+
 def print_plate(prep,job,limit=60000):
     """Oriented print meshes on the bed plus actual support roads (evenly sampled) from cad/spindle_print.py output."""
     parts=json.loads((prep/'plate-parts.json').read_text())
@@ -80,7 +102,7 @@ def main():
     ap.add_argument('--output',type=Path,required=True)
     ap.add_argument('--print-prep',type=Path,help='cad/spindle_print.py output directory (optional print-plate view)')
     ap.add_argument('--print-job',default='critical-tree-slim',help='slicing variant to show from --print-prep')
-    ap.add_argument('--system',type=Path,help='cad/drybox.py output directory (wheel, outlet, filament clip, inventory)')
+    ap.add_argument('--system',type=Path,help='cad/drybox.py output directory (outside drive, outlet, filament clip, inventory)')
     a=ap.parse_args();out=a.output.resolve();out.mkdir(parents=True,exist_ok=True)
     display=json.loads((a.native/'stand-display.json').read_text())
     build=json.loads((a.native/'stand-build.json').read_text())
@@ -107,13 +129,18 @@ def main():
     checks={'lock':k['lock'],'rotating_min_gap_mm':k['rotating_min_gap_mm'],'axial_float_mm':k['axial_float_mm'],'collar_travel_mm':k['collar_travel_mm'],'thread':k['thread'],
             'volume_mm3':{n:k['parts'][n]['volume_mm3'] for n in ['spindle','collar']},
             'spool_fit':json.loads(fit.read_text()) if fit_ok else None}
-    payload={'axis_y':axis_y,'parts':parts,'dimensions_mm':display['dimensions_mm'],'annotations':annotations(build),'lock_labels':lock_labels(build),'checks':checks}
+    payload={'axis_y':axis_y,'parts':parts,'dimensions_mm':display['dimensions_mm'],'annotations':annotations(build),'lock_labels':lock_labels(build),'checks':checks,
+            'grip_spec':build['config']['spindle']}  # grip.html places its labels from these spindle and collar values
     if a.system:
         system=json.loads((a.system/'system-display.json').read_text())
         if system.get('schema')!='drybox-system-display-v1':raise ValueError('Unexpected system-display schema; rebuild with cad/drybox.py')
-        parts+=[part(n,m['vertices'],m['triangles'],0) for n,m in system['parts'].items()]
+        # Outside-drive parts that turn (wheel set, and the disc's magnets) are stored about the bearing axis like the holder's rotating parts.
+        turning={'drive-wheel','drive-hub-retainer','drive-608-outer','drive-magnets-wheel','drive-magnets-disc'}
+        parts+=[part(n,m['vertices'],m['triangles'],axis_y if n in turning else 0) for n,m in system['parts'].items()]
         payload['parts']=parts
-        payload['system']={'inventory':manifest['inventory'],'checks':json.loads((a.system/'system-checks.json').read_text()),
+        sc=json.loads((a.system/'system-checks.json').read_text())
+        payload['axial']=axial(sc,display['dimensions_mm'],axis_y)
+        payload['system']={'inventory':manifest['inventory'],'checks':sc,
                            'git_head':manifest['git_head'],'working_tree_changes':manifest['working_tree_changes_under_filament_drybox']}
     if a.print_prep:
         # The plate must have been prepared from geometry identical to this holder: its STEP inputs are the hash-checked
@@ -142,7 +169,7 @@ def main():
                 payload['print']['downloads'].pop(key);target.unlink(missing_ok=True)
                 payload['print'].setdefault('withheld',[]).append(f'{Path(f).name}: changed after preparation (file modified after the preparation manifest), so it is not offered')
     (out/'geometry.json').write_text(json.dumps(payload,separators=(',',':')))
-    for f in ['index.html','viewer.js']:shutil.copy2(HERE/'holder'/f,out/f)
+    for f in ['index.html','viewer.js','grip.html']:shutil.copy2(HERE/'holder'/f,out/f)
     three=HERE/'node_modules/three'
     if json.loads((three/'package.json').read_text())['version']!=json.loads((HERE/'package.json').read_text())['dependencies']['three']:
         raise ValueError('preview/node_modules/three does not match preview/package.json; run npm ci in preview/')
