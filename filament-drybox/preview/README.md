@@ -18,13 +18,10 @@ The generated site directory holds everything it needs: `geometry.json`, the pag
 
 The generated payloads are derived; the CAD in `cad/` governs the parts.
 
-## Other pages
-
-`clip/` is a standalone page for the current two-body clip. It expects `geometry.json` from `cad/clip.py` plus a `context.json` whose producer is not maintained here. The whole-kit view shows the same clip, inside the outlet cap, built from `cad/clip.py`.
-
 ## Superseded pages (not maintained)
 
 These pages are kept for history and are not current print inputs. Their generated payloads came from producers that are no longer maintained, so they are not reproducible from this checkout.
 
 - `simple-axle/`, with `prepare_print_view.py`: the four-part holder with the green core.
 - `outlet-tail/`: the earlier outlet and C-leaf clip page. It expects `native-geometry.json`.
+- `clip/`: the earlier two-body clip preview, with matching CAD at `68cfb8a`. The current barrel stop is described in [OUTLET-PRINTING.md](../OUTLET-PRINTING.md#barrel-stop-fit-print).

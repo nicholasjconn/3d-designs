@@ -86,7 +86,7 @@
   ],
   "unchanged_subsystems": {
     "outlet": "outlet.py/outlet.json; body, locknut and storage cap reported working",
-    "filament-clip": "clip.py/clip.json; revised flat-jaw fit prototype"
+    "filament-stop": "clip.py/clip.json; one-piece barrel fit prototype"
   },
   "assumptions": [
     "Container wall2 mm, not measured",

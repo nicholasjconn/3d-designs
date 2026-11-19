@@ -19,7 +19,7 @@ inventory in `cad/drybox.json`. Generated files belong in ignored `build/`.
 | Wall fitting | `cad/wall_fitting.py` | Same shape; included on full nine-part plate |
 | Sealing cap | `cad/sealing_cap.py` | Same shape; included on full nine-part plate |
 | Filament outlet body, locknut, storage cap | `cad/outlet.py`, `outlet.json` | Reported working; reuse |
-| Filament clip | `cad/clip.py`, `clip.json` | Revised flat-jaw fit prototype |
+| Filament barrel stop | `cad/clip.py`, `clip.json` | One barrel for a fit print |
 | Desiccant box and refill cap | `cad/desiccant_box.py`, `cad/desiccant_cap.py` | Fit-test one pair |
 | Refill funnel | `cad/desiccant_funnel.py` | Optional, print one for both boxes |
 
@@ -93,7 +93,7 @@ The first command rebuilds every current part from authored geometry, validates
 single solids and checks rotation, float, lift-out, crank extraction, thread
 run-in and positive stops. It writes source/output identities and assumptions.
 There are no prior STEP or agent-workspace prerequisites. Add `--with-outlet`
-or `--with-clip` to include the outlet or clip.
+or `--with-clip` to include the outlet or barrel stop.
 
 The local lip/flange cantilever calculation is a limited hand-load sensitivity
 screen. It is not FE, a material allowable or physical strength qualification;

@@ -1,25 +1,12 @@
 {
   "units": "mm",
-  "status": "Flat-jaw clip prototype for a single fit print. Physical grip, latch life and cap fit remain unverified.",
-  "axial_height_mm": 6.0,
-  "filament_diameter_mm": 1.75,
-  "seat_radius_mm": 1.0,
-  "unloaded_grip_gap_mm": 1.43,
-  "hinge_x_mm": -7.3,
-  "pin_radius_mm": 1.0,
-  "pin_radial_clearance_mm": 0.25,
-  "fixed_knuckle_radius_mm": 2.5,
-  "moving_knuckle_radius_mm": 1.45,
-  "end_knuckle_height_mm": 1.4,
-  "axial_hinge_clearance_mm": 0.2,
-  "latch_outer_radius_mm": 7.0,
-  "latch_thickness_mm": 0.7,
-  "opening_angle_deg": 65.0,
-  "material": "Bambu PLA Basic first prototype; strength, life and grip unqualified",
-  "mechanism": "Two captured printed bodies. Flat jaw faces form the closing stop and rounded grooves grip the filament. Only the outside latch intentionally flexes.",
-  "printing_status": "Slice both solids together in the 65-degree open pose with their common Z0 plane on the bed. The checked H2D slice produced no supports.",
-  "moving_jaw_x_mm": [
-    -4.45,
-    3.3
-  ]
+  "barrel_length_mm": 16.0,
+  "barrel_diameter_mm": 5.8,
+  "bore_diameter_mm": 1.9,
+  "wing_span_mm": 14.0,
+  "wing_depth_mm": 5.2,
+  "wing_height_mm": 2.6,
+  "wing_corner_radius_mm": 1.2,
+  "entry_radius_mm": 0.3,
+  "exit_radius_mm": 0.55
 }

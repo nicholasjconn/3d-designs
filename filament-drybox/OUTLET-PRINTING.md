@@ -1,8 +1,8 @@
 # Filament outlet fit prototype
 
 Prepare one set before making four copies. The complete assembly has four
-printed parts: bulkhead body, inside locknut, storage cap and side-loading
-filament clip. It uses one HANGLIFE fitting, two 18 mm ID × 2 mm NBR O-rings,
+printed parts: bulkhead body, inside locknut, storage cap and filament
+barrel stop. It uses one HANGLIFE fitting, two 18 mm ID × 2 mm NBR O-rings,
 and one continuous 4 mm OD × 2.5 mm ID PTFE lead. All printed parts use the
 owner-selected Bambu PLA Basic. The owner reports that the first outlet set
 was started and its clip has failed to stay closed; see the print record below.
@@ -18,18 +18,37 @@ at the shoulder; forcing the metal fitting farther can damage the PLA neck.
 
 The inside nut compresses the wall O-ring beneath the outside flange. The cap
 seals on the second O-ring in the smooth neck above its retention thread.
-The cap encloses the fitting, clip and a nominal 20 mm parked filament tail.
-Listed fitting dimensions give 3 mm of crown clearance. Try the actual parts
+The cap encloses the fitting, barrel stop and bent filament tip. The modeled
+bend leaves 2.1 mm below the cap crown. Try the actual parts
 before drilling or installing an outlet in a container.
 
-For printing filament, remove the cap and clip. Prethread the detached PTFE lead,
+For printing filament, remove the cap and barrel stop as described below.
+Prethread the detached PTFE lead,
 then slide it along the filament into the purchased fitting and through the
 outlet. The nominal insertion mark is 54 mm from the lead's inlet end; verify
 that the tube projects inside the box. Press the release collar to remove the
-whole lead for storage, hold the filament, rewind to a 20 mm tail, attach the
-clip, then fit the cap. The connected printing path is not claimed hermetic.
+whole lead for storage. Leave enough bare filament to thread the stop and bend
+the tip, then fit the cap. The connected printing path is not claimed hermetic.
 
-## Flat-jaw clip fit print
+## Barrel stop fit print
+
+Print one stop upright with the two wings on the bed and the round 1.9 mm
+bore vertical. The 16 mm barrel sits on the push-to-release collar, with the
+wings spanning 14 mm. Thread the bare 1.75 mm filament and bend it sideways
+just beyond the rounded exit. The bend catches the barrel during rewind.
+To reload, pull out a little slack, hold the straight strand, snip below the
+bend and slide the stop off before threading the PTFE lead.
+
+The checked plate uses Bambu PLA Basic, H2D right 0.4 mm, Textured PEI and
+0.20 mm Standard with critical-only Tree Slim. The slice generates no support,
+brim or tower. The estimate is 10 min 35 s and about 0.57 g of useful PLA.
+Verify that the strand threads by hand, the bent tip catches under a pull,
+and the cap screws on without touching the parked tip.
+
+## Superseded flat-jaw clip fit print
+
+The owner reported a large gap and weak grip with the 19 November flat-jaw
+clip. Its source is retained at `68cfb8a`.
 
 Print one clip and reuse the outlet body, locknut and cap. In the new design,
 the 6 mm-deep jaws close against each other on flat faces. The rounded grooves
@@ -54,7 +73,7 @@ Grip force and the effects of cycling and sustained load remain unverified.
 
 The owner asked for a purpose-built clip after reviewing the trimmed
 [Mc2.project3D reference](https://makerworld.com/en/models/797139-clip-filament-click-print-in-place#profileId-736443).
-`cad/clip.py` and `cad/clip.json` now define independently authored native CAD,
+The clip source at `7f54693` defined independently authored native CAD,
 using a captured pin hinge and a positive click latch. No third-party mesh is
 loaded or trimmed by this generator. The downloaded reference and personal-use
 trim remain local only; they are superseded as the current design.
@@ -191,17 +210,14 @@ From the repository root, with the CadQuery dependency installed:
 
 ```sh
 python filament-drybox/cad/outlet.py
-python filament-drybox/cad/clip.py --output build/filament-drybox/clip-own
+python filament-drybox/cad/clip.py --output build/filament-drybox/barrel-stop
 ```
 
 The outlet generator writes native STEP references and upright fabrication STLs
-to `build/filament-drybox/outlet/`. The clip generator writes valid native
-part and open/closed assembly STEP references, display geometry and a receipt.
+to `build/filament-drybox/outlet/`. The stop generator writes
+`barrel-stop.step` in upright print orientation and checks the cap envelope.
 Both accept `--config` and `--output`; the outlet also accepts `--parts body nut
-cap` or a subset. The clip loader checks its axial height and filament diameter
-against `cad/outlet.json`. The authored clip viewer is in `preview/clip/` and
-uses generated geometry plus the existing local Three.js and outlet context
-assets. This design-stage export does not create or authorize a print job.
+cap` or a subset.
 
 The nominal native assembly fits and screw motions are geometric checks.
 Printed thread fit, received fitting passage and retention, O-ring fit, layer
