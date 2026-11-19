@@ -1,7 +1,7 @@
 """Original drybox clip: captured pin hinge, rigid upper jaw and compliant click latch.
 
 Independently authored CadQuery geometry. No downloaded mesh is loaded or
-transformed. This is a design prototype; physical grip and printability are
+transformed. This is a fit prototype; physical grip and hinge function are
 unqualified. All dimensions are millimetres. See OUTLET-PRINTING.md.
 """
 from pathlib import Path
@@ -47,35 +47,40 @@ def build(c):
         w=cq.Workplane('XY').moveTo(*pt(ro,a0)).threePointArc(pt(ro,mid),pt(ro,a1)).lineTo(*pt(ri,a1)).threePointArc(pt(ri,mid),pt(ri,a0)).close()
         return w.extrude(h).val().translate((0,0,z))
     # Broad lower jaw, two end knuckles and a lower spine are a single solid.
-    body=fuse(rect(-4.65,4.65,-3.6,-.1,r=.45),rect(-7.3,-3.8,-3.0,-2.05,r=.3),ring(0,knuckle),ring(H-knuckle,H),sector(HUB+.25,RING,180,360,knuckle,H-2*knuckle))
+    body=fuse(rect(-4.65,4.65,-4.2,-.1,r=.45),rect(-7.3,-3.8,-3.0,-2.05,r=.3),ring(0,knuckle),ring(H-knuckle,H),sector(HUB+.25,RING,180,360,knuckle,H-2*knuckle))
     body=body.cut(cyl(0,0,c["seat_radius_mm"],-.1,H+.1)).clean()
-    body=body.cut(rect(4.1,7,-4,-2.55,h=H)).clean()
-    # Closing stop next to the hinge; catch has a flat retaining underside.
-    stop=rect(-4.5,-3.8,-.8,.15,r=.12)
-    catch=prism([(4.1,-.6),(4.55,-.6),(5.35,-1.85),(5.35,-2.55),(4.1,-2.55)],r=.06)
-    body=fuse(body,stop,catch)
+    body=body.cut(rect(3.82,7,-4.5,-2.55,h=H)).clean()
+    # Catch has a flat retaining underside. The jaw faces set the closing stop.
+    catch=prism([(3.9,-.6),(4.55,-.6),(5.35,-1.85),(5.35,-2.55),(3.9,-2.55)],r=.06)
+    body = fuse(body, catch)
     # One smooth upper frame joins the rigid jaw to the outside latch root.
     frame=prism([(-4.65,.15),(-4.65,2.0),(-3.8,3.6),(.3,6.9),(1.8,7.1),(1.8,5.75),(.2,4.85),(-2.8,2.8),(-3.7,1.8),(-3.7,.15)],r=.2)
 
-    # The upper jaw is solid all the way to the hinge frame. Only the long
-    # outside latch is intended to flex; there is no short gripping spring.
-    jaw=rect(*c["moving_jaw_x_mm"],.25,1.8,r=.35).cut(
-        cyl(0,c["unloaded_grip_gap_mm"]-2*c["seat_radius_mm"],
-            c["seat_radius_mm"],-.1,H+.1)).clean()
+    # A single flat face closes against the fixed jaw. Only the rounded
+    # filament groove interrupts the grip surface.
+    jaw = rect(*c["moving_jaw_x_mm"], -.10, 1.8, r=.12)
+    jaw = jaw.cut(cyl(0, c["unloaded_grip_gap_mm"] - 2 * c["seat_radius_mm"],
+                      c["seat_radius_mm"], -.1, H+.1)).clean()
+    # Brace the gripping bar to the rigid diagonal frame, with clearance
+    # between this web and the separate free span of the curved latch.
+    web = prism([(-4.25,1.30),(3.23,1.30),(3.23,4.10),(2.12,5.32),
+                 (0.55,5.41),(-3.72,2.53)],r=.16)
     # Middle knuckle stem; full-height frame remains outside the fixed end rings.
     stem=rect(PX,-4.4,.1,1.15,z=knuckle+axial_gap,h=H-2*(knuckle+axial_gap),r=.15)
     hub=cyl(PX,0,HUB,knuckle+axial_gap,H-knuckle-axial_gap);pin=cyl(PX,0,PIN)
     # A curved latch spring gains length within the cap envelope. Its positive
-    # hook has 0.10 mm bearing clearance against the fixed catch.
+    # hook has 0.10 mm nominal clearance against the catch at the empty stop.
+    # The full-height latch shares the first-layer plane with the gate.
     def latch_arc():
         cx,cy=.8,.1;ro=c["latch_outer_radius_mm"];ri=ro-c["latch_thickness_mm"];rt=math.sqrt(.5)
         return cq.Workplane('XY').moveTo(cx+ro,cy).threePointArc((cx+ro*rt,cy+ro*rt),(cx,cy+ro)).lineTo(cx,cy+ri).threePointArc((cx+ri*rt,cy+ri*rt),(cx+ri,cy)).close().extrude(H).val()
     arm=fuse(latch_arc(),rect(.8+c["latch_outer_radius_mm"]-c["latch_thickness_mm"],.8+c["latch_outer_radius_mm"],-3.45,.3,r=.1))
     # A blunt lip has full 1 mm backing beneath its retaining flat. The 0.7 mm
     # nose and R0.15 corners replace the fragile pointed triangular underside.
-    hook=prism([(4.2,-2.65),(8.25,-2.65),(8.6,-2.95),(8.6,-3.4),(8.25,-3.65),(4.2,-3.65)],r=.15)
+    hook=prism([(3.98,-2.65),(8.25,-2.65),(8.6,-2.95),(8.6,-3.4),(8.25,-3.65),(3.98,-3.65)],r=.15)
 
-    gate=fuse(frame,jaw,stem,hub,pin,arm,hook)
+    rigid = fuse(frame,jaw,web,stem,hub,pin)
+    gate = fuse(rigid,arm,hook)
     # Datum is the straight nominal filament, seated against the rigid cradle.
     dy=c['seat_radius_mm']-c['filament_diameter_mm']/2
     return {'fixed':body.translate((0,dy,0)), 'gate':gate.translate((0,dy,0))}
@@ -102,7 +107,7 @@ def export(c,output):
         payload.append({'id':name,'name':{'fixed':'Fixed jaw and captured hinge','gate':'Rigid moving jaw and flexible latch'}[name],
                         'color':{'fixed':'#91b9d9','gate':'#4283bc'}[name],'meshes':meshes})
     (output/'geometry.json').write_text(json.dumps({'parts':payload},separators=(',',':')))
-    # Native CAD references only at this design stage; no sliced job is produced.
+    # The open assembly preserves the two solids at their print-in-place spacing.
     for pose in ['closed','open']:
         cq.exporters.export(cq.Compound.makeCompound(list(poses[pose].values())),str(output/('clip-'+pose+'.step')))
     report={'status':c['status'],'valid_solids':{n:p.isValid() for n,p in parts.items()},

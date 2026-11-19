@@ -159,7 +159,7 @@
     "exposed_tail_mm": 20,
     "clamp_status": "Separate canonical clip.py/clip.json define the native open printing and closed storage clip. Use its checks for the actual closed radial envelope; grip and cycling remain physically unqualified.",
     "clip_center_z_mm": 38.5,
-    "clip_height_mm": 5.0
+    "clip_height_mm": 6.0
   },
   "provenance": {
     "printed_geometry": "Proposed concept dimensions supplied by parent, 2026-11-14",

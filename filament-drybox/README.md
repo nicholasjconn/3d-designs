@@ -19,7 +19,7 @@ inventory in `cad/drybox.json`. Generated files belong in ignored `build/`.
 | Wall fitting | `cad/wall_fitting.py` | Same shape; included on full nine-part plate |
 | Sealing cap | `cad/sealing_cap.py` | Same shape; included on full nine-part plate |
 | Filament outlet body, locknut, storage cap | `cad/outlet.py`, `outlet.json` | Reported working; reuse |
-| Filament clip | `cad/clip.py`, `clip.json` | Deferred by owner |
+| Filament clip | `cad/clip.py`, `clip.json` | Revised flat-jaw fit prototype |
 | Desiccant box and refill cap | `cad/desiccant_box.py`, `cad/desiccant_cap.py` | Fit-test one pair |
 | Refill funnel | `cad/desiccant_funnel.py` | Optional, print one for both boxes |
 
@@ -93,7 +93,7 @@ The first command rebuilds every current part from authored geometry, validates
 single solids and checks rotation, float, lift-out, crank extraction, thread
 run-in and positive stops. It writes source/output identities and assumptions.
 There are no prior STEP or agent-workspace prerequisites. Add `--with-outlet`
-or `--with-clip` for those unchanged producers.
+or `--with-clip` to include the outlet or clip.
 
 The local lip/flange cantilever calculation is a limited hand-load sensitivity
 screen. It is not FE, a material allowable or physical strength qualification;
@@ -112,5 +112,5 @@ They are not current geometry or print entry points. Some unchanged generic
 mesh/slicing helpers in `stand_print.py`, `stand_prepare.py` and
 `spindle_print.py` are reused by `direct_prepare.py`; their earlier part recipes
 are not used. Earlier center-desiccant and magnetic-drive variants are not
-current fabrication inputs. Existing outlet instructions remain in
-[OUTLET-PRINTING.md](OUTLET-PRINTING.md); the clip is deferred.
+current fabrication inputs. See [OUTLET-PRINTING.md](OUTLET-PRINTING.md)
+for the outlet and the current clip fit print.

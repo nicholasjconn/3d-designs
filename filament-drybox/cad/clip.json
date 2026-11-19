@@ -1,10 +1,10 @@
 {
   "units": "mm",
-  "status": "Rigid-jaw design prototype; not sliced or physically qualified. The short-neck gripping spring is superseded following snap/stability concerns.",
-  "axial_height_mm": 5.0,
+  "status": "Flat-jaw clip prototype for a single fit print. Physical grip, latch life and cap fit remain unverified.",
+  "axial_height_mm": 6.0,
   "filament_diameter_mm": 1.75,
   "seat_radius_mm": 1.0,
-  "unloaded_grip_gap_mm": 1.5,
+  "unloaded_grip_gap_mm": 1.43,
   "hinge_x_mm": -7.3,
   "pin_radius_mm": 1.0,
   "pin_radial_clearance_mm": 0.25,
@@ -16,8 +16,8 @@
   "latch_thickness_mm": 0.7,
   "opening_angle_deg": 65.0,
   "material": "Bambu PLA Basic first prototype; strength, life and grip unqualified",
-  "mechanism": "Two captured printed bodies; rigid fixed cradle and broad rigid moving jaw. Only the long outside latch intentionally flexes. No short gripping spring, separate pin or bought hardware.",
-  "printing_status": "Open pose is a proposed orientation only; no support or slicer qualification yet.",
+  "mechanism": "Two captured printed bodies. Flat jaw faces form the closing stop and rounded grooves grip the filament. Only the outside latch intentionally flexes.",
+  "printing_status": "Slice both solids together in the 65-degree open pose with their common Z0 plane on the bed. The checked H2D slice produced no supports.",
   "moving_jaw_x_mm": [
     -4.45,
     3.3

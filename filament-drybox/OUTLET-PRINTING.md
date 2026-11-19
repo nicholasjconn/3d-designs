@@ -29,7 +29,28 @@ that the tube projects inside the box. Press the release collar to remove the
 whole lead for storage, hold the filament, rewind to a 20 mm tail, attach the
 clip, then fit the cap. The connected printing path is not claimed hermetic.
 
-## Current original clip design — 15 November 2026
+## Flat-jaw clip fit print
+
+Print one clip and reuse the outlet body, locknut and cap. In the new design,
+the 6 mm-deep jaws close against each other on flat faces. The rounded grooves
+form a 1.43 mm nominal opening at the empty stop. A solid web braces the moving
+jaw to its frame, and the curved spring's hook reaches 0.22 mm farther under
+the catch. On 1.75 mm filament the jaws open about 2.5 degrees and the spring
+flexes to engage the catch. The outlet still locates the clip at Z38.5.
+
+Use the two solids together from `clip-open.step`, with both at their native
+Z0 and the gate 65 degrees open. The checked plate uses Bambu PLA Basic,
+H2D right 0.4 mm, factory 0.20 mm Standard and Textured PEI. Tree Slim support
+is enabled for critical regions only and produces no supports on this clip.
+The offline estimate is 8 min 48 s total, with approximately 0.63 g of PLA
+in the clip. No brim or tower was generated.
+
+After cooling, free the hinge by hand. Check that the latch catches on 1.75 mm
+filament, the filament stays put when pulled, the latch releases by hand, and
+the loaded clip clears the cap. This test also checks for filament damage.
+Grip force and the effects of cycling and sustained load remain unverified.
+
+## Superseded rigid-jaw clip design — 15 November 2026
 
 The owner asked for a purpose-built clip after reviewing the trimmed
 [Mc2.project3D reference](https://makerworld.com/en/models/797139-clip-filament-click-print-in-place#profileId-736443).
@@ -174,7 +195,7 @@ python filament-drybox/cad/clip.py --output build/filament-drybox/clip-own
 ```
 
 The outlet generator writes native STEP references and upright fabrication STLs
-to `build/filament-drybox/outlet/`. The current clip generator writes valid native
+to `build/filament-drybox/outlet/`. The clip generator writes valid native
 part and open/closed assembly STEP references, display geometry and a receipt.
 Both accept `--config` and `--output`; the outlet also accepts `--parts body nut
 cap` or a subset. The clip loader checks its axial height and filament diameter
