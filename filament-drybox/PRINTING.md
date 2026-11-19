@@ -1,270 +1,146 @@
-# Holder print preparation
+# Current direct-drive fit print
 
-## Prepared: seven-part holder first-fit plate (17 November 2026)
+The current plate is built from `cad/drybox.py` and `direct_drive.json`.
+Magnetic-drive plates and earlier axle/stand projects are superseded.
+This is a physical fit-test candidate, not strength or sealing qualification.
+No printer job is sent by the build or preparation commands.
 
-The updated spindle, collar, blue disc, retaining clip, gray frame and two
-bearing carriers fit on one H2D plate. This replaces the old spindle/collar and
-disc/clip plates. The broad flat stops use the measured 59.6 mm hub width; the
-frame gives 70 mm working clearance for the measured 67.8 mm flange width.
-The square drive and matching socket, 0.5 mm tip chamfer and clip snap must be
-printed together. No print has been sent.
-
-| Part | Orientation | Useful part, g |
-| --- | --- | ---: |
-| Gray frame | Base down | 54.58 |
-| Blue disc | Closed magnet cover down, pockets up | 14.22 |
-| Spindle | Drive tip down, axle vertical | 10.55 |
-| Collar | Outer stop-ring face down | 7.52 |
-| Left bearing carrier | Outer face down | 1.57 |
-| Right bearing carrier | Outer face down | 1.57 |
-| Disc retaining clip | Broad face down | 0.42 |
-
-Saved slice: **4 h 3 min 16 s, 99.58 g**. Useful parts are **90.44 g**;
-supports total **9.10 g** (7.06 body, 1.02 transition, 1.02 interface), and brim
-is 0.02 g. Reconstructed deposition differs from Studio reporting by 0.028 g.
-Identified startup extrusion is another 0.18 g; firmware loading, purge and
-calibration consumption is unknown. No prime tower or material changes occur.
-
-Proposed configuration: H2D right 0.4 mm nozzle, Bambu PLA Basic, Textured PEI,
-factory 0.20mm Standard (2 walls, 15% infill). Changes from factory are support
-on, critical regions only, and tree slim. This single-material proposal uses
-less overhead than the previous job's separate interface material. These
-settings are disclosed for review; opening the file does not approve or send a
-print. Separate interface material would require a fresh estimate.
-
-All seven fabrication meshes are single, watertight solids. Saved project
-reimport preserves resolved settings and placement, with no warnings or mesh
-repairs. The actual plate and sampled support paths are in the
-[private preview](https://macbook.terrier-shade.ts.net/3d-designs/filament-drybox/holder/).
-Retained local preparation is `build/holder-fit-reprint-20261117`.
-
-Remove supports from the carrier grooves, bearing contact surfaces, disc
-counterbore and spindle clip groove. Pull the collar-arm interface off axially,
-without prying the compliant arm outward. Clean the collar hub outer end face flat: support scars there consume its 0.25 mm worst-case running gap. Empty the two lower anchor-magnet pockets before gluing magnets. Check the thread, lock, pilots,
-spool clearance and free rotation by hand before loading or rewinding. Bore,
-chamfer and recess dimensions remain assumed; this is a gentle first-fit
-prototype, not loaded-rewind qualification.
-
-Rebuild with `cad/spindle_print.py --scope holder --variant critical-tree-slim`
-and the same native/engineering-root/Bambu arguments shown below. Generated
-files stay ignored; source and exact inputs must be retained before printing.
-
-## Sent, superseded: spindle and collar first-fit print (r5)
-
-A **gentle, manual first fit** of the two printed center parts only. The
-founder sent the job on 17 November 2026 with separate support material:
-2 h 15 min 59 s and 38.55 g in its saved slice (14.54 g useful parts, 9.58 g
-supports and interface, 6.32 g prime tower, 8.09 g nominal flush, 14 right-nozzle
-AMS changes). The founder reported seating and drive-fit problems; see the
-[print record](https://macbook.terrier-shade.ts.net/castle-harker/notebook/pages/2026-11-17/manufacturing.html). The single-material numbers below are the
-prepared comparison, not the sent job. It qualifies no clamp force, torque or load: do not test index
-preload or loaded rewind on these prints. Geometry and rationale are in
-[README](README.md#holder); the producer command (`cad/spindle_print.py`) is
-listed there. The [private live preview](https://macbook.terrier-shade.ts.net/3d-designs/filament-drybox/holder/)
-shows the oriented parts and support paths; it is built by
-`preview/holder_geometry.py --print-prep`.
+## Matching parts on one plate
 
 | Part | Bed orientation | Useful-part estimate |
 | --- | --- | ---: |
-| Spindle | Axle vertical, drive journal end on the bed (cone ring starts 9.7 mm up) | 8.79 g |
-| Collar | Axle vertical, outboard cone face on the bed (hub starts 8 mm up) | 5.75 g |
+| Stand | Base down, native+Y becomes print+Z |37.42 g |
+| Axle | Drive end down, thread-boss ramp upward |10.66 g |
+| Locking collar | Outboard stop-ring face down |7.53 g |
+| Drive-side carrier | Flat rear locator face down |2.18 g |
+| Left carrier | Flat rear locator face down |1.69 g |
+| Inside nut | Wide flange down, thread vertical |2.29 g |
+| Crank | Grip end down, socket upward |2.94 g |
+| Wall fitting | Outside thread down; wall O-ring groove upward |3.97 g |
+| Sealing cap | Closed end down; threaded opening upward |2.39 g |
 
-Prepared single-material comparison: Bambu Lab H2D right 0.4 mm nozzle, Bambu PLA Basic,
-Textured PEI, factory **0.20mm Standard**. Changes from factory: supports
-enabled, critical regions only, and support style **tree_slim** (resolved by
-Studio as `tree(auto)` + `tree_slim`). Nothing else is customised: one
-filament, factory walls and infill, no purge tower; the auto brim is
-negligible (0.008 g).
+The left carrier and collar match their earlier widened/deeper-lock candidates;
+they are included because the versions of the existing physical prints are
+uncertain. Omit them only after matching the actual prints to this geometry.
+The fitting and sealing cap keep their earlier direct-drive geometry and are
+included on this complete nine-part plate. The working filament outlet parts are unchanged;
+filament clip work remains deferred. Retain two608 bearings and the22 ×2/18 ×2 mm
+static O-rings. Neither a magnetic wheel nor a rotor/retaining clip is needed.
 
-Estimate from the saved r5 slice (`build/spindle-print-r5-20261117`,
-`critical-tree-slim`): **1 h 11 m 26 s**, **18.42 g** Studio total (r4:
-1 h 15 m 16 s, 19.71 g). The r5 spindle's 45° ramp under the thread boss
-removed the tall support tree to the boss face; all spindle support now ends
-below 14.2 mm.
+## Configuration and overhead
 
-The founder sent a different configuration on 17 November: Support For PLA/PETG
-interface material on the same right nozzle as the PLA, default tree style,
-critical-regions-only off, independent support layers off, and dense zero-gap
-interfaces. Its saved sent file estimates **2 h 15 m 59 s and 38.55 g**, still
-printing each part once. Reconstructed useful-part material is unchanged at
-14.54 g; support grows to 9.58 g, a prime tower adds 6.32 g, and fourteen AMS
-material changes command about 8.09 g of filament flushing. The two files have
-the same 5 min 18 s startup allowance. This is a comparison of two configurations,
-not measured elapsed time or weighed waste. See the
-[recorded comparison](https://macbook.terrier-shade.ts.net/castle-harker/notebook/pages/2026-11-17/manufacturing.html#drybox-print-estimate-comparison-2026-11-17).
-Future estimates must use the final interface material, support settings and
-nozzle assignment. No settings on the running print were changed during the investigation.
+Baseline: Bambu Studio02.09.01.70, H2D right0.4 mm nozzle, Bambu PLA Basic,
+factory0.20 mm Standard, Textured PEI. The established single-PLA support
+configuration is retained: support enabled, critical regions only, tree slim.
+No interface-material changes, purge tower, custom walls/infill, speed,
+temperature or calibration overrides are added. Actual plate and filament
+assignment must match before sending; preserve Auto calibration choices.
 
-- Useful parts: **14.54 g** (spindle 8.79, collar 5.75).
-- Support: **3.84 g** (body 2.79, transition 0.53, interface 0.53); r4 5.17 g.
-- Startup G-code positive extrusion: about **0.183 g**, separate. Firmware
-  loading, purge and calibration consumption is unknown. Stationary positive
-  extrusion in the G-code may include unretraction and is not a measure of purge waste.
+The saved candidate estimates **3 h9 min38 s** and **77.860 g**:
 
-Support removal at the first fit: pick the tree support out of the spindle's
-2.2 mm clip groove and check that the clip seats; pull the support interface
-under the collar's spring arm off axially (do not lever the arm radially);
-remove nubs from the thrust-sleeve face. No support enters the thread, lock
-slots, female thread, spring pocket or key hole. These are estimates, not
-weighed spool consumption, and no fabrication is approved by this preparation.
+- Useful parts: **71.071 g**.
+- Support body: **4.795 g**; support transition: **0.948 g**;
+  support interface: **0.948 g** (same PLA). Total supports **6.691 g**.
+- Brim: **0.068 g**; about0.03 g difference remains between reconstructed
+  deposition and the slicer's rounded reporting.
+- No material changes or purge tower. Logged startup positive extrusion is
+  approximately **0.183 g**, separate from deposited-part accounting.
+  Firmware loading/purge/calibration consumption and additional heating/setup
+  overhead are not fully quantified. The slice estimate is not guaranteed
+  wall-clock time.
 
-## Not ready to print: outside drive
+All nine meshes are single watertight consistently wound components, with
+no degenerate triangles or slicer repairs/warnings. The editable project is
+actually sliced and reimported; resolved settings match across imports.
+Raw G-code bytes differ through ordering, so byte identity is not claimed.
+Critical bead checks include the retaining lip, guide, channel-floor top skin,
+carrier rim and nut flange. The crank's working socket is clear of intrusive
+support-road envelopes. The fitting bore and cap cavity are also clear of deposited material in their checked working regions. Supports elsewhere still require removal and inspection.
+The actual slice generates no supports on the stand, either carrier or nut. Axle, collar, crank and wall fitting retain supports; the cap has none. The carriers'1.4 mm bearing-stop ledges print as short overhang/bridge roads; check their undersides before seating a608.
 
-The 17 November 2026 outside drive (fixed X, redesigned handwheel, retainer ring,
-axle clip) are current native designs only: not sliced, not printed, not released, with no approved settings.
-Preparing these parts needs a separate print-preparation pass and your approval
-of the settings.
+## Rebuild and inspect
 
-## Superseded: four-part holder fit-print proposal
-
-> **17 November 2026:** the frame and green core on this four-part plate are superseded by the spoked frame, removable carriers, spindle and collar in [README](README.md#holder). The blue disc and retaining clip are unchanged. The spindle and collar are now sliced (see the current proposal above); the current frame and carriers have not been sliced.
-
-The current holder is prepared as **one empty fit-prototype plate**, not a released
-or physically qualified drybox. The redundant rounded wall noses and their
-support wings are removed. The surrounding lip retains the 1.5 mm nominal wall
-gap. Assembly wall span is 82.2 mm (3.236″); base width is 75 mm (2.953″), with
-130 mm (5.118″) front-to-back depth. Both purchased 608 bearings remain required.
-
-### Parts and orientations
-
-| Part | Bed orientation | Nominal print envelope, mm | Useful-part estimate |
-| --- | --- | --- | ---: |
-| Grey frame | Base down; native +Y becomes print +Z (Rx90°) | 82.2 × 130 × 133.321 | 54.412 g |
-| Green axle/core | Axle horizontal; Rx90° | 79.4 × 54.854 × 54.854 | 24.403 g |
-| Blue drive disc | Closed magnet-cover face down, pockets up; Ry90° | 80 × 80 × 7 | 14.194 g |
-| Purple retaining clip | Broad face down; Ry90° | 18 × 18 × 2 | 0.417 g |
-
-Colors identify parts; the proposed plate uses one PLA filament. Frame, core and
-disc need supports; the clip has none. The HTML review presents each part
-individually, on its bed with sampled actual support roads. All four parts fit
-together on one H2D plate. The oriented fabrication meshes are exported with
-0.05 mm absolute linear and 0.15 rad angular meshing settings, not the looser
-assembly-display triangulation.
-
-The mesh audit caught a zero-thickness tangent connection between the core's
-upper air tube and a longitudinal rib, even though native-solid validity and
-slicer repair checks passed. Reducing the rib inner radius from 21 to 20.8 mm
-creates positive overlap without changing the Ø6 bore or outside envelope.
-All four final fabrication meshes are single, watertight, consistently wound
-components with no degenerate triangles or nonmanifold edges. The producer
-rejects bad meshes before writing a plate recipe; it does not repair them.
-
-### Proposed settings and overhead
-
-| Selection | Proposal |
-| --- | --- |
-| Bambu Studio | 02.09.01.70 |
-| Printer / nozzle | Bambu Lab H2D, right 0.4 mm |
-| Material | Bambu PLA Basic @BBL H2D |
-| Process baseline | Factory 0.20mm Standard @BBL H2D |
-| Plate | Textured PEI; actual plate must be confirmed |
-| Process changes requiring approval before fabrication | `enable_support: 0 → 1`; `support_critical_regions_only: 0 → 1` |
-| Other process, filament and machine fields | Factory baseline |
-
-Normal automatic support trapped material inside the core's air bores. A
-build-plate-only comparison did not solve it. Critical-regions-only support in
-the horizontal pose leaves all three bores clear: even the conservative support
-road-width envelopes do not intrude, with at least 0.517 mm nominal clearance.
-The frame pilot bores and narrow thrust reliefs also contain no support roads.
-The selected slice supports the grey bearing-holder undersides and blue counterbore roof; the angled guard underside needs no generated supports.
-Core cage supports remain accessible through the open rib windows, and disc
-supports through the open Ø24 counterbore and radial channel. Physical support
-removal and supported journal surface quality remain first-print checks.
-
-The final slice estimates **3 h 53 m 5 s** and **100.476 g**:
-
-- Useful parts: **93.426 g**.
-- Support bodies and interfaces: **7.011 g**.
-- Brim: **0.008 g**; approximately **0.030 g** remains between reconstructed
-  deposition and slicer reporting.
-- No purge tower or color changes. About **0.183 g** of startup positive
-  extrusion commands is separate; loading, purging and calibration consumption
-  remain unknown. These are estimates, not weighed spool consumption.
-
-The saved editable project was sliced and reimported with identical resolved
-settings, zero warnings and zero mesh repairs. Direct 3MF vertex transforms
-agree with the declared oriented STL placements within 0.000004 mm. Raw G-code
-bytes may differ after reimport through travel ordering; byte identity is not
-claimed. Actual feed assignment and send-time calibration require confirmation.
-No manufacturing configuration or fabrication is approved by this preparation.
-
-### Gray frame by itself
-
-The current frame uses a narrow attached roof beneath the guard, with short
-35° side struts landing on the existing legs. Its axial underside rises 1:1.
-The roof stops 0.2 mm inside the drive-wall plane, preserving the original
-wall-contact face. The two free diaphragm tips end at the highest existing
-guard contact, reducing frame height from 151.634 to 133.321 mm. Native checks
-retain the full bearing seats/jaws, base and original wall-contact surface.
-The annulus reserved toward each bearing (|X|27–34.3, radius14.8–27.5 mm) stays
-clear; this reserves space without defining the longer green cartridge.
-
-The separate base-down gray-only plate estimates **2 h 3 m 58 s** and
-**57.090 g**: **54.412 g useful frame**, **2.648 g support/interface**, no brim
-or purge tower. Startup positive extrusion is separately about **0.183 g**;
-firmware loading/purge/calibration consumption remains unknown. Compared with
-the preceding 2 h 13 m 24 s /58.455 g plate, this saves about **9 min 26 s**
-and **36.7% of support material**. The guard needs no generated supports;
-carrier undersides still do. Saved project reimport has no warnings or repairs,
-all resolved settings match, and blind pilots stay clear. The process retains
-the same two proposed support changes; no speeds, walls or infill were changed.
-
-A quadratic-tetrahedron comparison at E1,000 MPa used 40 N axial and 15 N
-radial per seat, with an optimistic fixed floor and axial wall restraint.
-Fine-mesh mean axial movement changes from 0.5742 to 0.5795 mm (0.92%), while
-mesh refinement changes either result about1.4%; combined force-work differs
-0.61%. This does not resolve a meaningful stiffness loss, and does not establish
-printed strength. Both versions show substantial left-seat lateral flexibility
-in this uncoupled frame-only model; bearing/shaft contact, physical loaded fit,
-print anisotropy, retention and creep remain unqualified. The prior steel
-holder's strength screen does not qualify this frame. No fabrication approval
-is established by this preparation.
-
-### Rebuilding
-
-Use Python with the repository's CadQuery dependency. The offline slicing stage
-also uses the Castle Harker engineering checkout's maintained factory-profile,
-manufacturing and G-code analysis tools. Its location is an explicit argument;
-no agent scratch files are prerequisites.
+From the personal parts repository root, using a Python environment containing
+its dependencies and the engineering checkout's maintained slicing tools:
 
 ```sh
-python filament-drybox/cad/stand.py --output build/holder-native
-python filament-drybox/cad/stand_prepare.py \
-  --engineering-root /path/to/castle-harker \
-  --native-input build/holder-native --output build/holder-print \
-  --bambu /Applications/BambuStudio.app/Contents/MacOS/BambuStudio
-python filament-drybox/cad/stand_sections.py \
-  --build build/holder-native --output build/holder-native/stand-sections.json
-python filament-drybox/preview/prepare_print_view.py \
-  --print-input build/holder-print --native-input build/holder-native \
-  --house-renderer /path/to/castle-harker/shared/render \
-  --output build/holder-print-view
+python filament-drybox/cad/drybox.py --output build/filament-drybox/direct-drive-current
+python filament-drybox/cad/direct_mechanics.py --output build/filament-drybox/direct-drive-current/mechanical-screen.json
+python filament-drybox/cad/direct_prepare.py --native-input build/filament-drybox/direct-drive-current --engineering-root /path/to/castle-harker --output build/filament-drybox/direct-drive-print
+python filament-drybox/cad/direct_toolpaths.py --output build/filament-drybox/direct-drive-print --engineering-root /path/to/castle-harker
+python filament-drybox/cad/direct_layers.py --print-input build/filament-drybox/direct-drive-print --engineering-root /path/to/castle-harker --output build/filament-drybox/direct-drive-print/layers
+python filament-drybox/preview/direct_geometry.py --native-input build/filament-drybox/direct-drive-current --print-input build/filament-drybox/direct-drive-print --output build/filament-drybox/direct-drive-preview
 ```
 
-`stand_print.py` can separately export and audit the four oriented meshes and
-plate-placement inputs using `--native-input` and `--output`. `stand_prepare.py`
-produces the proposed editable/sliced project, exact input identities, mesh
-checks, placement proof, material ledger, support paths and bore-clearance
-checks. The house renderer requires Blender and the Castle Harker house look.
-Use a new output directory for each new preparation. Generated outputs are
-local artifacts, not released inputs; the source must be approved, committed and tagged before authorized fabrication,
-and the exact fabrication files retained and bound to that release.
+Use a new print-output directory per preparation; earlier fabrication inputs
+are retained. The preview requires the existing Three.js dependency in
+`filament-drybox/preview/node_modules/three` and shows the exact fabrication
+meshes with sampled real support roads. The editable project is
+`direct-drive-fit/direct-drive-fit.3mf`, with the sliced project and G-code
+under its `out/` directory. File hashes and source digests bind the candidate.
+No scratch source or copied native intermediate is required.
 
-### First physical checks
+Claude Opus High independently approved the corrected candidate for a gentle
+first fit print on18 November2026, with no remaining mechanical/print blockers.
+The increased crank running clearance resolved its original rubbing objection.
+That review covered the geometry and seven-part plate; the unchanged fitting
+and cap were subsequently added, freshly sliced and checked with all nine parts.
+Container fit, bearing-ledge cleanup, spool fit and sealing remain physical
+checks. The final source and fabrication inputs are hash-bound in the retained
+handoff manifest; no print has been sent by the preparation tools. This
+personal repository uses normal Git commits, not Castle Harker's release-tag
+sequence. Retain the exact print files and record the source commit before
+fabrication.
 
-Print empty. Remove support, inspect the Ø8 journals, bearing seats and thrust
-faces, then test snap insertion/release, full clip seating and retention, spool
-hub grip, rotation at both axial slack limits, guard clearance and container
-stability. The nominal Ø55 hub remains unmeasured. Creep, cyclic retention,
-service strength, magnet retention and actual container fit are unqualified.
-Desiccant bead containment and refill closure remain unfinished; these files do
-not yet define a working refillable desiccant cartridge.
+The revised crank has aØ8.8 running shaft (0.8 mm radial gap in theØ10.4 bore) and a shorter blind socket, preserving3.8 mm nominal keyed overlap and the overall length. The increased running gap prevents likely rubbing from printed/drilled alignment error. It affects the opening while cranking; the stationary cap still closes the opening when the crank is removed. No rotary seal is added.
 
-### Earlier printed prototype
+## Current selected print: eight parts, stand deferred
 
-The owner reported an earlier fixed stand printed on 15 November 2026 in PLA
-Basic with factory 0.20 mm Standard on the H2D right 0.4 mm, support off (actual
-send settings not reported). Its source commit was
-`463119cc972861f764fc8ddcdc39d433d4c2cbd7`; outcome: completed, fit/surface quality
-not reported. Its 60.29 g / 1 h 53 m 45 s plate, and the later fifteen-part
-steel-fastener plate, are superseded and do not qualify this four-part holder.
+On 18 November 2026 the owner removed the stand from the plate, pending
+additional base features. All eight other parts retain their matching geometry
+and print orientations. The nine-part single-PLA plate above remains the
+reproducible baseline, not the settings of this owner-edited job.
+
+The saved owner-edited project uses H2D right 0.4 mm, Textured PEI, Bambu PLA
+Basic for all useful parts and Bambu Support For PLA/PETG for interfaces only.
+The 0.20 mm layers, two walls and 15% grid infill are unchanged. Tree supports
+use the default style, with critical-regions-only disabled and independent
+support layer height disabled. Interface pattern is rectilinear interlaced,
+spacing 0 mm and top Z gap 0 mm; bottom Z gap remains 0.2 mm. The owner chose
+these settings; they do not replace the single-PLA build defaults.
+
+The actual saved slice estimates **3 h 26 min 53 s, 66.70 g**:
+
+- Useful parts: **33.647 g**; no support material is deposited in useful parts.
+- Supports: **13.611 g**, including body 8.906 g, transition 2.415 g and
+  interface 2.290 g.
+- Prime tower: **5.466 g**; brim: **0.074 g**.
+- The remaining approximately **13.902 g** of the slicer's reported total is
+  outside reconstructed deposited roads; it must not be described as useful
+  plastic. Startup positive extrusion is approximately 0.183 g separately;
+  firmware purge/calibration consumption is not fully reconstructed.
+
+Both used filaments are assigned to the right nozzle. Studio warns this
+allocation adds approximately 13 g and 24 nozzle purges relative to its
+suggested grouping. Separate-nozzle grouping is a lower-overhead alternative;
+no grouping, filament assignment or send settings were changed during review.
+The support-interface settings were accepted for the first physical fit test;
+they do not qualify sealing, printed strength or long-term operation. The
+owner controls sending the job; a saved or reviewed plate is not a print record.
+
+## First physical fit test
+
+Remove supports and brim. Inspect journals, bearing pockets, threads and the
+collar paddle before assembly. Test matching threads by fingers; do not force
+or wrench-tighten the nut. Tighten the fitting and nut with open hand access, then
+lower the stand over the upward-open nut flange channel. Seat the empty bearing/axle unit, check upward
+lift-out with the crank removed, and check crank insertion/extraction. Then
+load the spool, verify clearance at both sides and turn it both ways.
+
+The carrier and stationary nut faces have zero nominal gap; printed face
+cleanup may be required. The actual spool bore/recess, wall thickness, hole
+position and usable container cavity are not fully measured. Check these
+physically before drilling. Check lip/flange flex, collar retention and seals;
+stop if a thread binds, a flange whitens or a bearing does not slide correctly.
+Nominal collision checks and a local load screen do not qualify printed
+strength, creep, airtightness or long-term operation.

@@ -31,8 +31,9 @@ def box(x0, x1, y0, y1, z0, z1):
     return cq.Solid.makeBox(x1 - x0, y1 - y0, z1 - z0, cq.Vector(x0, y0, z0))
 
 
-def one(shape, name):
-    shape = shape.clean()
+def one(shape, name, *, merge_faces=True):
+    if merge_faces:
+        shape = shape.clean()
     if not shape.isValid() or len(shape.Solids()) != 1:
         raise ValueError(f'{name}: expected one valid solid, got {len(shape.Solids())}')
     return shape
@@ -114,7 +115,9 @@ def wheel():
         body = body.fuse(cylinder(m['cup_outer_radius'], x0, p['cup_back_mm'], y, z))
     body = body.fuse(cylinder(p['knob_radius_mm'], x0 + p['knob_front_mm'], p['knob_length_mm'], p['knob_center_radius_mm'], 0))
     for y, z in magnet_centers():
-        body = body.cut(cylinder(m['pocket_radius'], x0 + m['front_cover'], max(p['cup_back_mm'], thickness) - m['front_cover'] + 1, y, z))
+        # Wall-facing blind glue pockets: magnets sit flush, without a skin
+        # between their faces and the wall. The spoke provides the backing.
+        body = body.cut(cylinder(m['pocket_radius'], x0 - .1, m['drive_pocket_depth'] + .1, y, z))
     bore = MOUNT['bearing']['od'] / 2 + MOUNT['pocket_radial_clearance']
     body = body.cut(cylinder(bore, x0 - .1, st['lip'][0] - x0 + .1))
     g0, g1 = st['retainer_groove']
@@ -125,7 +128,9 @@ def wheel():
     half = MOUNT['shaft_contact_diameter'] / 2 + k['notch_clearance']
     notch = box(st['lip'][0] - .1, hub_end + .1, 0, MOUNT['hub_outer_radius'] + 1, -half, half)
     body = body.cut(notch.rotate((0, 0, 0), (1, 0, 0), k['notch_angle_deg']))
-    return one(body, 'wheel')
+    # Keep the boolean face partitions: merging the large back face causes
+    # OCCT to omit that face during STL meshing. This changes no solid volume.
+    return one(body, 'wheel', merge_faces=False)
 
 
 def retainer():
@@ -247,6 +252,11 @@ def checks(parts):
         failures.append('anchor cups inside the wheel sweep')
     out['knob'] = {'tip_x': round(st['wheel_back'] + PARAMETERS['knob_front_mm'] + PARAMETERS['knob_length_mm'], 3),
                    'exposed_grip_mm': round(PARAMETERS['knob_front_mm'] + PARAMETERS['knob_length_mm'] - PARAMETERS['structural_thickness_mm'], 3)}
+    out['drive_magnet_pockets_mm'] = {'depth': MAGNETS['drive_pocket_depth'], 'front_cover': 0,
+                                     'back_wall': PARAMETERS['structural_thickness_mm'] - MAGNETS['drive_pocket_depth'],
+                                     'face_to_wall': st['wheel_back']}
+    if PARAMETERS['structural_thickness_mm'] - MAGNETS['drive_pocket_depth'] < 1:
+        failures.append('Wheel magnet pocket has less than 1 mm backing')
     for n, s in parts.items():
         if not s.isValid() or len(s.Solids()) != 1:
             failures.append(f'{n}: not one valid solid')

@@ -4,14 +4,14 @@ Original parametric designs, printable models and practical build notes.
 
 Each project has its own folder, CAD source and parameters. Generated models,
 sliced projects and local print evidence live in ignored `build/` directories.
-Use a tagged source revision and retain the exact project sent to the printer
+Use a committed source revision and retain the exact project sent to the printer
 when making a physical prototype.
 
 ## Projects
 
 - [Filament drybox](filament-drybox/README.md): a passive spool holder with a
-  bearing-supported spindle and magnetic manual rewind. The seven-part holder is
-  prepared for a measured-spool fit print; the complete drybox is still in development.
+  bearing-supported spindle and removable through-wall crank. Matching compact
+  stand, carriers, spindle, collar, nut and crank are prepared for a physical fit test.
 
 ## Tools
 

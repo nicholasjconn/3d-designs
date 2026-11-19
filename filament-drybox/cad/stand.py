@@ -206,7 +206,7 @@ def drive_rotor(c):
   angle=i*2*math.pi/m['count'];pieces.append(cylinder_x(m['cup_outer_radius'],m['cup_back_x'],front-m['cup_back_x'],y+m['pitch_radius']*math.cos(angle),m['pitch_radius']*math.sin(angle)))
  disc=join(pieces)
  for i in range(m['count']):
-  angle=i*2*math.pi/m['count'];disc=disc.cut(cylinder_x(m['pocket_radius'],m['cup_back_x']-.1,front-m['front_cover']-m['cup_back_x']+.1,y+m['pitch_radius']*math.cos(angle),m['pitch_radius']*math.sin(angle)))
+  angle=i*2*math.pi/m['count'];disc=disc.cut(cylinder_x(m['pocket_radius'],front-m['drive_pocket_depth'],m['drive_pocket_depth']+.1,y+m['pitch_radius']*math.cos(angle),m['pitch_radius']*math.sin(angle)))
  bore=cylinder_x(a['journal_radius']+d['key_radial_clearance'],d['key_bore_start_x'],front-d['key_bore_start_x']+.2,y)
  for i in range(a['key_flats']):bore=bore.intersect(box(d['key_bore_start_x']-.1,front+.2,y-2*a['journal_radius'],y+a['key_apothem']+d['key_radial_clearance'],-2*a['journal_radius'],2*a['journal_radius']).rotate((0,y,0),(1,y,0),i*360/a['key_flats']))
  disc=disc.cut(bore).cut(cylinder_x(d['counterbore_radius'],d['counterbore_back_x'],front-d['counterbore_back_x']+.1,y))
@@ -417,9 +417,11 @@ def verify(c,parts):
  if disc_gap<mt['inside']['lower_root_disc_clearance']-1e-6:checks['failures'].append('Anchor branch closer to the turning disc than lower_root_disc_clearance')
  if corridor>1e-6:checks['failures'].append('Anchor branch enters the disc lift corridor')
  if max(fits)>1e-5 or mt['anchor_pocket_depth']<m['thickness']:checks['failures'].append('Anchor magnet does not fit its glue pocket flush with the wall-contact plane')
- pocket_depth=d['front_x']-m['front_cover']-m['cup_back_x']
- checks['magnet_stack_mm']={'pocket_depth':pocket_depth,'magnet_thickness':m['thickness'],'front_cover':m['front_cover']}
+ pocket_depth=m['drive_pocket_depth'];back_wall=d['front_x']-pocket_depth-m['cup_back_x']
+ checks['magnet_stack_mm']={'pocket_depth':pocket_depth,'magnet_thickness':m['thickness'],'front_cover':0,'back_wall':back_wall,
+  'retention':'Blind pockets open toward wall; glue magnet faces flush with the disc face. Adhesive retention unqualified.'}
  if pocket_depth<m['thickness']:checks['failures'].append('Magnet deeper than pocket')
+ if back_wall<1:checks['failures'].append('Drive magnet pocket has less than 1 mm backing')
  checks['bearing_jaw_deflection_each_mm']=(b['od']-b['mouth_width'])/2;checks['clip_jaw_deflection_each_mm']=(2*a['groove_radius']-p['mouth_width'])/2
  dk,fails=drive_key(c,parts);checks['drive_key']=dk;checks['failures']+=fails
  # Spool seat datum: both stop faces at half the measured hub-face width; collar travel covers D +-2 mm.

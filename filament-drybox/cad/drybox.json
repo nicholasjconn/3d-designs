@@ -1,52 +1,81 @@
 {
+  "design": "through-wall removable crank; magnetic drive superseded",
   "units": "mm",
-  "scope": "Current connected filament drybox: one entry per current printed part, its owning source and latest print state. cad/drybox.py builds and checks every part from these sources. Bottom-side desiccant baskets are not designed. The container is unmeasured (nominal 2 mm wall assumed), so outlet placement on it and the anchor and upper-frame fit are not modeled.",
+  "entry_point": "cad/drybox.py",
+  "parameters": "cad/direct_drive.json",
+  "current_candidate": "compact 84.6 mm marked span",
+  "fabrication_state": "Eight matching parts prepared and owner settings reviewed; stand print deferred pending added base features; no print sent by agent.",
   "parts": [
-    {"id": "fixed-stand", "name": "Gray frame with four anchor branches", "system": "holder", "source": "stand.py / stand.json", "output": "holder/fixed-stand.step", "state": "Changed 17 Nov 2026: four integral anchor branches with glue pockets for the outside X magnets; 0.5 mm inboard relief in the spool flange sweep. Prepared for gentle first-fit review; not printed."},
-    {"id": "left-carrier", "name": "Left bearing carrier", "system": "holder", "source": "stand.py / stand.json", "output": "holder/left-carrier.step", "state": "Current design; not printed. Prepared on the seven-part first-fit plate."},
-    {"id": "right-carrier", "name": "Right bearing carrier", "system": "holder", "source": "stand.py / stand.json", "output": "holder/right-carrier.step", "state": "Current design; not printed. Prepared on the seven-part first-fit plate."},
-    {"id": "spindle", "name": "Spindle (square key, flat stop)", "system": "holder", "source": "spindle.py / stand.json", "output": "holder/spindle.step", "state": "Changed 17 Nov 2026: square drive key with 0.5 mm tip chamfer and flat hub-face stop at the measured spool width; supersedes the r5 print sent that day. Not printed. Prepared on the seven-part first-fit plate."},
-    {"id": "collar", "name": "Locking collar (flat stop)", "system": "holder", "source": "spindle.py / stand.json", "output": "holder/collar.step", "state": "Changed 17 Nov 2026: flat hub-face stop, hub and arms 1.0 mm inboard; supersedes the print sent that day. Not printed. Prepared on the seven-part first-fit plate."},
-    {"id": "drive-rotor", "name": "Blue magnetic disc", "system": "holder", "source": "stand.py / stand.json", "output": "holder/drive-rotor.step", "state": "Changed 17 Nov 2026: square socket for the square key; supersedes the plate sent that day. Not printed. Prepared on the seven-part first-fit plate."},
-    {"id": "retaining-clip", "name": "Disc retaining clip", "system": "holder", "source": "stand.py / stand.json", "output": "holder/retaining-clip.step", "state": "Changed 17 Nov 2026: 6.0 mm mouth for the round groove neck; supersedes the plate sent that day. Not printed. Prepared on the seven-part first-fit plate."},
-    {"id": "wheel", "name": "Outside handwheel on an extra 608", "system": "wheel", "source": "wheel.py / wheel.json (+ stand.json magnets and mount)", "output": "wheel/wheel.step", "state": "Redesigned 17 Nov 2026: 608 hub with lip, retainer groove and clip notch; starts 4 mm farther out, knob 4 mm shorter. Not printed; not ready to print (the earlier wheel is in commit 7f54693)."},
-    {"id": "mount-x", "name": "Outside mounting X with integral axle", "system": "wheel", "source": "wheel.py / stand.json mount", "output": "wheel/mount-x.step", "state": "New 17 Nov 2026; not printed; not ready to print."},
-    {"id": "hub-retainer", "name": "608 retainer ring (wheel hub)", "system": "wheel", "source": "wheel.py / stand.json mount", "output": "wheel/hub-retainer.step", "state": "New 17 Nov 2026; not printed; not ready to print."},
-    {"id": "axle-clip", "name": "Outside axle clip", "system": "wheel", "source": "wheel.py / stand.json mount", "output": "wheel/axle-clip.step", "state": "New 17 Nov 2026; not printed; not ready to print."},
-    {"id": "body", "name": "Outlet bulkhead body", "system": "outlet", "source": "outlet.py / outlet.json", "output": "outlet/body-native.step", "state": "First set reported printing 15 Nov 2026 from commit edf2a7d (same body/nut/cap geometry); completion and fit not reported."},
-    {"id": "nut", "name": "Outlet inside locknut", "system": "outlet", "source": "outlet.py / outlet.json", "output": "outlet/nut-native.step", "state": "First set reported printing 15 Nov 2026 from commit edf2a7d; completion and fit not reported."},
-    {"id": "cap", "name": "Outlet storage cap", "system": "outlet", "source": "outlet.py / outlet.json", "output": "outlet/cap-native.step", "state": "First set reported printing 15 Nov 2026 from commit edf2a7d; completion and fit not reported."},
-    {"id": "fixed", "name": "Filament clip: fixed jaw and hinge", "system": "clip", "source": "clip.py / clip.json (+ outlet.json tail)", "output": "clip/fixed.step", "state": "Current two-body redesign; not printed (the 15 Nov C-leaf clip did not latch and is superseded)."},
-    {"id": "gate", "name": "Filament clip: moving jaw and latch", "system": "clip", "source": "clip.py / clip.json (+ outlet.json tail)", "output": "clip/gate.step", "state": "Current two-body redesign; not printed."}
+    {
+      "id": "stand",
+      "source": "direct_stand.py",
+      "action": "hold printing; base features requested by owner"
+    },
+    {
+      "id": "right-carrier",
+      "source": "bearing_carrier.py",
+      "action": "print"
+    },
+    {
+      "id": "axle",
+      "source": "direct_spindle.py",
+      "action": "print"
+    },
+    {
+      "id": "inside-nut",
+      "source": "inside_nut.py",
+      "action": "print"
+    },
+    {
+      "id": "crank",
+      "source": "direct_crank.py",
+      "action": "print"
+    },
+    {
+      "id": "left-carrier",
+      "source": "bearing_carrier.py",
+      "action": "geometry unchanged from widened lift-out candidate; include if printed version uncertain"
+    },
+    {
+      "id": "collar",
+      "source": "spindle.py",
+      "action": "deeper-lock candidate unchanged; include if printed version uncertain"
+    },
+    {
+      "id": "fitting",
+      "source": "wall_fitting.py",
+      "action": "print; included in complete wall-fitting assembly plate"
+    },
+    {
+      "id": "cap",
+      "source": "sealing_cap.py",
+      "action": "print; included in complete wall-fitting assembly plate"
+    }
   ],
   "purchased": [
-    {"name": "608ZZ bearing, 8 × 22 × 7 mm", "quantity": 3, "interface": "stand.json bearings (two holder) and mount.bearing (one outside drive)"},
-    {"name": "Axially magnetized neodymium disc, Ø15 × 3 mm", "quantity": 14, "interface": "stand.json magnets: 3 disc + 3 wheel (drive) and 4 X + 4 frame (mount anchors)"},
-    {"name": "Push-fit fitting, PT 1/8 thread per its packaging drawing (sold as HANGLIFE PC4-M10)", "quantity": 1, "interface": "outlet.json purchased_interfaces / fitting_envelope"},
-    {"name": "NBR O-ring, 18 mm ID × 2 mm", "quantity": 2, "interface": "outlet.json wall_ring / radial_ring"},
-    {"name": "PTFE lead, 4 mm OD × 2.5 mm ID, one continuous length", "quantity": 1, "interface": "outlet.json tube"}
+    {
+      "id": "608-bearing",
+      "quantity": 2,
+      "dimensions": "8x22x7 mm"
+    },
+    {
+      "id": "wall-o-ring",
+      "quantity": 1,
+      "dimensions": "22x2 mm"
+    },
+    {
+      "id": "cap-o-ring",
+      "quantity": 1,
+      "dimensions": "18x2 mm"
+    }
   ],
-  "not_designed": [
-    "Bottom-side desiccant baskets",
-    "Container measurements (wall thickness, interior, outlet location)"
-  ],
-  "axial_limits_mm": {
-    "note": "Locked by the founder on 17 Nov 2026 (baseline commit 7f54693): X along the axle, holder wall-contact span, spindle, and full assembly including the outside drive at a nominal 2 mm wall; base width x depth. drybox.py fails if any measured value differs by more than 0.001 mm.",
-    "holder": [
-      -37.5,
-      44.7
-    ],
-    "spindle": [
-      -36.2,
-      43.2
-    ],
-    "full_nominal_wall": [
-      -37.5,
-      67.15
-    ],
-    "base": [
-      75.0,
-      130.0
-    ]
-  }
+  "unchanged_subsystems": {
+    "outlet": "outlet.py/outlet.json; body, locknut and storage cap reported working",
+    "filament-clip": "clip.py/clip.json; deferred by owner"
+  },
+  "assumptions": [
+    "Container wall2 mm, not measured",
+    "Spool bore and recess reference; widths67.8/59.6 mm measured",
+    "Physical printed fit, lock, strength, creep and seals not qualified"
+  ]
 }

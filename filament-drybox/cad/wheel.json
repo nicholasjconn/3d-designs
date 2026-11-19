@@ -9,8 +9,8 @@
   "knob_center_radius_mm": 54.0,
   "knob_radius_mm": 6.0,
   "knob_front_mm": 3.3,
-  "knob_length_mm": 13.15,
-  "magnet_source": "stand.json \"magnets\" (shared with the disc): count, pitch radius, magnet size, pocket and cup radii and front cover.",
-  "knob_note": "Knob shortened from 17.15 mm (baseline commit 7f54693) by the 4 mm the wheel moved out for the X crossing and running gap, so its tip stays at the full-assembly endpoint X67.15 at a nominal 2 mm wall. Exposed grip beyond the wheel plate: 9.45 mm (was 13.45).",
+  "knob_length_mm": 13.65,
+  "magnet_source": "stand.json magnets: shared size, count, pitch, cup and 3.1 mm wall-facing blind glue pockets; exposed pole faces.",
+  "knob_note": "Wheel moves 0.5 mm toward wall for 0.5 mm nominal running clearance over unchanged 3 mm X arms. Knob is 0.5 mm longer than the previous bearing-supported wheel, preserving X67.15 outer endpoint at nominal 2 mm wall and giving 9.95 mm exposed grip.",
   "hub_source": "stand.json \"mount\": 608 pocket, lip, retainer groove, hub radius and the axle-clip notch."
 }

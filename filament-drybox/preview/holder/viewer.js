@@ -2,7 +2,7 @@ import * as T from 'three';
 import {OrbitControls} from './vendor/OrbitControls.js';
 
 const host = document.querySelector('#view');
-const r = await fetch('geometry.json?v=drive-x-7', {cache: 'no-store'});
+const r = await fetch('geometry.json?v=exposed-magnets', {cache: 'no-store'});
 if (!r.ok) throw Error('geometry.json HTTP ' + r.status);
 const data = await r.json();
 const renderer = new T.WebGLRenderer({antialias: true});
@@ -45,8 +45,9 @@ for (const p of data.parts) {
   g.setAttribute('position', new T.Float32BufferAttribute(p.vertices.flat(), 3));
   g.setIndex(p.triangles.flat());
   g.computeVertexNormals();
+  const colorId = p.id.startsWith('axial-') ? p.id.slice(6) : p.id;
   const isSpool = p.id.startsWith('spool-'), kit = p.id.startsWith('kit-'), clear = isSpool || (kit && kitClear(p.id));
-  const m = new T.Mesh(g, new T.MeshStandardMaterial({color: isSpool ? '#d4a349' : kit ? kitColor(p.id) : driveColors[p.id] || colors[p.id], roughness: .65, side: T.DoubleSide,
+  const m = new T.Mesh(g, new T.MeshStandardMaterial({color: isSpool ? '#d4a349' : kit ? kitColor(p.id) : driveColors[colorId] || colors[colorId] || '#ed8618', roughness: .65, side: T.DoubleSide,
     transparent: clear, opacity: isSpool ? .22 : clear ? .35 : 1, depthWrite: !clear}));
   group.add(m);
   objects[p.id] = m;
@@ -228,7 +229,7 @@ if (sys) {
   const c = sys.checks, mc = c.magnet_coupling, sr = [];
   const add = (a, b) => sr.push(`<tr><td>${a}</td><td>${b}</td></tr>`);
   add('Ø15 × 3 magnet in every disc and wheel pocket (shared stand.json magnet spec)', mc.pockets.every(p => p.disc_overlap_mm3 === 0 && p.wheel_overlap_mm3 === 0) ? 'Fits: 0 mm³ overlap in all pockets' : 'FAILS');
-  add('Drive-magnet face to face, disc to wheel, through the drive wall (wall unmeasured; coupling torque not evaluated)', Object.entries(mc.magnet_face_to_face_gap_mm).map(([w, g]) => `${g} mm at ${w}`).join(', ') + ` (was ${mc.baseline_gap_mm_at_nominal_wall} mm at 2 mm before the X)`);
+  add('Drive-magnet face to face, disc to wheel, through the drive wall (exposed poles; actual wall and torque unmeasured)', Object.entries(mc.magnet_face_to_face_gap_mm).map(([w, g]) => `${g} mm at ${w}`).join(', ') + ` (previous bearing mount ${mc.previous_bearing_mount_gap_mm} mm at 2 mm wall)`);
   const ap = c.anchor_pairs, od = c.outside_drive, al = c.axial_limits_mm;
   add('Anchor pairs: a magnet in each frame glue pocket and each X pocket, coaxial, faces separated only by the wall', ap.pairs.every(q => q.frame_pocket_overlap_mm3 === 0 && q.x_pocket_overlap_mm3 === 0 && q.axis_offset_mm <= 1e-3) ? `All 4 fit and line up (axis offset ≤ ${Math.max(...ap.pairs.map(q => q.axis_offset_mm))} mm); face gap ${ap.pairs.map(q => q.face_gap_mm).join(', ')} mm` : 'FAILS');
   add('Locked endpoints along the axle and base (exact to 0.001 mm)', Object.entries(al).map(([k, v]) => `${k.replace('_nominal_wall', ' (2 mm wall)')} ${v.measured.join('…')}`).join('; '));
@@ -238,7 +239,7 @@ if (sys) {
   add('Outside drive to holder (stays outside the wall)', `${c.outside_drive_to_holder_gap_mm} mm minimum`);
   add('Outlet, printing: PTFE lead clear of body, fitting and nut', Object.entries(c.outlet_printing).filter(([k]) => k.startsWith('continuous-tube')).map(([k, v]) => `${k.split(' / ')[1]} ${v.gap_mm} mm`).join(', '));
   add('Outlet, storage: closed clip inside the cap', Object.entries(c.outlet_storage).filter(([k]) => k.endsWith('/ cap')).map(([k, v]) => `${k.split(' ')[1]} ${v.gap_mm} mm`).join(', ') + ' clearance');
-  if (c.reference_build) add(`Printed or sent holder parts unchanged against ${c.reference_build.directory}: ${Object.keys(c.reference_build.symmetric_difference_mm3).join(', ')}. The gray frame is not compared because it changed.`, Object.values(c.reference_build.symmetric_difference_mm3).every(v => v === 0) ? 'Identical (0 mm³ difference, each listed part)' : JSON.stringify(c.reference_build.symmetric_difference_mm3));
+  if (c.reference_build) add(`Printed or sent holder parts unchanged against ${c.reference_build.directory}: ${Object.keys(c.reference_build.symmetric_difference_mm3).join(', ')}. The running stand print is included in this comparison.`, Object.values(c.reference_build.symmetric_difference_mm3).every(v => v === 0) ? 'Identical (0 mm³ difference, each listed part)' : JSON.stringify(c.reference_build.symmetric_difference_mm3));
   document.querySelector('#system-checks').innerHTML = sr.join('');
   document.querySelector('#build-id').textContent = `Built from commit ${sys.git_head.slice(0, 7)}${sys.working_tree_changes ? ' plus uncommitted working-tree changes' : ''}.`;
 } else document.querySelector('#kit').hidden = true;
@@ -259,7 +260,10 @@ function fit(direction) {
   // The drive-wall slab is a view-only reference: it never sets the camera extents.
   target.traverseVisible(o => { if (state.mode === 'center' && o === objects['spool-envelope']) return; if (o.geometry && o !== driveWall && (state.mode === 'print' || state.mode !== 'lock' || o === objects['section-lock-collar'] || o === objects['section-lock-collar-lifted'])) { o.geometry.computeBoundingBox(); box.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld)); } });
   // The axial section's side labels sit right of the knob tip: keep room for them.
-  if (state.mode === 'axial' && data.axial) box.expandByPoint(new T.Vector3(data.axial.labels.find(l => l.to).to[0] + 70, data.axis_y, 0));
+  if (state.mode === 'axial' && data.axial) {
+    box.expandByPoint(new T.Vector3(data.axial.labels.find(l => l.to).to[0] + 70, data.axis_y, 0));
+    box.expandByPoint(new T.Vector3(0, data.axis_y + 90, 0));
+  }
   const center = box.getCenter(new T.Vector3()), d = (direction || new T.Vector3(1, .3, .8)).clone().normalize();
   const right = new T.Vector3(0, 1, 0).cross(d).normalize(), up = d.clone().cross(right).normalize();
   const tan = Math.tan(T.MathUtils.degToRad(camera.fov / 2)) * .86;
@@ -283,7 +287,7 @@ const captions = {
   lifted: 'Key lifted clear of the thread crests, so the collar can be turned. Push the paddle toward the arm root to lift it; this view shows a rigid radial lift for illustration, while the real arm also tilts the key. Let go and keep turning forward until the key drops into the next slot.',
   change: 'Spool change, after lifting the whole unit out: pull off the left carrier, slide the left 608 off its slip-fit journal, hold the spool near the collar end and unscrew the collar, then slide the spool off toward the refill side. Reverse to refit.'};
 captions.kit = 'Every current part. The outside drive (fixed X, extra 608, handwheel) sits coaxial with the blue disc across a nominal 2 mm drive wall (container unmeasured). In front, set aside because its place on the container is not defined: the outlet in its printing configuration (left: PTFE lead through the body and purchased fitting) and its storage configuration (right: cap on, filament tail held by the two-body clip inside the cap). Translucent plates are 50 mm wall patches.';
-captions.axial = 'Optional amber spool envelope: measured overall and hub widths, assumed radial profile. Axial section on the axle plane (front half removed). Green: the locked spans along the axle (holder 82.2, spindle 79.4, full assembly 104.65 mm at a nominal 2 mm wall) and the 75 × 130 mm base, all checked against the build. Outside the wall, the fixed gray X carries the extra 608 on its integral axle. The wheel\'s lip and retainer ring hold the outer ring, and the X shoulder and axle clip hold the inner ring. Turn the rotation slider: the wheel, retainer, outer ring and both magnet sets turn with the disc.';
+captions.axial = 'Native CAD half-section at Z=0 with real cut faces, shown at the seated zero-degree pose. Black rectangles above the axle are the exposed drive magnets. The gray fixed X remains 3 mm thick; the wheel clears it by 0.5 mm. Pole-face gap is 7.0 mm through the assumed 2 mm wall. The gray stand, bearing carriers, spindle and collar are unchanged. Green labels show the measured holder, spindle, full assembly and base spans. Use Complete assembly to rotate the parts; this native section stays at its stated cut plane.';
 captions.print = 'Current holder plate in its actual fabrication orientations. Orange lines are sampled support roads; red lines are contact interfaces. This replacement plate has not been sent to the printer.';
 if (data.axial) captions.axial += ' Labels: ' + data.axial.labels.filter(l => l.to).map((l, i) => `${i + 1} ${l.label}`).join('; ') + '.';
 const modes = ['assembly', 'kit', 'axial', 'lift', 'parts', 'carriers', 'center', 'lock', 'change', 'print'];
@@ -292,7 +296,8 @@ const view = () => state.mode === 'center' || state.mode === 'axial' ? new T.Vec
 
 function update(reframe = true) {
   for (const [n, o] of Object.entries(objects)) {
-    const spool = n.startsWith('spool-'), section = n.startsWith('section-'), kit = n.startsWith('kit-'), drive = n in driveColors;
+    const nativeAxial = n.startsWith('axial-');
+    const spool = n.startsWith('spool-'), section = n.startsWith('section-') || nativeAxial, kit = n.startsWith('kit-'), drive = n in driveColors;
     o.visible = spool ? state.spool && !['parts', 'carriers'].includes(state.mode) : !section && !kit;
     // Outside-drive parts never lift with the spindle; only the disc's magnets do.
     o.position.set(0, n === 'fixed-stand' || kit ? 0 : drive ? (driveTurn.has(n) ? data.axis_y + (n === 'drive-magnets-disc' ? state.height : 0) : 0) : data.axis_y + state.height, 0);
@@ -303,9 +308,14 @@ function update(reframe = true) {
     if (state.mode === 'center') { o.visible = centerParts.includes(n) || (spool && state.spool); o.rotation.x = 0; }
     if (state.mode === 'lock') { o.visible = n === 'section-lock-spindle' || n === (state.lifted ? 'section-lock-collar-lifted' : 'section-lock-collar'); o.rotation.x = 0; }
     if (state.mode === 'change') { if (n === 'fixed-stand' || drive) o.visible = false; o.position.x = change[n] || 0; }
-    if (state.mode === 'axial' && spool) o.visible = state.spool;
-    o.traverse(m => { if (m.material) m.material.clippingPlanes = (state.cut || state.mode === 'axial') && state.mode !== 'center' ? [cut] : (spool && state.mode === 'center' ? [cut] : []); });
+    if (state.mode === 'axial') {
+      o.visible = nativeAxial || (spool && state.spool);
+      if (nativeAxial) { o.position.set(0, 0, 0); o.rotation.x = 0; }
+    }
+    o.traverse(m => { if (m.material) m.material.clippingPlanes = !nativeAxial && (state.cut || state.mode === 'axial') && state.mode !== 'center' ? [cut] : (spool && state.mode === 'center' ? [cut] : []); });
   }
+  document.querySelector('#rotation').disabled = state.mode === 'axial';
+  document.querySelector('#height').disabled = state.mode === 'axial';
   group.visible = state.mode !== 'print';
   printGroup.visible = state.mode === 'print';
   if (state.mode === 'print') walls.visible = false;
@@ -351,6 +361,7 @@ new ResizeObserver(() => {
   camera.updateProjectionMatrix();
   fit(view());
 }).observe(host);
+if (location.hash === '#axial') state.mode = 'axial';
 update();
 
 const v = new T.Vector3();

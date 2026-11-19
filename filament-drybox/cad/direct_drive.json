@@ -1,0 +1,256 @@
+{
+  "units": "mm",
+  "bearings": {
+    "axis_y": 104,
+    "left_x": [
+      -38.7,
+      -31.7
+    ],
+    "right_x": [
+      28.3,
+      35.3
+    ],
+    "outer_radius": 11,
+    "bore_radius": 4
+  },
+  "axle": {
+    "journal_radius": 4.0,
+    "right_end_x": 39.2,
+    "key_start_x": 35.4,
+    "key_apothem": 3.2,
+    "key_flats": 4,
+    "key_min_engagement": 0.5,
+    "key_note": "Four flats at apothem3.2 within the original \u00d88 journal envelope.",
+    "tip_chamfer": 0.5,
+    "tip_chamfer_note": "0.5 mm45-degree edge relief on the square drive tip.",
+    "groove_start_x": 43.4,
+    "groove_end_x": 45.6,
+    "groove_radius": 3.2,
+    "interface": "608 journals, square drive key and removable crank; no retaining clip.",
+    "left_end_x": -38.900000000000006,
+    "shoulder_radius": 7.0,
+    "shoulder_length": 3.4,
+    "shoulder_end_x": 29.9,
+    "thrust_face_x": 31.5,
+    "journal_root_radius": 1.4,
+    "sleeve_outer_root_radius": 7.0,
+    "sleeve_outer_face_radius": 5.8,
+    "sleeve_inner_root_radius": 5.8,
+    "sleeve_inner_face_radius": 4.2,
+    "left_journal_radius": 3.95,
+    "left_journal_note": "Left journal is a printed slip fit (\u00d87.9 against the 608 \u00d88 bore) so the left 608 slides off for spool changes; the allowance needs a physical trial. The right journal keeps the nominal \u00d88 with the disc key and clip groove."
+  },
+  "spindle": {
+    "status": "Current direct-drive fit-test candidate; physical fit, lock and strength remain unqualified.",
+    "shaft_radius": 5.0,
+    "boss_ramp_angle_deg": 45.0,
+    "boss_ramp_note": "Conical ramp from the thread boss inboard face down to the shaft, angle measured from the axle, so the boss face needs no support when the spindle prints refill end up.",
+    "arm_count": 3,
+    "arm_width": 6.0,
+    "strut_radii": [
+      21.5,
+      24.3
+    ],
+    "drive_arm_x": [
+      20.1,
+      26.1
+    ],
+    "ring_x": [
+      27.8,
+      31.5
+    ],
+    "stop_outer_radius": 31.0,
+    "pilot_length": 2.0,
+    "pilot_radius": 27.0,
+    "pilot_lead_in": 0.5,
+    "seat_note": "Each ring is a broad flat stop face at the spool hub face plus a short loose pilot. The face lies at |X| = ring_x[0] + pilot_length = 29.8, half the measured hub-face width D 59.6 (envelopes.measured_spool), so the hub faces set the axial datum without relying on the bore chamfer. Face \u00d854-62 (pilot \u00d854 to stop_outer_radius); the \u00d854 pilot is 1 mm under the \u00d855 reference bore, a loose first-fit centring guess because the real bore (B) and chamfer (C) cannot be measured. The 1.7 mm flange keeps min_running_gap to the frame at the collar's 2 mm outboard travel, full axial float and thread flank clearance. Replaces the 45-degree cones of 17 November, which were placed for the reference model's flush 67.4 mm hub and sat 3.9 mm outboard of the measured hub faces.",
+    "ring_inner_radius": 21.5,
+    "thread": {
+      "hand": "right",
+      "pitch": 3.0,
+      "major_radius": 9.0,
+      "root_radius": 7.75,
+      "crest_width": 0.4,
+      "radial_clearance": 0.25,
+      "flank_clearance": 0.25,
+      "boss_x": [
+        -29.9,
+        -9.0
+      ],
+      "thread_x": [
+        -27.0,
+        -9.5
+      ],
+      "phase_x": 0.0,
+      "note": "Custom printed thread (\u00d818 major, 3 mm pitch, truncated 60-degree tooth) shared by spindle and collar only; not an ISO M18 nut fit. The hand does not matter for retention: the collar lock holds it in both directions."
+    },
+    "collar": {
+      "hub_x": [
+        -24.5,
+        -14.5
+      ],
+      "hub_outer_radius": 12.0,
+      "arm_x": [
+        18.5,
+        24.5
+      ],
+      "note": "Hub and arms 1.0 mm inboard of r5 (17 November 2026) for the flat stops. Outboard travel 2.0 mm keeps min_running_gap to the left carrier and the frame after full axial float plus the thread flank clearance (the clamp pushes the collar outboard through that play); inboard 5.0 mm to the thread end. Clamped hub width D 54.6-61.6 mm."
+    },
+    "min_running_gap": 0.25,
+    "running_gap_note": "min_running_gap is the gap that must remain after the rotating unit takes up its full axial float (thrust-sleeve gap + 608 seat clearance + carrier tongue/groove play, derived in stand.py).",
+    "lock": {
+      "purpose": "Positive collar retention in both directions; lift paddle to release.",
+      "slot_count": 12,
+      "slot_width": 2.5,
+      "key_angle_deg": 92.0,
+      "key_width": 2.0,
+      "key_tip_radius": 7.5,
+      "key_x_from_hub": [
+        0.15,
+        6.95
+      ],
+      "hole_clearance": 0.35,
+      "arm_root_angle_deg": 4.0,
+      "arm_radii": [
+        10.3,
+        11.3
+      ],
+      "arm_length_x": 7.7,
+      "pocket_radii": [
+        10.0,
+        12.1
+      ],
+      "pocket_end_angle_deg": 99.5,
+      "key_hole_roof_gap": 0.75,
+      "paddle_outer_radius": 14.5,
+      "paddle_length_x": 3.0,
+      "lift_clearance": 0.15,
+      "status": "Unprinted: arm strain, lift feel, key/slot wear and stop strength need a physical trial.",
+      "slot_floor_radius": 7.25
+    }
+  },
+  "frame": {
+    "base_x": 80.4,
+    "base_z": 130,
+    "base_height": 8,
+    "upright_inner_x": 37.4,
+    "upright_outer_x": 40.2,
+    "top_y": 111,
+    "left_top_half_z": 17,
+    "right_top_half_z": 21,
+    "left_window_apex_y": 87,
+    "right_window_apex_y": 78.1,
+    "window_radius": 6,
+    "carrier_floor_y": 90.8,
+    "carrier_face_x": 40.2,
+    "slot_outer_half_z": 14.2,
+    "slot_tongue_half_z": 12.2,
+    "tongue_x": [
+      38.4,
+      39.2
+    ]
+  },
+  "port": {
+    "nut_x": [
+      40.2,
+      44.4
+    ],
+    "nut_body_radius": 15,
+    "flange_radius": 17.6,
+    "flange_thickness": 1.6,
+    "wall_inner_x": 44.4,
+    "wall_thickness": 2,
+    "wall_thickness_basis": "assumed; measure before drilling",
+    "shaft_radius": 5,
+    "bore_radius": 5.2,
+    "thread_pitch": 2,
+    "thread_profile": {
+      "major_radius": 9,
+      "root_radius": 8.3,
+      "crest_width": 0.5,
+      "radial_clearance": 0.25,
+      "flank_clearance": 0.15
+    },
+    "thread_phase_x": 41.4,
+    "fitting_tip_x": 41.4,
+    "fitting_flange_x": [
+      46.4,
+      51.6
+    ],
+    "fitting_end_x": 55.1,
+    "cap_x": [
+      51.6,
+      57.6
+    ],
+    "wall_groove_x": [
+      46.3,
+      48.0
+    ],
+    "cap_groove_x": [
+      50.0,
+      51.7
+    ],
+    "wall_oring_id_cs": [
+      22,
+      2
+    ],
+    "cap_oring_id_cs": [
+      18,
+      2
+    ],
+    "hole_diameter": 18.6,
+    "dock_channel_x": [
+      40,
+      42
+    ],
+    "dock_outer_x": 44.2,
+    "dock_center_y": 103.5,
+    "dock_channel_radius": 17.8,
+    "dock_lip_radius": 15.2,
+    "dock_half_z": 21,
+    "dock_top_y": 111,
+    "dock_ramp_xy": [
+      [
+        37.4,
+        73.9
+      ],
+      [
+        44.2,
+        80.7
+      ]
+    ],
+    "crank_socket_x": [
+      35.4,
+      40.2
+    ],
+    "crank_shaft_x": [
+      35.4,
+      63.2
+    ],
+    "crank_hub_x": [
+      58.5,
+      67.1
+    ],
+    "crank_arm_x": [
+      63.2,
+      67.1
+    ],
+    "crank_grip_x": [
+      63.2,
+      77.7
+    ],
+    "crank_running_radius": 4.4,
+    "crank_neck_x": [
+      40.4,
+      41.0
+    ]
+  },
+  "spool": {
+    "flange_width": 67.8,
+    "hub_width": 59.6,
+    "bore_radius": 27.5,
+    "recess_radius": 40,
+    "outer_radius": 100,
+    "basis": "Widths measured; bore, recess and OD reference assumptions, not physical measurements."
+  }
+}

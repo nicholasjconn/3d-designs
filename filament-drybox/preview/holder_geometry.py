@@ -61,17 +61,40 @@ def axial(sc,dim,axis_y):
     dims=[{'label':f"Base {span('base')[0]:g} mm (× {span('base')[1]:g})",'from':[-span('base')[0]/2,span('base')[0]/2],'y':-8},
           {'label':f"Holder {fmt(span('holder'))}",'from':span('holder'),'y':-26},
           {'label':f"Spindle {fmt(span('spindle'))}",'from':span('spindle'),'y':-44},
-          {'label':f"Full, {wall:g} mm wall: {fmt(span('full_nominal_wall'))}",'from':span('full_nominal_wall'),'y':-62}]
+          {'label':f"Full, {wall:g} mm wall: {fmt(span('full_nominal_wall'))}",'from':span('full_nominal_wall'),'y':-62},
+          {'label':f"Magnet face gap {gap:g} mm / {gap/25.4:.3f} in",'from':[wi-mc['disc_front_to_wall_mm'],wo+mc['wheel_magnet_face_to_wall_mm']],'y':axis_y+46}]
     r=lambda x:wo+x
     # Drive labels sit right of the knob tip (side) with a leader to the feature; the section stays unobscured.
     side=L['full_nominal_wall']['measured'][1]+8;mid=lambda a:(a[0]+a[1])/2
     labels=[{'label':f"Wall {wall:g} mm (nominal, unmeasured)",'at':[wi+wall/2,axis_y+80,0]},
-            {'label':f"Magnet gap {gap:g} mm (was {mc['baseline_gap_mm_at_nominal_wall']:g}); torque not evaluated",'at':[wo,axis_y+30,0],'to':[side,axis_y+60,0],'warn':True},
             {'label':'Lip + retainer ring: 608 outer ring','at':[r(st['lip'][1]),axis_y+10.5,0],'to':[side,axis_y+34,0]},
             {'label':'X shoulder + axle clip: inner ring','at':[r(mid(st['clip_groove'])),axis_y-4.5,0],'to':[side,axis_y+8,0]},
-            {'label':'Fixed X 3 mm; 1 mm running gap','at':[r(1.5),axis_y-14,0],'to':[side,axis_y-18,0]},
+            {'label':f"Fixed X {st['crossing_front']:g} mm; {st['wheel_back']-st['crossing_front']:g} mm running gap",'at':[r(st['crossing_front']/2),axis_y-14,0],'to':[side,axis_y-18,0]},
             {'label':'Anchor pair: frame / X pocket','at':[wo,axis_y-55,-55],'to':[side,axis_y-44,-55]}]
     return {'dims':dims,'labels':labels,'wall':[wi,wo]}
+
+
+def native_axial_parts(native,system,build,checks):
+    """Closed native CAD half-sections at Z=0, with real cut faces, in world coordinates."""
+    import cadquery as cq
+    c=build['config'];y=c['bearings']['axis_y'];m=c['magnets']
+    wi=build['dimensions_mm']['right_wall_x'];wo=wi+checks['anchor_pairs']['wall_mm']
+    half=cq.Solid.makeBox(300,300,200,cq.Vector(-150,-20,-200))
+    shapes={n:cq.importers.importStep(str(native/f'{n}.step')).val() for n in build['checks']['parts']}
+    for n in ['mount-x','wheel','hub-retainer','axle-clip','outer-bearing']:
+        shapes['drive-'+n]=cq.importers.importStep(str(system/'wheel'/f'{n}.step')).val().translate((wo,y,0))
+    for name,x0 in [('drive-magnets-disc',c['disc']['front_x']-m['thickness']),
+                    ('drive-magnets-wheel',wo+checks['outside_drive']['stations_mm']['wheel_back'])]:
+        shapes[name]=cq.Compound.makeCompound([cq.Solid.makeCylinder(m['diameter']/2,m['thickness'],
+            cq.Vector(x0,y+m['pitch_radius']*math.cos(i*2*math.pi/m['count']),m['pitch_radius']*math.sin(i*2*math.pi/m['count'])),cq.Vector(1,0,0)) for i in range(m['count'])])
+    result=[]
+    for name,shape in shapes.items():
+        cut=shape.intersect(half)
+        if not cut.isValid():raise ValueError(f'{name}: native axial cut is invalid')
+        if cut.Volume()<1e-6:continue
+        vertices,triangles=cut.tessellate(.06,.25)
+        result.append(part('axial-'+name,[v.toTuple() for v in vertices],triangles,0))
+    return result
 
 
 def print_plate(prep,job,limit=60000):
@@ -145,6 +168,7 @@ def main():
         parts+=[part(n,m['vertices'],m['triangles'],axis_y if n in turning else 0) for n,m in system['parts'].items()]
         payload['parts']=parts
         sc=json.loads((a.system/'system-checks.json').read_text())
+        parts+=native_axial_parts(a.native,a.system,build,sc)
         payload['axial']=axial(sc,display['dimensions_mm'],axis_y)
         payload['system']={'inventory':manifest['inventory'],'checks':sc,
                            'git_head':manifest['git_head'],'working_tree_changes':manifest['working_tree_changes_under_filament_drybox']}
