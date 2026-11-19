@@ -4,12 +4,12 @@
   "entry_point": "cad/drybox.py",
   "parameters": "cad/direct_drive.json",
   "current_candidate": "compact 84.6 mm marked span",
-  "fabrication_state": "Eight matching parts prepared and owner settings reviewed; stand print deferred pending added base features; no print sent by agent.",
+  "fabrication_state": "Eight matching parts previously prepared; stand now includes frozen desiccant attachment and has a separate fit-print preparation. Box closure remains in development; no print sent by agent.",
   "parts": [
     {
       "id": "stand",
       "source": "direct_stand.py",
-      "action": "hold printing; base features requested by owner"
+      "action": "stand-only fit print; preserve T-key base attachment for future boxes"
     },
     {
       "id": "right-carrier",

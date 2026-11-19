@@ -10,7 +10,7 @@ inventory in `cad/drybox.json`. Generated files belong in ignored `build/`.
 
 | Part | Geometry source | Current action |
 | --- | --- | --- |
-| Stand with nut channel | `cad/direct_stand.py` | Current design retained; print deferred pending base features |
+| Stand with nut channel | `cad/direct_stand.py` | Frozen base attachment for two removable desiccant boxes; stand-only fit print prepared |
 | Left and right608 carriers | `cad/bearing_carrier.py` | Right revised; left unchanged from widened sliding version |
 | One-piece axle | `cad/direct_spindle.py`, helpers in `spindle.py` | Print matching recessed drive journal/key |
 | Locking collar | `cad/spindle.py` | Deeper lock geometry; version of existing print uncertain |
@@ -51,6 +51,16 @@ Remove the crank before lifting the axle, spool, bearings and carriers as a
 unit. Carriers intentionally slide upward without snaps. The fixed stand and
 wall nut remain in place. First tighten the wall fitting and inside nut with open hand access, then lower the stand over the nut flange. The channel is open upward. For spool replacement, remove the left carrier and
 608, lift the collar paddle and unscrew the collar. Do not pry on the nut flange.
+
+## Desiccant attachment
+
+The stand has two through-open T-key sockets at each end of its base.
+Future box closures stay on the boxes and must preserve this frozen attachment.
+Each box lifts 2.9 mm, then pulls outward; it does not require spool removal.
+The matching key dimensions and 0.35 mm socket allowance are authored in
+`cad/direct_stand.py`. Socket fit and actual container service room still need
+physical checks. The desiccant boxes and their spill-resistant refill caps
+remain under development and are not part of the current print inventory.
 
 ## Build and check
 

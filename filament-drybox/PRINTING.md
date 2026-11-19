@@ -144,3 +144,29 @@ physically before drilling. Check lip/flange flex, collar retention and seals;
 stop if a thread binds, a flange whitens or a bearing does not slide correctly.
 Nominal collision checks and a local load screen do not qualify printed
 strength, creep, airtightness or long-term operation.
+
+## Stand-only print with frozen desiccant attachment
+
+The current stand adds four through-open T-key sockets in the base rails.
+Its uprights, bearing guides, nut channel, axle center and overall envelope
+are unchanged. Box lids and their fasteners must fit this frozen connection;
+box closure development does not require another stand revision.
+The earlier nine-part plate above predates these sockets and is superseded
+for the stand alone. The eight other parts retain their geometry.
+
+The standalone stand is base-down, using the same factory 0.20 mm Standard
+H2D right 0.4 mm / PLA Basic / Textured PEI baseline and approved tree-slim,
+critical-only support configuration. The slicer generates no supports,
+material changes, prime tower or brim. Estimate: **1 h 24 min 24 s**, **37.068 g**,
+including **37.038 g** reconstructed useful deposition and approximately
+0.03 g reporting difference. Startup positive extrusion is approximately
+**0.183 g** separately; firmware purge/calibration and heating overhead remain
+additional and incompletely quantified. No support-interface filament is needed.
+
+The saved standalone project and its independent reimport produce identical
+resolved settings and G-code, with no warnings or mesh repairs. Print geometry
+is checked against the frozen native stand before handoff. This remains a
+first physical fit print: verify box-key fit and container access later,
+and inspect carrier seats, nut fit and loaded spool clearance as described
+above. No desiccant box or cap is approved for loose beads by this stand handoff.
+Retain the exact standalone fabrication inputs and source commit before printing.

@@ -20,6 +20,29 @@ def upright(c,side):
         s=s.cut(box(xa,xb,f['carrier_floor_y'],f['top_y']+1,-half,half))
     return s if side>0 else s.mirror('YZ')
 
+def desiccant_sockets(stand):
+    """Frozen box interface: two rigid T keys per end, lift 2.9 mm then pull.
+
+    Native axes: X along axle, Y up, Z outward. Matching box keys are
+    10 mm wide at Z59.8..62, 6 mm wide to Z67.2, and 2.4 mm tall.
+    Socket clearance is 0.35 mm. The upper opening runs through the rail end.
+    Closure, grips and bead containment belong entirely to the removable box.
+    """
+    clearance=.35
+    for side in [-1,1]:
+        for x in [-18,18]:
+            a,b,e=59.8-clearance,62+clearance,67.2+clearance
+            h,n=5+clearance,3+clearance
+            w=cq.Workplane('XZ').polyline([
+                (x-h,a),(x+h,a),(x+h,b),(x+n,b),
+                (x+n,e),(x-n,e),(x-n,b),(x-h,b)]).close().val()
+            socket=cq.Solid.extrudeLinear(w,[],cq.Vector(0,2.4+2*clearance,0)).translate((0,-clearance,0))
+            recess=box(x-6.15,x+6.15,2.4,8.2,a,65.2)
+            if side<0:
+                socket=socket.mirror('XY');recess=recess.mirror('XY')
+            stand=stand.cut(recess).cut(socket)
+    return stand
+
 def build(c):
     f,p=c['frame'],c['port']
     outer=rounded(cq.Workplane('XZ').rect(f['base_x'],f['base_z']).val(),2)
@@ -38,4 +61,4 @@ def build(c):
     dock=dock.cut(box(36,37.2,86,top+1,-16.2,16.2)).cut(box(37.1,40.2,90.6,top+1,-14.2,14.2))
     dock=dock.cut(u(17.8,40,42)).cut(u(15.2,41.9,x1+.1))
     dock=dock.intersect(box(f['upright_inner_x'],60,0,112,-30,30))
-    return one(stand.fuse(dock),'direct-drive stand')
+    return one(desiccant_sockets(stand.fuse(dock)),'direct-drive stand')
