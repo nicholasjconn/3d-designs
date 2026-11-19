@@ -20,6 +20,8 @@ inventory in `cad/drybox.json`. Generated files belong in ignored `build/`.
 | Sealing cap | `cad/sealing_cap.py` | Same shape; included on full nine-part plate |
 | Filament outlet body, locknut, storage cap | `cad/outlet.py`, `outlet.json` | Reported working; reuse |
 | Filament clip | `cad/clip.py`, `clip.json` | Deferred by owner |
+| Desiccant box and refill cap | `cad/desiccant_box.py`, `cad/desiccant_cap.py` | Fit-test one pair |
+| Refill funnel | `cad/desiccant_funnel.py` | Optional, print one for both boxes |
 
 Two purchased608 bearings (8 ×22 ×7 mm), one22 ×2 mm wall O-ring and one18 ×2 mm
 cap O-ring remain required. No magnetic drive parts or shaft retaining clips
@@ -59,8 +61,23 @@ Future box closures stay on the boxes and must preserve this frozen attachment.
 Each box lifts 2.9 mm, then pulls outward; it does not require spool removal.
 The matching key dimensions and 0.35 mm socket allowance are authored in
 `cad/direct_stand.py`. Socket fit and actual container service room still need
-physical checks. The desiccant boxes and their spill-resistant refill caps
-remain under development and are not part of the current print inventory.
+physical checks.
+
+The vented box is 80.4 mm wide and has a recessed threaded cap between the
+keys. Grip the sides to lift and remove it. Stand it on the flat outer face,
+undo the cap and pour through the 14.3 mm opening. The optional funnel locates
+in that opening. The CAD fill estimate is about 51 mL per box. The two docks
+take identical boxes rotated 180° about the vertical axis. Start by printing
+one box, one cap and one funnel. The box prints on its normal floor, the cap
+with its spokes down, and the funnel with its wide mouth down.
+
+Export these three parts separately from the stand and spindle:
+
+```sh
+python filament-drybox/cad/desiccant.py --output build/filament-drybox/desiccant
+```
+
+See [the desiccant fit-print settings](PRINTING.md#desiccant-fit-print).
 
 ## Build and check
 
