@@ -8,18 +8,18 @@
     2,
     4
   ],
-  "panel_hole_diameter_mm": 16.6,
+  "panel_hole_diameter_mm": 19.05,
   "flange": {
-    "diameter_mm": 32,
+    "diameter_mm": 34,
     "z_mm": [
       0,
       4
     ],
-    "across_flats_mm": 28,
-    "flats_purpose": "Two opposing wrench counterhold flats, limited to flange z0..4; leave 2 mm outside face-gland outer radius."
+    "across_flats_mm": 30,
+    "flats_purpose": "Two opposing wrench counterhold flats, limited to flange z0..4; leave 1 mm of flange outside the face gland at the flats."
   },
   "stem_thread": {
-    "major_diameter_mm": 16,
+    "major_diameter_mm": 18.4,
     "pitch_mm": 1.5,
     "z_mm": [
       -12,
@@ -123,18 +123,19 @@
     "root_corner_radius_mm": 0.3
   },
   "wall_ring": {
-    "nominal_id_mm": 18,
+    "nominal_id_mm": 22,
     "cross_section_mm": 2,
-    "gland_inner_radius_mm": 9.2,
-    "gland_outer_radius_mm": 12.0,
+    "gland_inner_radius_mm": 11.2,
+    "gland_outer_radius_mm": 14.0,
     "gland_depth_mm": 1.5,
-    "compressed_mean_radius_mm": 10.6,
+    "compressed_mean_radius_mm": 12.4818602136341,
     "compressed_axial_height_mm": 1.5,
-    "compressed_radial_width_mm": 2.515723270440252,
-    "status": "Sourced nominal 18x2 face gland geometry; printed fit and sealing unqualified",
-    "nominal_free_volume_mm3": 197.39208802178715,
+    "compressed_radial_width_mm": 2.5637204272682,
+    "status": "22 x 2 face ring stretches about 1.8 percent around the shoulder. Nominal squeeze is 25 percent before stretch. Printed fit and sealing require a physical test.",
+    "nominal_free_volume_mm3": 236.8705056261446,
     "display_geometry": "Volume-preserving compressed ellipse of nominal ring; not contact mechanics or seal qualification",
-    "root_corner_radius_mm": 0.3
+    "root_corner_radius_mm": 0.3,
+    "entry_radius_mm": 0.2
   },
   "fitting_envelope": {
     "purchased_part": "HANGLIFE PC4-M10 pass-through for 4 mm tube",

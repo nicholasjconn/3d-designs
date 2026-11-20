@@ -348,6 +348,14 @@ def make_body(c):
     if len(face_edges)!=2:
         raise ValueError(f"Expected two face gland floor corners, found {len(face_edges)}")
     rounded=rounded.fillet(wg["root_corner_radius_mm"],face_edges)
+    if 'entry_radius_mm' in wg:
+        shoulder_edges = [edge for edge in rounded.Edges()
+                          if edge.geomType() == 'CIRCLE'
+                          and abs(edge.Center().z - fl['z_mm'][0]) < 1e-6
+                          and abs(edge.radius() - wg['gland_inner_radius_mm']) < 1e-6]
+        if len(shoulder_edges) != 1:
+            raise ValueError(f'Expected one face gland entry edge, found {len(shoulder_edges)}')
+        rounded = rounded.fillet(wg['entry_radius_mm'], shoulder_edges)
     return require_one(rounded,"body with both glands root radii")
 
 
