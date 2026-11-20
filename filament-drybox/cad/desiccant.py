@@ -1,4 +1,4 @@
-"""Export the two matching desiccant parts and the optional refill funnel."""
+"""Export the desiccant box, cap, and shared refill accessories."""
 import argparse
 from pathlib import Path
 
@@ -7,6 +7,7 @@ import cadquery as cq
 import desiccant_box
 import desiccant_cap
 import desiccant_funnel
+import desiccant_sieve
 from direct_interfaces import one
 
 
@@ -19,6 +20,7 @@ def main():
         ("desiccant-box", desiccant_box),
         ("desiccant-cap", desiccant_cap),
         ("desiccant-funnel", desiccant_funnel),
+        ("desiccant-sieve", desiccant_sieve),
     ):
         part = one(module.build(), name)
         cq.exporters.export(part, str(args.output / f"{name}.step"))

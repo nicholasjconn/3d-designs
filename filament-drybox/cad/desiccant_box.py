@@ -6,7 +6,10 @@ import cadquery as cq
 import numpy as np
 
 from direct_interfaces import box, one
-from desiccant_interface import INNER, OUTER, SEAT_Z, THREAD, WIDTH, cylinder, helix, place_at_port
+from desiccant_interface import (
+    INNER, OUTER, SEAT_Z, STANDARD_VENT_LENGTH_MM, THREAD, VENT_WIDTH_MM, WIDTH,
+    cylinder, helix, place_at_port, vent_profile,
+)
 from spindle import thread_profiles
 
 HALF = WIDTH / 2
@@ -97,25 +100,6 @@ def mounting_key(x):
     return cq.Solid.extrudeLinear(wire, [], cq.Vector(0, 2.4, 0))
 
 
-def vent_profile(plane, x, center, length):
-    start, end = center - length / 2, center + length / 2
-    return (
-        cq.Workplane(plane)
-        .polyline(
-            [
-                (x - 1, start + 1),
-                (x, start),
-                (x + 1, start + 1),
-                (x + 1, end - 1),
-                (x, end),
-                (x - 1, end - 1),
-            ]
-        )
-        .close()
-        .val()
-    )
-
-
 def build():
     envelope = roof_prism(INNER, OUTER, -HALF, HALF)
     cavity = roof_prism(INNER + WALL, OUTER - WALL, -HALF + WALL, HALF - WALL, ROOF, FLOOR)
@@ -137,17 +121,19 @@ def build():
     slots = []
     for z in np.arange(69, 93, 3.2):
         for y in np.arange(7, roof(z - 1, ROOF) - 4, 9.5):
-            slots.append(hex_slot_face_x(-HALF - 0.2, HALF + 0.2, float(z), float(y), 2, 8))
+            slots.append(hex_slot_face_x(-HALF - 0.2, HALF + 0.2, float(z), float(y),
+                                         VENT_WIDTH_MM, STANDARD_VENT_LENGTH_MM))
     # A uniform grid leaves an uninterrupted flat rim for the refill stance.
     for x in np.linspace(-36.8, 36.8, 24):
-        for y, length in [(8, 8), (17.5, 8), (27, 8), (36.5, 8), (46, 6)]:
+        for y, length in [(8, STANDARD_VENT_LENGTH_MM), (17.5, STANDARD_VENT_LENGTH_MM),
+                          (27, STANDARD_VENT_LENGTH_MM), (36.5, STANDARD_VENT_LENGTH_MM), (46, 6)]:
             profile = vent_profile('XY', float(x), y, length)
             slot = cq.Solid.extrudeLinear(profile, [], cq.Vector(0, 0, WALL + 0.4))
             slots.append(slot.translate((0, 0, OUTER - WALL - 0.2)))
     # Short-face slots open above the eight-millimeter rail. Leave the entire
     # cap web and the lower key land intact.
     for x in [s * a for s in [-1, 1] for a in np.arange(17, HALF - 2, 3.2)]:
-        profile = vent_profile('XY', x, 13.6, 8)
+        profile = vent_profile('XY', x, 13.6)
         slot = cq.Solid.extrudeLinear(profile, [], cq.Vector(0, 0, WALL + 0.4))
         slots.append(slot.translate((0, 0, INNER - 0.2)))
 
