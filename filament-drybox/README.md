@@ -20,8 +20,8 @@ inventory in `cad/drybox.json`. Generated files belong in ignored `build/`.
 | Sealing cap | `cad/sealing_cap.py` | Same shape; included on full nine-part plate |
 | Filament outlet body, locknut, storage cap | `cad/outlet.py`, `outlet.json` | Reported working; reuse |
 | Filament barrel stop | `cad/clip.py`, `clip.json` | One barrel for a fit print |
-| Desiccant box and refill cap | `cad/desiccant_box.py`, `cad/desiccant_cap.py` | Fit-test one pair |
-| Refill funnel | `cad/desiccant_funnel.py` | Optional, print one for both boxes |
+| Desiccant box and refill cap | `cad/desiccant_box.py`, `cad/desiccant_cap.py` | Flat refill wall and flush coin-slot cap. Fit-test one pair. |
+| Screw-in refill funnel | `cad/desiccant_funnel.py` | Shared by both boxes. The longer threaded stem fits the flush port in CAD. |
 
 Two purchased608 bearings (8 ×22 ×7 mm), one22 ×2 mm wall O-ring and one18 ×2 mm
 cap O-ring remain required. No magnetic drive parts or shaft retaining clips
@@ -63,21 +63,24 @@ The matching key dimensions and 0.35 mm socket allowance are authored in
 `cad/direct_stand.py`. Socket fit and actual container service room still need
 physical checks.
 
-The vented box is 80.4 mm wide and has a recessed threaded cap between the
-keys. Grip the sides to lift and remove it. Stand it on the flat outer face,
-undo the cap and pour through the 14.3 mm opening. The optional funnel locates
-in that opening. The CAD fill estimate is about 51 mL per box. The two docks
-take identical boxes rotated 180° about the vertical axis. Start by printing
-one box, one cap and one funnel. The box prints on its normal floor, the cap
-with its spokes down, and the funnel with its wide mouth down.
+The vented box is 80.4 mm wide. Its coin-slot cap sits flush between the
+mounting keys and threads into a 6.47 mm end wall. The chamber face is flat all
+the way to the bore, with about 58.6 mL of CAD fill volume below the opening.
+The new box takes the matching coin-slot cap. The two docks take identical
+boxes rotated 180° about the vertical axis.
 
-Export these three parts separately from the stand and spindle:
+Grip the sides to lift and remove the box, then stand it on the broad flat
+outer face with the port facing up. Use a U.S. quarter to start turning the cap.
+The shared 56 mm screw-in funnel retains its 6.55 mm stem and 2.4 mm thread
+pitch. Cap engagement, emptying and funnel fit still need a physical check.
+
+Export the box, cap and funnel separately from the stand and spindle:
 
 ```sh
 python filament-drybox/cad/desiccant.py --output build/filament-drybox/desiccant
 ```
 
-See [the desiccant fit-print settings](PRINTING.md#desiccant-fit-print).
+See [the desiccant refill print guidance](PRINTING.md#desiccant-refill-parts).
 
 ## Build and check
 

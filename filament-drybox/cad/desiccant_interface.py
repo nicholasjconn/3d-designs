@@ -2,13 +2,17 @@
 
 import cadquery as cq
 
-from spindle import _helical
+from spindle import _helical, thread_profiles
 
 WIDTH = 80.4
 INNER, OUTER = 65.35, 95.7
 VENT_WIDTH_MM = 2.0
 STANDARD_VENT_LENGTH_MM = 8.0
-PORT_Y, SEAT_Z = 11.5, 69.5
+CAP_HEAD_RADIUS_MM = 9.3
+CAP_HEAD_THICKNESS_MM = 1.72
+PORT_Y = 10.25
+SEAT_Z = INNER + CAP_HEAD_THICKNESS_MM
+PORT_THREAD_DEPTH_MM = 4.75
 PITCH = 2.4
 THREAD = dict(
     root_radius=6.85,
@@ -37,3 +41,14 @@ def place_at_port(shape):
 
 def helix(profile, z0, z1):
     return _helical(profile, PITCH, z0, z1, 0, 0, False).rotate((0, 0, 0), (0, 1, 0), -90)
+
+
+def refill_stem(lead_start=3.45):
+    """Male thread and tapered lead for the refill port, measured from its seat."""
+    male_profile, _, _ = thread_profiles(THREAD)
+    lead_length = 1.05
+    end = lead_start + lead_length
+    core = cylinder(THREAD['root_radius'], -0.11, end)
+    tooth = helix(male_profile, 0.35, end)
+    tip = cq.Solid.makeCone(8.15, 6.35, lead_length, cq.Vector(0, 0, lead_start))
+    return core.fuse(tooth).intersect(cylinder(8.2, -0.2, lead_start + 0.01).fuse(tip))

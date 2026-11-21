@@ -5,16 +5,18 @@ import math
 import cadquery as cq
 import numpy as np
 
-from direct_interfaces import box, one
+from direct_interfaces import one
 from desiccant_interface import (
-    INNER, OUTER, SEAT_Z, STANDARD_VENT_LENGTH_MM, THREAD, VENT_WIDTH_MM, WIDTH,
-    cylinder, helix, place_at_port, vent_profile,
+    INNER, OUTER, PORT_THREAD_DEPTH_MM, SEAT_Z, STANDARD_VENT_LENGTH_MM, THREAD,
+    VENT_WIDTH_MM, WIDTH, cylinder, helix, place_at_port, vent_profile,
 )
 from spindle import thread_profiles
 
 HALF = WIDTH / 2
 WALL, FLOOR, ROOF = 1.6, 1.8, 1.8
 AXIS_Y, ROOF_RADIUS = 104.0, 106.0
+CHAMBER_Z = SEAT_Z + PORT_THREAD_DEPTH_MM
+MOUTH_RADIUS = 9.5
 
 
 def roof(z, depth=0):
@@ -102,24 +104,21 @@ def mounting_key(x):
 
 def build():
     envelope = roof_prism(INNER, OUTER, -HALF, HALF)
-    cavity = roof_prism(INNER + WALL, OUTER - WALL, -HALF + WALL, HALF - WALL, ROOF, FLOOR)
+    cavity = roof_prism(CHAMBER_Z, OUTER - WALL, -HALF + WALL, HALF - WALL, ROOF, FLOOR)
     body = envelope.cut(cavity)
     for x in [-18, 18]:
         body = body.fuse(mounting_key(x))
-    # Pocket opens through the upper edge so fingers can reach the cap.
-    # Add material inside the shell first so the pocket only communicates through the port.
-    port_web = envelope.intersect(box(-14.3, 14.3, 0, 45, INNER, SEAT_Z + 1.8))
-    collar = place_at_port(cylinder(10.25, -0.4, 4.75)).intersect(envelope)
-    body = body.fuse(port_web, collar)
-    body = body.cut(box(-12.5, 12.5, 1.9, 45, INNER - 0.1, SEAT_Z))
+    # Cut the cap seat and bore within the planar end wall.
     _, female_profile, bore_r = thread_profiles(THREAD)
-    bore = cylinder(bore_r, -0.2, 5.3)
-    groove = helix(female_profile, -0.2, 4.75)
+    mouth = cylinder(MOUTH_RADIUS, INNER - SEAT_Z - 0.1, 0)
+    bore = cylinder(bore_r, -0.2, CHAMBER_Z - SEAT_Z + 0.15)
+    groove = helix(female_profile, -0.2, PORT_THREAD_DEPTH_MM)
     lead = cq.Solid.makeCone(8.55, bore_r, 1.42, cq.Vector(0, 0, -0.12))
-    body = body.cut(place_at_port(bore.fuse(groove, lead)))
+    port = mouth.fuse(bore, groove, lead)
+    body = body.cut(place_at_port(port))
 
     slots = []
-    for z in np.arange(69, 93, 3.2):
+    for z in np.arange(73.2, 93, 3.2):
         for y in np.arange(7, roof(z - 1, ROOF) - 4, 9.5):
             slots.append(hex_slot_face_x(-HALF - 0.2, HALF + 0.2, float(z), float(y),
                                          VENT_WIDTH_MM, STANDARD_VENT_LENGTH_MM))
@@ -130,20 +129,15 @@ def build():
             profile = vent_profile('XY', float(x), y, length)
             slot = cq.Solid.extrudeLinear(profile, [], cq.Vector(0, 0, WALL + 0.4))
             slots.append(slot.translate((0, 0, OUTER - WALL - 0.2)))
-    # Short-face slots open above the eight-millimeter rail. Leave the entire
-    # cap web and the lower key land intact.
+    # Short-face slots open above the rail and pass through the flat end wall.
     for x in [s * a for s in [-1, 1] for a in np.arange(17, HALF - 2, 3.2)]:
         profile = vent_profile('XY', x, 13.6)
-        slot = cq.Solid.extrudeLinear(profile, [], cq.Vector(0, 0, WALL + 0.4))
+        slot = cq.Solid.extrudeLinear(profile, [], cq.Vector(0, 0, CHAMBER_Z - INNER + 0.4))
         slots.append(slot.translate((0, 0, INNER - 0.2)))
 
-    # Roof slots open into the chamber. The inner row stops either side of the
-    # threaded collar. The outer row stops short of the outer wall.
+    # Keep both rows on the chamber side so the roof slots are through cuts.
     for x in np.arange(-35.2, 35.3, 3.2):
-        for start, end in [(70.0, 79.8), (82.0, 90.0)]:
-            if start < 75 and abs(x) < 16:
-                # Resume the short row once the collar and its rim are behind it.
-                start = 76.0
+        for start, end in [(72.55, 80.0), (82.0, 90.0)]:
             z = (start + end) / 2
             low = roof(start, ROOF) - 1
             profile = vent_profile('XZ', float(x), z, end - start)

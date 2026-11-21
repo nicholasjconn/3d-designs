@@ -172,23 +172,16 @@ above. No desiccant box or cap is approved for loose beads by this stand handoff
 Retain the exact standalone fabrication inputs and source commit before printing.
 
 
-## Desiccant fit print
+## Desiccant refill parts
 
-Print one flat-front desiccant box, one matching cap and the optional funnel.
-The established H2D right 0.4 mm nozzle, PLA Basic, Textured PEI and 0.20 mm
-Standard profile use single-PLA tree slim supports in critical areas. Slice
-the box with its normal floor down, the cap with its spokes down, and the
-funnel with its wide mouth down. The box and funnel have no support in the
-checked slice. About 0.27 g of supports form under the cap's finger spokes.
-Do not use the box's refill orientation for printing: with the broad outer
-face down, the slicer generates support inside the bead chamber.
+Export the box, matching coin-slot cap and revised threaded funnel from
+`cad/desiccant.py`. The intended orientations put the box on its normal
+floor, the cap with its slotted face down, and the funnel mouth-down with
+its thread vertical. Fit-test one box and cap on the existing stand.
 
-The checked one-box plate estimates 1 h 42 min and 25.22 g. Useful parts account
-for 24.92 g, including 4.05 g for the funnel. The plate uses one material and
-no purge tower or filament changes. Startup G-code commands about 0.18 g of
-positive extrusion separately. Actual firmware startup, purge and calibration
-are not fully captured by this accounting.
-
-Start with an empty-box fit. Check cap turning and seating, funnel fit, side
-access inside the container, and clearance during lifting. Before filling the
-installed box, shake the closed box with a small bead charge over a tray.
+To refill, lift the box out of its dock and stand it on its broad flat outer
+face with the port facing up. Use a quarter to start loosening the cap.
+Check that the cap runs freely and seats flush when tightened. Screw the
+funnel in clockwise and check that it seats flat, holds under a gentle lift
+and unscrews cleanly. Use a small charge of beads to check emptying past the
+flush bore and retention with the cap closed.

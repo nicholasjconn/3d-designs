@@ -4,7 +4,7 @@
   "entry_point": "cad/drybox.py",
   "parameters": "cad/direct_drive.json",
   "current_candidate": "compact 84.6 mm marked span",
-  "fabrication_state": "Eight drive parts and the stand have separate fit-print preparations. One vented desiccant box, cap and funnel are prepared as a separate trial.",
+  "fabrication_state": "Eight drive parts and the stand have separate fit-print preparations. The flat-wall desiccant box, matching coin-slot cap and threaded funnel need a physical fit check.",
   "parts": [
     {
       "id": "stand",
@@ -54,17 +54,17 @@
     {
       "id": "desiccant-box",
       "source": "desiccant_box.py",
-      "action": "fit-test one box on the frozen sockets; eventual quantity two"
+      "action": "fit-test one flat-wall box on the frozen sockets; eventual quantity two"
     },
     {
       "id": "desiccant-cap",
       "source": "desiccant_cap.py",
-      "action": "fit-test one threaded refill cap"
+      "action": "fit-test one flush coin-slot cap with the revised box"
     },
     {
       "id": "desiccant-funnel",
       "source": "desiccant_funnel.py",
-      "action": "print one optional funnel for both boxes"
+      "action": "print one screw-in funnel for both boxes"
     }
   ],
   "purchased": [

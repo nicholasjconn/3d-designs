@@ -14,8 +14,8 @@ specification.
 | PTFE printer lead | As routed | 4 mm OD × 2.5 mm ID; [selected example](https://www.amazon.com/dp/B0F5HG7659). One continuous removable lead; the final length depends on the printer route. |
 | NBR O-ring | 2 | 18 mm ID × 2 mm cross-section: one wall seal and one cap seal. Kit hardness/tolerances and printed sealing remain unqualified. |
 | Humidity monitor | 1 | [TempPro / ThermoPro TP49](https://www.amazon.com/dp/B07WCR5Y4B), initially a trial candidate. A displayed minimum of 10% RH does not establish accuracy below that limit. |
-| Refillable desiccant | As tested | Orange indicating silica gel; [selected example](https://www.amazon.com/dp/B01I5Y2DG6). Installed mass and bead-retention openings are unfinished. |
-| Desiccant baskets | Not designed | Bottom-side baskets are still to be designed; the holder carries no desiccant. |
+| Refillable desiccant | As tested | Orange indicating silica gel; [selected example](https://www.amazon.com/dp/B01I5Y2DG6). Verify installed mass and bead retention through the 2.0 mm CAD vent slots. |
+| Desiccant boxes and coin-slot caps | 2 pairs | Removable printed parts with one shared screw-in funnel. See the [desiccant attachment](README.md#desiccant-attachment). |
 
 The drive magnets sit behind closed printed skins, glued into open pockets.
 The anchor magnets sit flush in 3.1 mm glue pockets that open toward the

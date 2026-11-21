@@ -1,21 +1,22 @@
-"""Finger-tight threaded closure for the desiccant box."""
+"""Flush threaded closure with a blind coin slot."""
 
 from direct_interfaces import box, one
-from desiccant_interface import THREAD, cylinder, helix, place_at_port
-from spindle import thread_profiles
-import cadquery as cq
+from desiccant_interface import (
+    CAP_HEAD_RADIUS_MM, CAP_HEAD_THICKNESS_MM, cylinder, place_at_port, refill_stem,
+)
+
+SLOT_LENGTH_MM = 12.8
+SLOT_WIDTH_MM = 2.2
+SLOT_DEPTH_MM = 1.65
 
 
 def build():
-    male_profile, _, _ = thread_profiles(THREAD)
-    # Cap seats on a flat annulus. Three radial ribs stand proud of the cap into the recess.
-    core = cylinder(THREAD['root_radius'], -0.11, 4.5)
-    tooth = helix(male_profile, 0.35, 4.5)
-    tip = cq.Solid.makeCone(8.15, 6.35, 1.05, cq.Vector(0, 0, 3.45))
-    core = core.fuse(tooth).intersect(cylinder(8.2, -0.2, 3.46).fuse(tip))
-    cap = cylinder(9.3, -1.72, 0).fuse(core)
-    for angle in [0, 120, 240]:
-        rib = box(0, 8.6, -1.05, 1.05, -3.58, -1.62).rotate((0, 0, 0), (0, 0, 1), angle)
-        cap = cap.fuse(rib)
-    cap = one(cap.clean(), 'three-spoke refill cap')
-    return place_at_port(cap)
+    head_face = -CAP_HEAD_THICKNESS_MM
+    cap = cylinder(CAP_HEAD_RADIUS_MM, head_face, 0).fuse(refill_stem())
+    # The solid stem backs the entire floor of the slot.
+    slot = box(
+        -SLOT_LENGTH_MM / 2, SLOT_LENGTH_MM / 2,
+        -SLOT_WIDTH_MM / 2, SLOT_WIDTH_MM / 2,
+        head_face - 0.1, head_face + SLOT_DEPTH_MM,
+    )
+    return place_at_port(one(cap.cut(slot), 'coin-slot refill cap'))
