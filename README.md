@@ -10,8 +10,8 @@ when making a physical prototype.
 ## Projects
 
 - [Filament drybox](filament-drybox/README.md): a passive spool holder with a
-  bearing-supported spindle and removable through-wall crank. Matching compact
-  stand, carriers, spindle, collar, nut and crank are prepared for a physical fit test.
+  bearing-supported spindle, removable through-wall crank, filament outlet and
+  two removable desiccant boxes.
 
 ## Tools
 

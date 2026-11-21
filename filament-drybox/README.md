@@ -12,19 +12,21 @@ inventory in `cad/drybox.json`. Generated files belong in ignored `build/`.
 | --- | --- | --- |
 | Stand with nut channel | `cad/direct_stand.py` | Frozen base attachment for two removable desiccant boxes; stand-only fit print prepared |
 | Left and right608 carriers | `cad/bearing_carrier.py` | Right revised; left unchanged from widened sliding version |
-| One-piece axle | `cad/direct_spindle.py`, helpers in `spindle.py` | Print matching recessed drive journal/key |
-| Locking collar | `cad/spindle.py` | Deeper lock geometry; version of existing print uncertain |
+| One-piece axle | `cad/direct_spindle.py`, helpers in `spindle.py` | Print the next axle in PETG |
+| Locking collar | `cad/spindle.py` | Print the matching collar in PETG |
 | Inside wall nut | `cad/inside_nut.py` | Print compact flanged version |
-| Removable crank | `cad/direct_crank.py` | Print matching longer shaft and deep socket |
-| Wall fitting | `cad/wall_fitting.py` | Same shape; included on full nine-part plate |
-| Sealing cap | `cad/sealing_cap.py` | Same shape; included on full nine-part plate |
-| Filament outlet body, locknut, storage cap | `cad/outlet.py`, `outlet.json` | Reported working; reuse |
-| Filament barrel stop | `cad/clip.py`, `clip.json` | One barrel for a fit print |
+| Removable crank | `cad/direct_crank.py` | One matching crank can serve multiple dryboxes |
+| Wall fitting | `cad/wall_fitting.py` | Two fixed grip tabs for holding the fitting while turning the cap; fit-test pending |
+| Sealing cap | `cad/sealing_cap.py` | Six rounded grip spokes on the crank storage cap; same thread and seal seat |
+| Filament outlet body and locknut | `cad/outlet.py`, `outlet.json` | Matched pair for the same 3/4″ wall hole as the crank |
+| Filament outlet storage cap | `cad/outlet.py`, `outlet.json` | Reuse |
+| Filament barrel stop | `cad/clip.py`, `clip.json` | Wider print and seating foot with the selected 2.025 mm bore |
 | Desiccant box and refill cap | `cad/desiccant_box.py`, `cad/desiccant_cap.py` | Flat refill wall and flush coin-slot cap. Fit-test one pair. |
 | Screw-in refill funnel | `cad/desiccant_funnel.py` | Shared by both boxes. The longer threaded stem fits the flush port in CAD. |
 
-Two purchased608 bearings (8 ×22 ×7 mm), one22 ×2 mm wall O-ring and one18 ×2 mm
-cap O-ring remain required. No magnetic drive parts or shaft retaining clips
+Use two 608 bearings (8 × 22 × 7 mm), two 22 × 2 mm wall O-rings, one 20 × 2 mm
+crank cap O-ring and one 18 × 2 mm outlet cap O-ring. Ring sizes are inside diameter × cross-section.
+No magnetic drive parts or shaft retaining clips
 are used by the current direct-drive assembly.
 
 ## Dimensions and physical limits
@@ -41,10 +43,18 @@ outboard retaining plate is2.2 mm thick and overlaps the flange2.4 mm radially.
 The drive-side bearing sits at X28.3–35.3 mm and its carrier back at X40.2 mm.
 The carrier and nut meet at that stationary plane with zero nominal gap;
 printed faces may need cleanup. The drive key ends at X39.2 mm, giving1 mm
-before the nut and3.8 mm nominal engagement in the removable crank (at least3.4 mm at the modeled axial-play limits). The running crank shaft isØ8.8 through theØ10.4 fitting bore, giving0.8 mm nominal radial clearance; a short neck transition reaches0.7 mm at the most outward modeled float. The socket ends1 mm past the nominal axle tip. The overall crank length and stationary cap are unchanged.
+before the nut and3.8 mm nominal engagement in the removable crank (at least3.4 mm at the modeled axial-play limits). The running crank shaft isØ8.8 through theØ10.4 fitting bore, giving0.8 mm nominal radial clearance; a short neck transition reaches0.7 mm at the most outward modeled float. The socket ends1 mm past the nominal axle tip. The stationary cap has six grip spokes on a Ø44 mm envelope and keeps its original thread and seal seat.
 
 The wall is assumed2 mm, not measured. The printed custom matching thread is
 Ø18 major,2 mm pitch, with3 mm overlap (1.5 turns) at that wall thickness.
+Both fittings use 3/4″ (19.05 mm) holes. Each wall face groove has a Ø22.4 mm
+inner shoulder, Ø28 mm outer edge, 1.5 mm depth and 2.8 mm radial width.
+The crank cap face groove uses the same depth and width on a Ø20.4 mm shoulder
+with a Ø26 mm outer edge. The 20 × 2 mm ring clears the Ø18 mm thread on the way in.
+The wall fitting has two rounded 12 mm wide tabs across a 65 mm tip span.
+Each extends 10.5 mm beyond the sweep of the cap spokes. Hold the fitting at
+the tabs while turning the cap so the inside nut stays clamped. Both threads
+remain right-handed. Verify finger access and continued wall clamp on the actual tub.
 Finger-snug assembly only; no tightening-torque or printed-strength rating is
 established. Hole alignment, actual wall/spool fit, support removal, collar lock,
 loaded rotation, wear, creep and sealing remain physical checks.
@@ -82,6 +92,19 @@ python filament-drybox/cad/desiccant.py --output build/filament-drybox/desiccant
 
 See [the desiccant refill print guidance](PRINTING.md#desiccant-refill-parts).
 
+## Physical fit checks
+
+- Check both 608 bearings on the PETG journals, the collar lock in both directions,
+  and free rotation with a loaded spool. Verify the loaded assembly at the intended
+  drying temperature before relying on it for hot drying.
+- Check the crank wall fitting, inside nut and both O-ring seats after removing
+  support. Hold the tabs when turning the cap and check that the wall clamp stays
+  tight. Check the outlet and the clearance under its storage cap.
+- Check that each coin-slot cap seats flush and opens with a quarter, the funnel
+  seats and holds, and a small bead charge pours out cleanly.
+- The TP49 did not fit with the spool installed. The container sits lid-down.
+  Check any future sensor mount for loaded-spool clearance, visibility and vent access.
+
 ## Build and check
 
 Use a Python environment with the repository requirements (CadQuery, NumPy,
@@ -92,7 +115,7 @@ python filament-drybox/cad/drybox.py --output build/filament-drybox/direct-drive
 python filament-drybox/cad/direct_mechanics.py --output build/filament-drybox/direct-drive-current/mechanical-screen.json
 ```
 
-The first command rebuilds every current part from authored geometry, validates
+The first command rebuilds the direct-drive assembly from authored geometry, validates
 single solids and checks rotation, float, lift-out, crank extraction, thread
 run-in and positive stops. It writes source/output identities and assumptions.
 There are no prior STEP or agent-workspace prerequisites. Add `--with-outlet`

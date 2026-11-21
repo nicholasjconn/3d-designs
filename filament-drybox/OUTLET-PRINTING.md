@@ -2,7 +2,8 @@
 
 Prepare one set before making four copies. The complete assembly has four
 printed parts: bulkhead body, inside locknut, storage cap and filament
-barrel stop. It uses one HANGLIFE fitting, two 18 mm ID × 2 mm NBR O-rings,
+barrel stop. It uses one HANGLIFE fitting, a 22 mm ID × 2 mm wall O-ring,
+an 18 mm ID × 2 mm cap O-ring,
 and one continuous 4 mm OD × 2.5 mm ID PTFE lead. All printed parts use the
 owner-selected Bambu PLA Basic. The owner reports that the first outlet set
 was started and its clip has failed to stay closed; see the print record below.
@@ -30,20 +31,63 @@ that the tube projects inside the box. Press the release collar to remove the
 whole lead for storage. Leave enough bare filament to thread the stop and bend
 the tip, then fit the cap. The connected printing path is not claimed hermetic.
 
+## Outlet for a 3/4-inch hole
+
+Both fittings use a 3/4″ (19.05 mm) container hole. The outlet's 18.40 mm
+mounting thread leaves 0.65 mm of nominal diametral clearance. The new
+locknut matches its 1.5 mm pitch and the stem keeps its 12 mm length.
+The larger 34 mm flange has the same radial wall-gland dimensions as the
+crank fitting. The wall ring now grips a Ø22.4 mm shoulder in a 1.50 mm deep,
+2.80 mm wide groove. Use a 22 × 2 mm wall O-ring and the existing 18 × 2 mm
+ring under the storage cap. Reuse the storage cap and quick-release tube fitting.
+
+Print one body neck-down and one nut flat. The checked process uses Bambu
+PLA Basic, H2D right Standard-flow 0.4 mm, Textured PEI and 0.20 mm Standard
+with critical-only Tree Slim. The slice predates the face-groove revision.
+Its estimate is 34 min 26 s, 8.29 g in the
+parts and 1.68 g of support on the body. Support reaches the cap-ring groove.
+The wall-ring groove and tube guide have no generated support paths. Clean
+the cap groove, then check the printed stem in a 3/4″ test hole and thread
+the matching nut by hand before installing.
+
+Keep the body neck-down with Tree Slim. A same-body orientation comparison
+with critical-only Tree Slim put support near the cap-side thread and ring
+groove in the neck-down slice. Stem-down moved interface paths to the
+mounting stem and wall-face groove and still put interface paths near the
+cap-side ring groove. Inspect support removal on the actual part. If cleanup
+continues to damage the cap thread, test a local painted support blocker on
+its flanks while retaining support under the adjoining shoulder.
+
 ## Barrel stop fit print
 
-Print one stop upright with the two wings on the bed and the round 1.9 mm
-bore vertical. The 16 mm barrel sits on the push-to-release collar, with the
-wings spanning 14 mm. Thread the bare 1.75 mm filament and bend it sideways
-just beyond the rounded exit. The bend catches the barrel during rewind.
-To reload, pull out a little slack, hold the straight strand, snip below the
-bend and slide the stop off before threading the PTFE lead.
+The first 1.90 mm bore printed too tight to thread the filament (source
+`387fd88`). The owner chose a 2.025 mm bore, halfway between the
+two-dot and three-dot samples. The first print at that size failed as spaghetti.
+The retry keeps the 2.025 mm bore and widens the wings to 16 × 9.5 mm. The
+measured CAD bed contact increases from 67 to 145 mm². It prints without dots.
 
-The checked plate uses Bambu PLA Basic, H2D right 0.4 mm, Textured PEI and
-0.20 mm Standard with critical-only Tree Slim. The slice generates no support,
-brim or tower. The estimate is 10 min 35 s and about 0.57 g of useful PLA.
-Verify that the strand threads by hand, the bent tip catches under a pull,
-and the cap screws on without touching the parked tip.
+| Dots on the wings | Nominal bore |
+| --- | ---: |
+| 1 | 1.95 mm |
+| 2 | 2.00 mm |
+| 3 | 2.05 mm |
+| 4 | 2.10 mm |
+
+To reproduce the comparison, run
+`python filament-drybox/cad/clip.py --bore-fit-trials --output build/filament-drybox/bore-trials`
+from the repository root. The four marked STEP files print
+upright with the wings on the bed. The checked plate uses Bambu PLA Basic,
+H2D right Standard-flow 0.4 mm, Textured PEI and 0.20 mm Standard with
+critical-only Tree Slim. The slice generates no support, brim or tower.
+The estimate is 16 min 10 s and 2.27 g of useful PLA.
+
+Try the same strand in each bore and choose the smallest that threads through
+the full length by hand without forcing. The 16 mm barrel sits on the
+push-to-release collar. Bend the exposed tip
+sideways just beyond the rounded exit. Verify the bend holds under a pull and
+the cap screws on without touching the tip. To reload, pull out a little slack,
+hold the straight strand, snip below the bend and slide the stop off before
+threading the PTFE lead.
 
 ## Superseded flat-jaw clip fit print
 

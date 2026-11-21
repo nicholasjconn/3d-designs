@@ -4,7 +4,7 @@
   "entry_point": "cad/drybox.py",
   "parameters": "cad/direct_drive.json",
   "current_candidate": "compact 84.6 mm marked span",
-  "fabrication_state": "Eight drive parts and the stand have separate fit-print preparations. The flat-wall desiccant box, matching coin-slot cap and threaded funnel need a physical fit check.",
+  "fabrication_state": "The owner reports a functioning drybox. For the next iteration, use PETG for the spool axle and collar. The flat-wall desiccant box, matching coin-slot cap and threaded funnel need a physical fit check.",
   "parts": [
     {
       "id": "stand",
@@ -19,7 +19,8 @@
     {
       "id": "axle",
       "source": "direct_spindle.py",
-      "action": "print"
+      "material": "PETG",
+      "action": "print matching recessed drive journal and key"
     },
     {
       "id": "inside-nut",
@@ -29,7 +30,7 @@
     {
       "id": "crank",
       "source": "direct_crank.py",
-      "action": "print"
+      "action": "shared tool; reuse the matching crank across copies"
     },
     {
       "id": "left-carrier",
@@ -39,7 +40,8 @@
     {
       "id": "collar",
       "source": "spindle.py",
-      "action": "deeper-lock candidate unchanged; include if printed version uncertain"
+      "material": "PETG",
+      "action": "print matching deeper-lock collar"
     },
     {
       "id": "fitting",
@@ -85,8 +87,8 @@
     }
   ],
   "unchanged_subsystems": {
-    "outlet": "outlet.py/outlet.json; body, locknut and storage cap reported working",
-    "filament-stop": "clip.py/clip.json; one-piece barrel fit prototype"
+    "outlet": "outlet.py/outlet.json; 3/4-inch body and matching locknut; reuse storage cap",
+    "filament-stop": "clip.py/clip.json; 2.025 mm bore selected after fit comparison"
   },
   "assumptions": [
     "Container wall2 mm, not measured",

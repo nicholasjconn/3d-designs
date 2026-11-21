@@ -1,9 +1,42 @@
-# Current direct-drive fit print
+# Direct-drive print preparation
 
-The current plate is built from `cad/drybox.py` and `direct_drive.json`.
+The original PLA fit plate was built from `cad/drybox.py` and `direct_drive.json`.
 Magnetic-drive plates and earlier axle/stand projects are superseded.
-This is a physical fit-test candidate, not strength or sealing qualification.
+The PLA fit-print estimates below are retained for reference. Use the following material specification for the next iteration.
 No printer job is sent by the build or preparation commands.
+
+Use Bambu Studio Tree Slim whenever a drybox plate needs support. The owner
+found it easier to remove from the wall fittings. Inspect the support preview
+around the threads and O-ring grooves before sending a fitting plate.
+
+## Current materials and plates
+
+Print the spool axle and locking collar in PETG on their own plate, using the
+factory profile for the PETG loaded in the printer. Use the current
+`cad/drybox.py` exports. Keep the axle drive-end down and the collar outboard
+stop-ring face down. The estimates and single-PLA preparation command below
+describe the earlier fit print. Slice the PETG plate with the selected profile
+and check the 608 journals, collar lock and running clearance on the new prints.
+
+The second-copy plates use the H2D 0.4 mm nozzles, Textured PEI and
+0.20 mm Standard. The two threaded wall fittings and the PETG axle use
+Tree Slim with Bambu Support for PLA/PETG as the dedicated interface.
+Only the fittings use support on the PLA plate.
+
+| Plate | Parts | Studio estimate | Part / support / prime tower material |
+| --- | --- | ---: | ---: |
+| PLA Basic | Two desiccant boxes, two coin-slot caps, shared funnel, crank wall fitting and outlet body | 4 h 29 min | 63.8 / 3.9 / 5.3 g |
+| PETG Basic | Axle and locking collar | 2 h 19 min | 17.5 / 5.9 / 4.0 g |
+
+The checked PLA plate routes part material through the right nozzle and
+interface material through the left. The PETG plate reverses those sides.
+Startup adds approximately 0.18 g per plate. Printer setup and calibration
+may add time and material. Inspect the fitting threads and ring grooves
+after cleanout, and check the PETG bearing seats before assembling the spool.
+
+The loaded hot-drying limit depends on the actual PETG grade, spool, container
+and other parts kept in the dryer. Verify loaded fit at the intended temperature
+and duration.
 
 ## Matching parts on one plate
 
@@ -22,10 +55,11 @@ No printer job is sent by the build or preparation commands.
 The left carrier and collar match their earlier widened/deeper-lock candidates;
 they are included because the versions of the existing physical prints are
 uncertain. Omit them only after matching the actual prints to this geometry.
-The fitting and sealing cap keep their earlier direct-drive geometry and are
-included on this complete nine-part plate. The working filament outlet parts are unchanged;
-filament clip work remains deferred. Retain two608 bearings and the22 ×2/18 ×2 mm
-static O-rings. Neither a magnetic wheel nor a rotor/retaining clip is needed.
+The plate and estimates below predate the revised face grooves and fixed grip
+tabs in the crank wall fitting. Rebuild the fitting from current CAD for the
+next fit print. Check support removal under the tabs and near the cap groove.
+The crank cap keeps the same fit on the revised fitting. Use a 22 × 2 mm ring at the wall
+and a 20 × 2 mm ring under the cap. Retain two 608 bearings.
 
 ## Configuration and overhead
 
