@@ -12,6 +12,8 @@ when making a physical prototype.
 - [Filament drybox](filament-drybox/README.md): a passive spool holder with a
   bearing-supported spindle, removable through-wall crank, filament outlet and
   two removable desiccant boxes.
+- [Manual feeder enclosure](manual-feeder/README.md) with a lift-off lid,
+  print-in-place cam latches, and an O-ring seal for the 608 idler feeder.
 
 ## Tools
 
