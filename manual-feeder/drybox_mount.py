@@ -7,6 +7,10 @@ WALL_X = -36.2
 MOUNT_AXIS_OFFSET = 3.55
 FLANGE_SEAT_X = -24.95
 FLANGE_FRONT_X = -22.20
+LINER_SEAT_RADIUS = 3.00
+BUSHING_STEM_RADIUS = 3.08
+BUSHING_STEM_BORE = 4.46
+BUSHING_LIP_BORE = 3.98
 
 def mesh(shape):
     points, triangles = shape.tessellate(.018,.135)
@@ -36,6 +40,11 @@ def build(port, box, yz_prism, axis_z, tube_stop):
     flange_end = WALL_X + flange["z_mm"][1]
     stem_end = WALL_X + stem["z_mm"][0]
     wall_flange = on_axis(original_body.intersect(outlet.cylinder(18,0,flange["z_mm"][1])))
+    # An inner lead-in captures the wall ring while the drybox is being assembled.
+    retainer = (around_mount(11.41,WALL_X,WALL_X+.14,11.50)
+                +around_mount(11.50,WALL_X+.13,WALL_X+.70,11.18)
+                -around_mount(10.95,WALL_X-.01,WALL_X+.71))
+    wall_flange += retainer
     # Lower the mounting axis relative to the PTFE so the large opening
     # can pass beneath the lid gasket. The PTFE itself stays straight.
     neck = around_mount(15.4,flange_end-.30,-28.15,13.4)
@@ -53,15 +62,18 @@ def build(port, box, yz_prism, axis_z, tube_stop):
     pilot += around_mount(9.45,FLANGE_SEAT_X-.69,FLANGE_SEAT_X+.025)
     threads = on_axis(outlet.external_thread(stem["major_diameter_mm"],stem["pitch_mm"],*stem["z_mm"]))
     tube_guide = port(2.20,stem_end-.12,FLANGE_FRONT_X+.15)
-    # A flanged TPU bushing grips the liner at a reachable end of the mount.
-    # The larger cavity is inside the stem and leaves its external thread intact.
-    bushing_seat = port(3.00,stem_end-.06,stem_end+3.65)
+    # The exposed flange seals against the tube. The wider stem bore
+    # accommodates inward deflection when pressed into the rigid seat.
+    bushing_seat = port(LINER_SEAT_RADIUS,stem_end-.06,stem_end+3.65)
     bushing = port(3.80,stem_end-1.05,stem_end)
-    bushing += port(3.08,stem_end-.02,stem_end+3.18)
-    bushing += port(3.08,stem_end+3.16,stem_end+3.53,2.85)
-    bushing_bore = port(1.95,stem_end-1.12,stem_end+3.60)
-    bushing_bore += port(2.18,stem_end-1.10,stem_end-.56,1.95)
-    bushing_bore += port(1.95,stem_end+3.16,stem_end+3.64,2.18)
+    bushing += port(BUSHING_STEM_RADIUS,stem_end-.02,stem_end+3.18)
+    bushing += port(BUSHING_STEM_RADIUS,stem_end+3.16,stem_end+3.53,2.85)
+    lip, bore = BUSHING_LIP_BORE/2, BUSHING_STEM_BORE/2
+    bushing_bore = (port(2.31,stem_end-1.12,stem_end-.69,lip)
+                    +port(lip,stem_end-.70,stem_end-.41)
+                    +port(lip,stem_end-.42,stem_end-.08,bore)
+                    +port(bore,stem_end-.09,stem_end+3.25)
+                    +port(bore,stem_end+3.24,stem_end+3.62,2.37))
     inlet = WALL_X+tube["inside_tip_z_mm"]
     liner_clearance = port(tube["od_mm"]/2,inlet,-tube_stop)
     liner = liner_clearance - port(tube["id_mm"]/2,inlet-.05,-tube_stop+.05)
