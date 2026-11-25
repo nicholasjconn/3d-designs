@@ -1,35 +1,57 @@
-# Print-in-place manual feeder enclosure
+# Drybox-mounted manual feeder
 
-The tray fits the 608 idler version of the Lao Teng manual feeder. Two cams
-print captive on the tray and turn by hand to compress the lid gasket. The
-lid lifts off with both PTFE tubes connected. Tapered braces support the cam
-mounts and the underside of each tube socket.
+This enclosure mounts the removable 608-version Lao Teng feeder at the
+drybox's ¾-inch outlet. The keyed inlet bulkhead replaces the spool-side
+push-fit and keeps the short PTFE liner aligned with the feeder. A shortened
+printer-side outlet screws into the tray and takes the standard push-fit and
+cylindrical storage cap. Two captive cams compress a reusable TPU lid gasket.
 
-## Generate the enclosure
+## Generate and print
 
-Install the Python 3.12 dependencies from `requirements-core.txt` in the
-repository's virtual environment. Run the generator from the repository root.
+Use Python 3.12 with `requirements-core.txt` installed. From the repository root:
 
 ```sh
 .venv/bin/python manual-feeder/enclosure.py
 ```
 
-The generator uses the repository's drybox outlet geometry for the HANGLIFE
-PT 1/8 push-fits. It writes `tray-with-captive-cams.stl`, `lid.stl`, and
-`checks.json` to `build/manual-feeder/`.
+The generator writes the meshes and interference checks to
+`build/manual-feeder/`. It reuses the thread and seal geometry from
+`filament-drybox/cad/outlet.py`.
 
-## Print and assemble
+- **PLA** · Tray with captive cams, lid, keyed bulkhead and short outlet.
+  Import the tray's indexed `drybox-feeder-tray.3mf` as geometry. Keep the tray
+  base down, the lid rim down, the bulkhead stem up and the short outlet's cap
+  neck down, as exported. The existing drybox wall locknut and storage cap fit
+  this revision. Their sources are in `filament-drybox/cad/outlet.py`.
+- **TPU** · Perimeter gasket and inlet liner bushing. The lid gasket's nominal
+  bead protrusion is 0.50 mm above the 1.36 mm recess.
+- **On hand** · Two 22 × 2 mm face O-rings, one 18 × 2 mm storage-cap O-ring,
+  one HANGLIFE PC4-M10 pass-through fitting with PT 1/8 thread and 4 mm OD PTFE.
+  Reuse the working feeder center and its hardware.
 
-The first prototype uses PLA Basic on the Bambu Lab H2D with a 0.4 mm nozzle,
-0.20 mm Standard layers, and Textured PEI. Print the tray with its groove up
-and the lid with its rim down. The tested slim-tree slice placed supports
-around the lid roof and rim. The tray uses the small breakaway ribs built
-into the model to start each cam.
+The PLA prototype used an H2D with a 0.4 mm nozzle, 0.20 mm layers and slim
+tree supports enabled. The horizontal outlet socket bridged without support
+inside the thread. Check the socket and the cam gaps in the slice preview.
+After cooling, remove loose support and check that both cams turn.
 
-After the parts cool, free the cams from the ribs and check they turn by
-hand. Install the AS568-132 O-ring (44.12 mm ID × 2.62 mm cross-section) in
-the 3.90 × 2.05 mm groove. Seat the lid and turn both cams to their stops.
-Verify that the lid seats evenly at the tube ends and check for leakage.
+## Assemble
+
+1. Drop the keyed bulkhead into the tray in the orientation set by its
+   clipped corner. Slide the stem through the tray wall and mount the tray
+   to the drybox with a 22 × 2 mm O-ring and the matching locknut.
+2. Seat the push-fit in the short outlet, fit the other 22 × 2 mm O-ring behind
+   the outlet flange and screw it into the tray by hand until the flange seats.
+3. Snap the feeder into the tray with both PTFE runs out of the way. From
+   inside the drybox insert the TPU bushing and the short inlet liner
+   (about 44 mm of 4 mm OD × 2.5 mm ID PTFE). Pass the printer lead through
+   the push-fit. Check that both square-cut tubes reach the feeder's original
+   stops and that the wheel feeds freely.
+4. Lay the TPU gasket flat in its groove. Set the lid down with both cams
+   parked outward, then turn both cams closed.
+5. For storage, release the printer lead and park about 20 mm of bare
+   filament at the fitting. Seat the 18 × 2 mm ring in the smooth groove above
+   the cap thread and screw the original cylinder onto the outlet. Check the
+   assembled drybox for leakage before relying on the seal.
 
 ## References
 
